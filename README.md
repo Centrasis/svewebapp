@@ -6,7 +6,7 @@ Framework7 app created with following options:
 
 ```
 {
-  "cwd": "F:\\Users\\FTL\\source\\repos\\newwebapp",
+  "cwd": ".",
   "type": [
     "pwa"
   ],
