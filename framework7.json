@@ -1,0 +1,26 @@
+{
+  "cwd": ".",
+  "type": [
+    "pwa"
+  ],
+  "name": "sve-online",
+  "framework": "react",
+  "template": "tabs",
+  "bundler": "webpack",
+  "cssPreProcessor": "less",
+  "theming": {
+    "customColor": true,
+    "color": "#008c0e",
+    "darkTheme": true,
+    "iconFonts": true,
+    "fillBars": false
+  },
+  "customBuild": false,
+  "webpack": {
+    "developmentSourceMap": true,
+    "productionSourceMap": true,
+    "hashAssets": false,
+    "preserveAssetsPaths": false,
+    "inlineAssets": true
+  }
+}

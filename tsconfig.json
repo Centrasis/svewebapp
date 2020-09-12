@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "declarationMap":true,
+    "isolatedModules": true,
+    "declaration": true,
+    "allowJs": true,                       /* Allow javascript files to be compiled. */
+    "lib": [
+      "es6", "es2015.core", "dom"
+    ],
+    "composite": true,
+    "types": [
+      "babylonjs",
+      "babylonjs-materials",
+      "babylonjs-gui",
+      "node"
+    ],
+    "esModuleInterop": true,
+    "jsx": "react",
+    "skipLibCheck": false,
+    "strict": false
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/huge-uploader/src/index.js"
+ ]
+}
