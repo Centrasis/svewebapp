@@ -25,7 +25,6 @@ export default class extends React.Component {
     this.state = {
       displayCount: 10,
       selectedGalleryImg: 0,
-      allowInfinite: true,
       zlib: require('zlib'),
       project: Number(props.f7route.params.id),
       sortBy: Sorting.AgeASC,
@@ -365,48 +364,6 @@ export default class extends React.Component {
     }
   }
 
-  infinityScroll(usr) {
-    var self = this;
-    var $$ = Dom7;
-
-    // Exit, if loading in progress
-    if (!this.state.allowInfinite) return;
-  
-    // Set loading flag
-    this.state.allowInfinite = false;
-
-    $$('.infinite-scroll-preloader').show();
-
-
-    this.setState({displayCount: this.state.displayCount + 10});
-    
-  
-    // Emulate 1s loading
-    setTimeout(function () {
-      // Reset loading flag
-      self.state.allowInfinite = true;
-      $$('.infinite-scroll-preloader').hide();
-    }, 1000);
-  }
-
-  scrollHandler(evt) {
-    var element = evt.target;
-    if(element.scrollHeight - element.scrollTop === element.clientHeight)
-    {
-      this.infinityScroll({name: element.id});
-    }
-  }
-
-  registerScrollListeners() {
-    var $$ = Dom7;
-    $$('.scrollBox').off("scroll", this.scrollHandler.bind(this));
-    $$('.scrollBox').on("scroll", this.scrollHandler.bind(this));
-  }
-
-  componentDidUpdate() {
-    this.registerScrollListeners();
-  }
-
   componentDidMount() {
     var router = this.$f7router;
     var self = this;
@@ -424,11 +381,7 @@ export default class extends React.Component {
         self.updateContent();
       });
 
-      self.registerScrollListeners();
-
-      self.state.allowInfinite = true;
-
-      $$('.infinite-scroll-preloader').hide();
+      //self.registerScrollListeners();
     });
   }
 

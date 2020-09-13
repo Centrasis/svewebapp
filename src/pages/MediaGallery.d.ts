@@ -13,20 +13,27 @@ export declare type MediaSettings = {
     enableDeletion?: boolean;
     enableFavorization?: boolean;
     displayCount?: number;
+    displayCountIncrement?: number;
     onDeleteMedia?: (id: number) => void;
 };
 export default class MediaGallery extends React.Component<MediaSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected data: SVEData[];
     protected displayCount: number;
+    protected displayCountIncrement: number;
     protected caption: string;
     protected enableDeletion: boolean;
     protected enableFavorization: boolean;
     protected sortBy: Sorting;
     protected onDeleteMedia: (id: number) => void;
     protected favoriteImgs: Set<number>;
+    protected toastFavIcon: any;
+    protected infiniteActive: boolean;
     componentDidMount(): void;
-    render(): JSX.Element[];
+    render(): JSX.Element;
     saveImageToDevice(img: SVEData): void;
+    scrollHandler(evt: any): void;
+    registerScrollListeners(): void;
+    infinityScroll(): void;
     getPartialImagesList(): SVEData[];
     deleteFromServer(img: SVEData): void;
     markWithStar(img: SVEData): void;
