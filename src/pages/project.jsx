@@ -92,7 +92,12 @@ export default class extends React.Component {
 
         <Block strong>
           {(this.state.viewableUsers.size === 0) ? (
-            <Preloader></Preloader>
+            <Block strong>
+              <Row><span>Lade Medien...</span></Row>
+              <Row>
+                <Col><Preloader></Preloader></Col>
+              </Row>
+            </Block>
            ) : (
           <Swiper 
             id="ImgSwiper"
