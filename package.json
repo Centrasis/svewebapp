@@ -1,8 +1,8 @@
 {
-  "name": "my-app",
+  "name": "sve-online",
   "private": true,
   "version": "1.0.0",
-  "description": "My App",
+  "description": "Webapp to use the SVE System",
   "repository": "",
   "license": "UNLICENSED",
   "scripts": {
