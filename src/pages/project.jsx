@@ -107,7 +107,7 @@ export default class extends React.Component {
             style={{display: "flex", flexFlow: "column", height: "100%"}}
           >
             {(this.state.viewableUsers.has(this.$f7.data.getUser().getName())) ? (
-              <SwiperSlide style={{overflow: "scroll", overflowX: "hidden"}} className="scrollBox">
+              <SwiperSlide className="scrollBox">
                   <MediaGallery 
                     id={`image-gallery-${this.$f7.data.getUser().getName()}`}
                     data={this.getImagesFor(this.$f7.data.getUser().getName())}

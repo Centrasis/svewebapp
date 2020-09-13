@@ -88,7 +88,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     }
 
     render () {   
-        return (<Block strong style={{overflow: "scroll", overflowX: "hidden", height: "inherit", width: "inherit"}} className={this.props.id + "-scrollBox"}>
+        return (<Block strong style={{overflow: "scroll", overflowX: "hidden", position: "absolute", top: "0", left: "0", right: "0", bottom: "0", display: "block"}} className={this.props.id + "-scrollBox"}>
                     {this.getPartialImagesList().map((image: SVEData) => (
                     <Block strong>
                         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", paddingBottom: "1em", textAlign: "center"}}>
