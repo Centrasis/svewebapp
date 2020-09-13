@@ -330,6 +330,9 @@ export default class extends React.Component {
         h = windowHeight * 0.9;
       }
       $$("#ImgSwiper").css("height", h + "px");
+      document.querySelectorAll(".scrollBox").forEach((e, ke, p) => {
+        e.style.height = h + "px";
+      });
       $$(".scrollBox").each((i, e) => e.css("height", h + "px"));
     }
   }
