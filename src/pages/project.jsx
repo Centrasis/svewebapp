@@ -273,7 +273,6 @@ export default class extends React.Component {
   }
 
   updateUploadedImages() {
-    console.log("update Uploaded imgs");
     var self = this;
     var $$ = Dom7;
 
@@ -293,7 +292,6 @@ export default class extends React.Component {
           list.push(i);
           vu.set(usr.getName(), list);
           self.setState({viewableUsers: vu});
-          console.log("Viewable -> " + vu.size);
         });
       });
     }, 

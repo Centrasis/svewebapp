@@ -34,6 +34,10 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected toastFavIcon = null;
     protected infiniteActive: boolean = false;
 
+    componentDidUpdate() {
+        Dom7('#'+this.props.id + "-Infinity-Loader").hide();
+    }
+
     componentDidMount() {
         console.log("Init media gallery.." + JSON.stringify(this.props));
         this.data = this.props.data;
@@ -137,7 +141,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                         </Block>
                     </Block>
                     ))}
-                    <Preloader color="#11a802" className="preloader infinite-scroll-preloader"></Preloader>
+                    <Preloader color="#11a802" className="preloader infinite-scroll-preloader" id={this.props.id + "-Infinity-Loader"}></Preloader>
                 </Block>)
       }
 
@@ -169,15 +173,17 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         // Set loading flag
         this.infiniteActive = true;
     
-        $$('.infinite-scroll-preloader').show();
+        $$('#'+this.props.id + "-Infinity-Loader").show();
     
         this.displayCount += this.displayCountIncrement;
+
+        console.log("Update display count: " + this.displayCount);
       
         // Emulate 1s loading
         setTimeout(function () {
           // Reset loading flag
           self.infiniteActive = false;
-          $$('.infinite-scroll-preloader').hide();
+          $$('#'+this.props.id + "-Infinity-Loader").hide();
         }, 1000);
 
         this.forceUpdate();
