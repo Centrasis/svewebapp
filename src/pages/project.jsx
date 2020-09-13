@@ -107,7 +107,7 @@ export default class extends React.Component {
             style={{display: "flex", flexFlow: "column", height: "100%"}}
           >
             {(this.state.viewableUsers.has(this.$f7.data.getUser().getName())) ? (
-              <SwiperSlide className="scrollBox">
+              <SwiperSlide className="scrollBox" style={{height: "500px"}}>
                   <MediaGallery 
                     id={`image-gallery-${this.$f7.data.getUser().getName()}`}
                     data={this.getImagesFor(this.$f7.data.getUser().getName())}
@@ -317,13 +317,20 @@ export default class extends React.Component {
         lastScrollPos = document.body.scrollTop;
       };
     }
+    this.recalcHeight();
+  }
+
+  recalcHeight() {
+    var $$ = Dom7;
     if($$("#ImgSwiper") !== null && $$("#ImgSwiper").offset() !== null) {
+      console.log("Update height!");
       var h = ($$("#page").height() - $$("#ImgSwiper").offset().top - 2 * $$(".navbar").height());
       if (self.$device.ios || self.$device.android)
       {
         h = windowHeight * 0.9;
       }
       $$("#ImgSwiper").css("height", h + "px");
+      $$(".scrollBox").css("height", h + "px");
     }
   }
 
@@ -334,6 +341,8 @@ export default class extends React.Component {
   updateContent() {
     var self = this;
     var router = this.$f7router;
+
+    this.recalcHeight();
 
     let panelContent = {
       caption: "Urlaubsaktionen",
