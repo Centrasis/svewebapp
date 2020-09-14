@@ -5,22 +5,12 @@ import Dom7 from 'dom7';
 
 //import MapView from 'react-native-maps';
 import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData} from 'svebaselib';
-import Dropzone from 'react-dropzone';
-import HugeUploader from 'huge-uploader';
+import UploadDropzone from './UploadDropzone';
 import MediaGallery, {Media, Sorting} from './MediaGallery';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
-
-    this.uploadInfo = {
-      imagesToUpload: [],
-      pendingUploads: [],
-      filesUploaded: 0,
-      totalFilesToUpload: 0,
-      maxParallelUploads: 2,
-      progressbar: undefined
-    };
 
     this.state = {
       displayCount: 10,
@@ -147,27 +137,9 @@ export default class extends React.Component {
       <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false})}>
         <Page>
           <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
-          <Block style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-            <Dropzone onDrop={acceptedFiles => { this.onAcceptMedia(acceptedFiles) }}>
-            {({getRootProps, getInputProps}) => (
-                <section style={{
-                  backgroundImage: "url(\"images/DragNDropArea.png\")",
-                  WebkitFilter: (this.state.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                  filter: (this.state.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                  backgroundRepeat: "no-repeat", 
-                  backgroundSize: "100% 100%",
-                  margin: "3em",
-                  position: "relative",
-                  padding: "3em"
-                }}>
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()}/>
-                    <Block style={{minHeight: "90%", minWidth: "100%", cursor: "copy"}}>{"Ziehe Dokumente zum Hochladen hier hin oder suche diese per Explorer."}</Block>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
-          </Block>
+          <UploadDropzone
+
+          />
         </Page>
       </Popup>
     </Page>
@@ -198,69 +170,6 @@ export default class extends React.Component {
       return "Upload absteigend";
     
     return "Unbekannt";
-  }
-
-  onAcceptMedia(media) {
-    this.$f7.progressbar.show(0, "#11a802");
-    this.uploadInfo.progressbar = this.$f7.dialog.progress("Hochladen..", 0, "#11a802");
-    this.setState({hasError: false});
-
-    media.forEach(m => this.uploadInfo.imagesToUpload.push(m));
-    this.uploadInfo.totalFilesToUpload += media.length;
-
-    for (let i = 0; i < this.uploadInfo.maxParallelUploads; i++) {
-      if(this.uploadInfo.pendingUploads.length < this.uploadInfo.maxParallelUploads)
-        this.popNextUpload();
-    }
-  }
-
-  popNextUpload() {
-    if (this.uploadInfo.imagesToUpload.length === 0) {
-      this.updateUploadedImages();
-      this.uploadInfo.filesUploaded = 0;
-      this.uploadInfo.totalFilesToUpload = 0;
-      if(this.uploadInfo.progressbar !== undefined)
-        this.uploadInfo.progressbar.close();
-      this.$f7.progressbar.hide();
-      return;
-    }
-
-    this.uploadInfo.progressbar.setText("Datei (" + this.uploadInfo.filesUploaded + " / " + this.uploadInfo.totalFilesToUpload + ")");
-
-    var self = this;
-    const media = this.uploadInfo.imagesToUpload.pop();
-    console.log("Upload: " + JSON.stringify(media));
-    const uploader = new HugeUploader({ 
-      endpoint: SVESystemInfo.getAPIRoot() + "/project/" + ((typeof this.state.project !== "number") ? this.state.project.getID() : "") + "/data/upload", 
-      file: media,
-      postParams: {
-        fileName: media.name,
-        created: (media.lastModifiedDate !== undefined) ? media.lastModifiedDate : media.lastModified
-      }
-    });
-    this.uploadInfo.pendingUploads.push(uploader);
-
-    uploader.on('error', (err) => {
-      console.error('Something bad happened', err.detail);
-      self.uploadInfo.pendingUploads = self.uploadInfo.pendingUploads.filter(v => v != uploader);
-      self.setState({hasError: true});
-      self.popNextUpload();
-    });
-
-    uploader.on('progress', (progress) => {
-        console.log(`The upload is at ${progress.detail}%`);
-        let ratio = ((self.uploadInfo.filesUploaded + (progress.detail / 100.0)) / self.uploadInfo.totalFilesToUpload) * 100.0;
-        self.$f7.progressbar.show(ratio, "#11a802");
-        self.uploadInfo.progressbar.setProgress(ratio);
-        self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ")");
-    });
-
-    uploader.on('finish', () => {
-        console.log('complete');
-        self.uploadInfo.filesUploaded++;
-        self.uploadInfo.pendingUploads = self.uploadInfo.pendingUploads.filter(v => v != uploader);
-        self.popNextUpload();
-    });
   }
 
   setSortBy(SortBy) {
