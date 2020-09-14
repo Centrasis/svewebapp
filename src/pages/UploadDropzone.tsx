@@ -109,14 +109,14 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     
         uploader.on('error', (err) => {
           console.error('Something bad happened', err.detail);
-          this.toastError = this.$f7.toast.create({
+          self.toastError = self.$f7.toast.create({
             text: JSON.stringify(err.detail),
             closeButton: true,
             closeButtonText: 'Ok',
             closeButtonColor: 'red',
           });
-          this.toastError.open();
-          
+          self.toastError.open();
+
           self.uploadInfo.pendingUploads = self.uploadInfo.pendingUploads.filter(v => v != uploader);
           self.hasError = true;
           self.forceUpdate();
