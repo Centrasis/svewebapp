@@ -13,7 +13,8 @@ export type UploadDropzoneSettings = {
 export default class UploadDropzone extends React.Component<UploadDropzoneSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected project: SVEProject;
     protected hasError: boolean = false;
-    protected onImageUploaded: (img: SVEData) =>void = (img: SVEData) => {};
+    protected onImageUploaded: (img: SVEData) =>void = (img: SVEData) => {}
+    protected toastError = null;
     protected uploadInfo = {
         imagesToUpload: [],
         pendingUploads: [],
@@ -108,6 +109,14 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     
         uploader.on('error', (err) => {
           console.error('Something bad happened', err.detail);
+          this.toastError = this.$f7.toast.create({
+            text: JSON.stringify(err.detail),
+            closeButton: true,
+            closeButtonText: 'Ok',
+            closeButtonColor: 'red',
+          });
+          this.toastError.open();
+          
           self.uploadInfo.pendingUploads = self.uploadInfo.pendingUploads.filter(v => v != uploader);
           self.hasError = true;
           self.forceUpdate();
