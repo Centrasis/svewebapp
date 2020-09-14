@@ -1,5 +1,5 @@
 import React from 'react';
-import { PhotoBrowser, Toggle, Swiper, SwiperSlide, Page, Navbar, Popup, Block, Row, NavRight, Link, Panel, View, List, ListInput, BlockTitle, Icon, ListItem, Col, Preloader, ListButton, Button, Progressbar, f7, BlockFooter, AccordionContent, BlockHeader } from 'framework7-react';
+import { PhotoBrowser, Toggle, Swiper, SwiperSlide, Page, Navbar, Popup, Block, Row, NavRight, Link, Panel, View, List, ListInput, BlockTitle, Icon, ListItem, Col, Preloader, ListButton, Button, f7, BlockFooter, AccordionContent, BlockHeader } from 'framework7-react';
 import Dom7 from 'dom7';
 //import KeepScreenOn from 'react-native-keep-screen-on'
 
@@ -27,9 +27,7 @@ export default class extends React.Component {
       showUpload: false,
       images_toPreSelect: [],
       showPreSelect: false,
-      progress: 0.0,
       ownerName: '',
-      hasError: false,
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
     };
@@ -137,9 +135,12 @@ export default class extends React.Component {
       <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false})}>
         <Page>
           <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
-          <UploadDropzone
-
-          />
+          {(typeof this.state.project !== "number") ? 
+            <UploadDropzone
+              project={this.state.project}
+              onImageUploaded={(img) => this.updateUploadedImages()}
+            />
+          : ""}
         </Page>
       </Popup>
     </Page>
