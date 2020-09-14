@@ -32,6 +32,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected onDeleteMedia: (id: number) => void = (id: number) => {};
     protected favoriteImgs: Set<number> = new Set<number>();
     protected toastFavIcon = null;
+    protected toastDeleteIcon = null;
     protected infiniteActive: boolean = false;
 
     componentDidUpdate() {
@@ -39,14 +40,21 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     }
 
     componentDidMount() {
-        console.log("Init media gallery.." + JSON.stringify(this.props));
+        //console.log("Init media gallery.." + JSON.stringify(this.props));
         this.data = this.props.data;
 
         this.toastFavIcon = this.$f7.toast.create({
             icon: '<i class="f7-icons">star</i>',
             text: 'Favorisiert',
             position: 'center',
-            closeTimeout: 2000,
+            closeTimeout: 1000,
+        });
+
+        this.toastDeleteIcon = this.$f7.toast.create({
+            icon: '<i class="f7-icons">trash</i>',
+            text: 'Gelöscht',
+            position: 'center',
+            closeTimeout: 1000,
         });
 
         if (this.props.sortBy)
@@ -220,10 +228,9 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         this.$f7.dialog.confirm("Möchten Sie die Datei: wirklich löschen?", "Löschbestätigung", function () {
           img.remove().then((val) => {
             if(val) {
-              img.getOwner().then((o) => {
+                self.toastDeleteIcon.open();
                 self.data = self.data.filter(e => e.getID() != img.getID());
-                this.onDeleteMedia(img.getID());
-              });
+                self.onDeleteMedia(img.getID());
             } else {
               self.$f7.dialog.alert("Datei konnte nicht gelöscht werden!");
             }
