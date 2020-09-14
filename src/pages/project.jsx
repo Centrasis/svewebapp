@@ -121,7 +121,7 @@ export default class extends React.Component {
             ) : ""}
             {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== this.$f7.data.getUser().getName()) ? (
               <SwiperSlide 
-                style={{overflow: "scroll", overflowX: "hidden"}}
+                style={{height: "500px"}}
                 className="scrollBox"
                 id={v.key}
               >
