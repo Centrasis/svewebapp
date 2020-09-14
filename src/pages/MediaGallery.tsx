@@ -1,6 +1,6 @@
-import React, { useState, useEffect, version } from 'react';
-import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData, SVEAccount} from 'svebaselib';
-import { PhotoBrowser, Toggle, Swiper, SwiperSlide, Page, Navbar, Popup, Block, Row, NavRight, Link, Panel, View, List, ListInput, BlockTitle, Icon, ListItem, Col, Preloader, ListButton, Button, Progressbar, f7, BlockFooter, AccordionContent, BlockHeader } from 'framework7-react';
+import React from 'react';
+import { SVEDataType, SVEDataVersion, SVEData} from 'svebaselib';
+import { Block, Row, Link, Icon, Col, Preloader } from 'framework7-react';
 import Dom7 from 'dom7';
 
 export enum Sorting {
