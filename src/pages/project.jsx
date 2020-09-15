@@ -211,7 +211,6 @@ export default class extends React.Component {
     // Init
     self.setState({favoriteImgs: favImgs});
 
-    var windowHeight = window.innerHeight;
     if (self.$device.ios || self.$device.android)
     {
       let lastScrollPos = 0.0;

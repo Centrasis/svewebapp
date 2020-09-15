@@ -102,6 +102,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
           file: media,
+          chunkSize: 5,
           postParams: {
             fileName: media.name,
             created: (media.lastModifiedDate !== undefined) ? media.lastModifiedDate : media.lastModified
