@@ -127,7 +127,6 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         });
     
         uploader.on('progress', (progress) => {
-            console.log(`The upload is at ${progress.detail}%`);
             let ratio = ((self.uploadInfo.filesUploaded + (progress.detail / 100.0)) / self.uploadInfo.totalFilesToUpload) * 100.0;
             self.$f7.progressbar.show(ratio, "#11a802");
             self.uploadInfo.progressbar.setProgress(ratio);
@@ -135,7 +134,6 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         });
     
         uploader.on('finish', () => {
-            console.log('complete');
             self.uploadInfo.filesUploaded++;
             self.uploadInfo.pendingUploads = self.uploadInfo.pendingUploads.filter(v => v != uploader);
             self.popNextUpload(media);

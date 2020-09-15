@@ -280,7 +280,7 @@ export default class extends React.Component {
       ]
     };
 
-    self.$f7.data.updateRightPanel(panelContent);
+    self.$f7.data.pushRightPanel(panelContent);
 
     if (typeof this.state.project !== "number") {
       this.state.project.getOwner().then(user => {
@@ -311,8 +311,14 @@ export default class extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    console.log("page unmount!");
+    self.$f7.data.popRightPanel(panelContent);
+  }
+
   onPageBeforeRemove() {
     const self = this;
+    console.log("before page remove!");
     // Destroy popup when page removed
     if (self.popup) self.popup.destroy();
   }

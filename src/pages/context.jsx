@@ -237,8 +237,7 @@ export default class extends React.Component {
         onClick: function() { self.openCamera() }
       });
     }
-    console.log("Update context menue");
-    self.$f7.data.updateRightPanel(panelContent);
+    self.$f7.data.pushRightPanel(panelContent);
 
     self.setState({projects: []});
     group.getProjects().then(prjs => {

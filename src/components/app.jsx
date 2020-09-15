@@ -61,8 +61,13 @@ export default class extends React.Component {
             getUser: function() {
               return app.state.user;
             },
-            updateRightPanel: function(content) {
-              app.setState({panelMenueContent: content});
+            pushRightPanel: function(content) {
+              app.panelMenueContent.push(content);
+              app.setState({panelMenueContent: app.panelMenueContent});
+            },
+            popRightPanel: function() {
+              app.panelMenueContent.pop();
+              app.setState({panelMenueContent: app.panelMenueContent});
             },
             updateLeftPanel: function(content) {
               app.setState({panelMenueContentLeft: content});
@@ -91,7 +96,7 @@ export default class extends React.Component {
       },
       onLoginHooks: [],
       panelMenueContentLeft: undefined,
-      panelMenueContent: {
+      panelMenueContent: [{
         caption: "_",
         menueItems: [
           {
@@ -99,7 +104,7 @@ export default class extends React.Component {
             onClick: function() { self.dialog.alert("Test"); }
           }
         ]
-      }
+      }]
     }
   }
   render() {
@@ -110,7 +115,8 @@ export default class extends React.Component {
         <Panel right cover themeDark>
           <View>
             <Page>
-              <Navbar title={`${this.state.panelMenueContent.caption}`}/>
+              {(this.state.panelMenueContent.length > 0) ? <Navbar title={`${this.state.panelMenueContent.caption}`}/> : ""}
+              {(this.state.panelMenueContent.length > 0) ? 
               <List>
                 {this.state.panelMenueContent.menueItems.map((item) => (
                   <ListItem 
@@ -127,6 +133,7 @@ export default class extends React.Component {
                 ))}
                 <ListItem panelClose="right"/>
               </List>
+              : ""}
             </Page>
           </View>
         </Panel>
