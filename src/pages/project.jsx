@@ -104,7 +104,6 @@ export default class extends React.Component {
                     enableFavorization={true}
                     style={{width: "100%", height: "100%"}}
                     displayCount={this.state.displayCount}
-                    onDeleteMedia={(id) => this.updateUploadedImages()}
                   />
               </SwiperSlide>
             ) : ""}
@@ -126,7 +125,6 @@ export default class extends React.Component {
                   enableFavorization={false}
                   style={{width: "100%", height: "100%"}}
                   displayCount={this.state.displayCount}
-                  onDeleteMedia={(id) => this.updateUploadedImages()}
                 />
               </SwiperSlide>
             ) : "")}

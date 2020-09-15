@@ -230,6 +230,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             if(val) {
                 self.toastDeleteIcon.open();
                 self.data = self.data.filter(e => e.getID() != img.getID());
+                self.forceUpdate();
                 self.onDeleteMedia(img.getID());
             } else {
               self.$f7.dialog.alert("Datei konnte nicht gelöscht werden!");
