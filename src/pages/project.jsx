@@ -81,9 +81,9 @@ export default class extends React.Component {
         <Block strong>
           {(this.state.viewableUsers.size === 0) ? (
             <Block strong>
-              <Row><span>Lade Medien...</span></Row>
+              <Row><Col></Col><Col><span>Lade Medien...</span></Col><Col></Col></Row>
               <Row>
-                <Col><Preloader></Preloader></Col>
+                <Col></Col><Col><Preloader></Preloader></Col><Col></Col>
               </Row>
             </Block>
            ) : (
@@ -104,6 +104,7 @@ export default class extends React.Component {
                     enableFavorization={true}
                     style={{width: "100%", height: "100%"}}
                     displayCount={this.state.displayCount}
+                    onDeleteMedia={(id) => this.updateUploadedImages()}
                   />
               </SwiperSlide>
             ) : ""}
@@ -125,6 +126,7 @@ export default class extends React.Component {
                   enableFavorization={false}
                   style={{width: "100%", height: "100%"}}
                   displayCount={this.state.displayCount}
+                  onDeleteMedia={(id) => this.updateUploadedImages()}
                 />
               </SwiperSlide>
             ) : "")}
