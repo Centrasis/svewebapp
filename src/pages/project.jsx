@@ -235,7 +235,7 @@ export default class extends React.Component {
     if($$("#ImgSwiper") !== null && $$("#ImgSwiper").offset() !== null) {
       console.log("Update height!");
       let h = ($$("#page").height() - $$("#ImgSwiper").offset().top - 2 * $$(".navbar").height());
-      if (self.$device.ios || self.$device.android)
+      if (this.$device.ios || this.$device.android)
       {
         h = windowHeight * 0.9;
       }
