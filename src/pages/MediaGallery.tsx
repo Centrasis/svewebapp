@@ -191,7 +191,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         setTimeout(function () {
           // Reset loading flag
           self.infiniteActive = false;
-          $$('#'+this.props.id + "-Infinity-Loader").hide();
+          $$('#'+self.props.id + "-Infinity-Loader").hide();
         }, 1000);
 
         this.forceUpdate();
