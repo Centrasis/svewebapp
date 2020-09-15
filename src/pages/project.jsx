@@ -95,7 +95,7 @@ export default class extends React.Component {
             style={{display: "flex", flexFlow: "column", height: "100%"}}
           >
             {(this.state.viewableUsers.has(this.$f7.data.getUser().getName())) ? (
-              <SwiperSlide className="scrollBox" style={{height: "500px"}}>
+              <SwiperSlide className="scrollBox" style={{height: this.getSwiperHeight() + "px"}}>
                   <MediaGallery 
                     id={`image-gallery-${this.$f7.data.getUser().getName()}`}
                     data={this.getImagesFor(this.$f7.data.getUser().getName())}
@@ -109,7 +109,7 @@ export default class extends React.Component {
             ) : ""}
             {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== this.$f7.data.getUser().getName()) ? (
               <SwiperSlide 
-                style={{height: "500px"}}
+                style={{height: this.getSwiperHeight() + "px"}}
                 className="scrollBox"
                 id={v.key}
               >
@@ -227,23 +227,26 @@ export default class extends React.Component {
         lastScrollPos = document.body.scrollTop;
       };
     }
-    this.recalcHeight();
+    $$("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
   }
 
-  recalcHeight() {
+  getSwiperHeight() {
     var $$ = Dom7;
     if($$("#ImgSwiper") !== null && $$("#ImgSwiper").offset() !== null) {
       console.log("Update height!");
-      var h = ($$("#page").height() - $$("#ImgSwiper").offset().top - 2 * $$(".navbar").height());
+      let h = ($$("#page").height() - $$("#ImgSwiper").offset().top - 2 * $$(".navbar").height());
       if (self.$device.ios || self.$device.android)
       {
         h = windowHeight * 0.9;
       }
-      $$("#ImgSwiper").css("height", h + "px");
+      return h;
+      /*$$("#ImgSwiper").css("height", h + "px");
       document.querySelectorAll(".scrollBox").forEach((e, ke, p) => {
         e.style.height = h + "px";
       });
-      $$(".scrollBox").each((i, e) => e.css("height", h + "px"));
+      $$(".scrollBox").each((i, e) => e.css("height", h + "px"));*/
+    } else {
+      return 500;
     }
   }
 
@@ -255,7 +258,7 @@ export default class extends React.Component {
     var self = this;
     var router = this.$f7router;
 
-    this.recalcHeight();
+    Dom7("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
 
     let panelContent = {
       caption: "Urlaubsaktionen",
