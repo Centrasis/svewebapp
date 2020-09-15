@@ -75,8 +75,9 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         this.uploadInfo.totalFilesToUpload += media.length;
     
         for (let i = 0; i < this.uploadInfo.maxParallelUploads; i++) {
-          if(this.uploadInfo.pendingUploads.length < this.uploadInfo.maxParallelUploads)
+          if(this.uploadInfo.pendingUploads.length < this.uploadInfo.maxParallelUploads && this.uploadInfo.imagesToUpload.length > 0) {
             this.popNextUpload(null);
+          }
         }
       }
     
@@ -96,7 +97,6 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     
         var self = this;
         const media = this.uploadInfo.imagesToUpload.pop();
-        console.log("Upload: " + JSON.stringify(media));
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
           file: media,
