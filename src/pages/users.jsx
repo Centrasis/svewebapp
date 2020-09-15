@@ -15,25 +15,17 @@ import {
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
-
+import {SVEGroup} from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      contextID: props.f7route.params.id,
-      contextName: "",
-      users: [],
-      detailedUser: {
-        id: -1,
-        canRead: false,
-        canWrite: false,
-        isAdmin: false
-      },
-      selfUser: {
-
-      }
+      group: Number(props.f7route.params.id),
+      userRights: new Map(),
+      detailedUser: undefined,
+      selfUser: undefined
     };
   }
   render() {
@@ -58,14 +50,14 @@ export default class extends React.Component {
       <p>Nutzerübersicht und Administration für die Gruppe {this.state.contextName}.</p>
     </Block>
     <List>
-          {this.state.users.map((user) => (
+          {this.getListFromMap(this.state.userRights).map((user) => (
             <ListItem 
-              link={this.state.selfUser.id != user.id}
-              key={user.id}
-              title={user.name}
-              onClick={this.onDetailsUser.bind(this, user)}
-              popoverOpen={(this.state.selfUser.id != user.id) ? ".popover-details" : ""}
-              disabled={this.state.selfUser.id === user.id}
+              link={this.state.selfUser.getID() != user.key.getID()}
+              key={user.key.getID()}
+              title={user.key.getName()}
+              onClick={this.onDetailsUser.bind(this, user.key)}
+              popoverOpen={(this.state.selfUser.getID() != user.key.getID()) ? ".popover-details" : ""}
+              disabled={this.state.selfUser.getID() === user.key.getID()}
             />
           ))}
     </List>
@@ -74,17 +66,19 @@ export default class extends React.Component {
       <List>
         <ListItem disabled={true}>
           <p>Aktuelle Rechte</p>
+          {(this.state.detailedUser !== undefined) ? 
           <List>
             <ListItem>
-              <Col><p>Lesen:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.detailedUser.canRead)}</p></Col>
+              <Col><p>Lesen:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).read)}</p></Col>
             </ListItem>
             <ListItem>
-              <Col><p>Schreiben:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.detailedUser.canWrite)}</p></Col>
+              <Col><p>Schreiben:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).write)}</p></Col>
             </ListItem>
             <ListItem>
-              <Col><p>Admin:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.detailedUser.isAdmin)}</p></Col>
+              <Col><p>Admin:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).admin)}</p></Col>
             </ListItem>
           </List>
+          : ""}
         </ListItem>
         <ListItem link="#" popoverClose={true} title="Zum Admin machen" onClick={this.setAdmin.bind(this, this.state.detailedUser)}/>
         <ListItem link="#" popoverClose={true} title="Schreibberechtigungen geben" onClick={this.setWrite.bind(this, this.state.detailedUser)}/>
@@ -95,61 +89,56 @@ export default class extends React.Component {
   </Page>
   )}
 
-  Bool2Str(b) {
-    if (b)
-    {
-      return "Ja";
+  getListFromMap(map) {
+    let ret = [];
+    for (let [k, v] of map) {
+      ret.push({key: k, value: v});
     }
-    return "Nein";
+    return ret;
+  }
+
+  Bool2Str(b) {
+    return (b) ? "Ja" : "Nein";
   }
 
   setAdmin(usr) {
-    this.$f7.request.get(this.$f7.apiPath + "/editRights.php?context=" + this.state.contextID + "&user="+usr.id+"&r=true&w=true&a=true");
+    
   }
 
   setWrite(usr) {
-    this.$f7.request.get(this.$f7.apiPath + "/editRights.php?context=" + this.state.contextID + "&user="+usr.id+"&r=true&w=true&a=false");
+    
   }
 
   setRead(usr) {
-    this.$f7.request.get(this.$f7.apiPath + "/editRights.php?context=" + this.state.contextID + "&user="+usr.id+"&r=true&w=false&a=false");
+    
   }
 
   removeUser(usr) {
-    this.$f7.request.get(this.$f7.apiPath + "/editRights.php?context=" + this.state.contextID + "&user="+usr.id+"&r=false&w=false&a=false");
+    
   }
 
   onDetailsUser(usr) {
-    var self = this;
-    var $$ = Dom7;
-
-    self.$f7.request.get(self.$f7.apiPath + "/getUserInfo.php?context=" + self.state.contextID+"&id="+usr.id, function(data) {
-      self.state.detailedUser = JSON.parse(data);
-      self.setState({detailedUser: JSON.parse(data)});
-    });
+    self.setState({detailedUser: usr});
   }
 
   componentDidMount() {
-    var router = this.$f7router;
     var self = this;
     this.$f7ready((f7) => {
-      f7.request.get(f7.apiPath + "/getContextInfo.php?context=" + self.state.contextID, function(data) {
-        self.state.contextName = JSON.parse(data).name;
-        self.setState({contextName: JSON.parse(data).name});
-
-        f7.request.get(f7.apiPath + "/getAccountInfo.php", function(data) {
-          var user = JSON.parse(data);
-          self.state.selfUser = user;
-          self.setState({selfUser: user});
-
-          f7.request.get(f7.apiPath + "/getUsersOfContext.php?context=" + self.state.contextID, function(data) {
-            self.setState({users: JSON.parse(data)});
-          });
+      if (typeof self.state.group === "number") {
+        new SVEGroup(self.state.group, self.$f7.data.getUser(), g => {
+          self.setState({group: g});
+          g.getUsers().then(usrs => {
+            usrs.forEach(u => {
+              g.getRightsForUser(u).then(r => {
+                let rm = self.state.userRights;
+                rm.set(u, r);
+                self.setState({userRights: rm});
+              });
+            });
+          })
         });
-      },
-      function(xhr, status) {
-        router.navigate('/login/');
-      });
+        self.setState({selfUser: self.$f7.data.getUser()});
+      }
     });
   }
 };

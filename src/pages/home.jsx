@@ -165,7 +165,6 @@ export default class extends React.Component {
     self.setState({groupProjects: new Map()});
 
     if(this.$f7.data.getUser() !== undefined) {
-      console.log("User accepted: " + JSON.stringify(this.$f7.data.getUser()) +"!");
       SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(gs => {
         gs.forEach(g => {
           self.state.groupProjects.set(g, []);
@@ -176,7 +175,6 @@ export default class extends React.Component {
         });
       }, err => this.$f7.dialog.alert("Can't fetch groups from server!", "Server down!"));
     } else {
-      console.log("No user logged in!");
       this.$f7.loginScreen.open("#login-screen");
     }
 

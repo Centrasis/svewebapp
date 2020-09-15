@@ -267,11 +267,11 @@ export default class extends React.Component {
         },
         {
           caption: "Details",
-          onClick: function() { router.navigate("/projectdetails/" + self.state.project.id + "/") }
+          onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
         },
         {
           caption: "Mitglieder",
-          onClick: function() { router.navigate("/users/" + self.state.project.context + "/") }
+          onClick: function() { router.navigate("/users/" + self.state.project.getGroup().getID() + "/") }
         }/*,
         {
           caption: "Karte",

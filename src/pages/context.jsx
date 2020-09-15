@@ -4,7 +4,7 @@ import Framework7 from 'framework7';
 import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
-import {SVEGroup, SVEProject} from 'svebaselib';
+import {SVEGroup} from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
