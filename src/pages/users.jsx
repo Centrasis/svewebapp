@@ -85,9 +85,9 @@ export default class extends React.Component {
           </List>
           : ""}
         </ListItem>
-        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Zum Admin machen" onClick={this.setAdmin.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
-        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Schreibberechtigungen geben" onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
-        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Leseberechtigungen geben" onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={(this.state.userRights.get(this.state.detailedUser).admin) ? "Adminrechte nehmen" : "Zum Admin machen"} onClick={this.setAdmin.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Schreibberechtigungen " + ((this.state.userRights.get(this.state.detailedUser).write) ? "nehmen" : "geben")} onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Leseberechtigungen "+ ((this.state.userRights.get(this.state.detailedUser).read) ? "nehmen" : "geben")} onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Aus Gruppe entfernen" onClick={this.removeUser.bind(this, this.state.detailedUser)}/> : ""}
       </List>
     </Popover>
