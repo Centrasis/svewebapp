@@ -312,14 +312,12 @@ export default class extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log("page unmount!");
-    self.$f7.data.popRightPanel();
+    this.$f7.data.popRightPanel();
   }
 
   onPageBeforeRemove() {
-    const self = this;
     console.log("before page remove!");
     // Destroy popup when page removed
-    if (self.popup) self.popup.destroy();
+    if (this.popup) this.popup.destroy();
   }
 }

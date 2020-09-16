@@ -260,6 +260,6 @@ export default class extends React.Component {
 
   componentWillUnmount() {
     console.log("page unmount!");
-    self.$f7.data.popRightPanel();
+    this.$f7.data.popRightPanel();
   }
 }
