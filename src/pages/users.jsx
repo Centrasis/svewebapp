@@ -32,7 +32,7 @@ export default class extends React.Component {
     return (
   <Page name="users">
     {/* Top Navbar */}
-    <Navbar sliding={true} large backLink="Back" title={`Nutzer von ${this.state.contextName}`}>
+    <Navbar sliding={true} large backLink="Back" title={`Nutzer von ${(typeof this.state.group !== "number") ? this.state.group.getName() : ""}`}>
     <NavRight>
       <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
     </NavRight>
@@ -47,7 +47,7 @@ export default class extends React.Component {
 
     {/* Page content */}
     <Block strong>
-      <p>Nutzerübersicht und Administration für die Gruppe {this.state.contextName}.</p>
+      <p>Nutzerübersicht und Administration für die Gruppe {(typeof this.state.group !== "number") ? this.state.group.getName() : ""}.</p>
     </Block>
     <List>
           {this.getListFromMap(this.state.userRights).map((user) => (
@@ -118,7 +118,7 @@ export default class extends React.Component {
   }
 
   onDetailsUser(usr) {
-    self.setState({detailedUser: usr});
+    this.setState({detailedUser: usr});
   }
 
   componentDidMount() {
