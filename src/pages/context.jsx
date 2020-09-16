@@ -39,7 +39,7 @@ export default class extends React.Component {
     });
     */}
     return (
-      <Page name="context">
+      <Page name="context" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)}>
         <Navbar title="Urlaube" backLink="Back">
           <NavRight>
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
@@ -258,8 +258,10 @@ export default class extends React.Component {
     });
   }
 
-  componentWillUnmount() {
-    console.log("page unmount!");
+  onPageBeforeRemove() {
+    console.log("before page remove!");
     this.$f7.data.popRightPanel();
+    // Destroy popup when page removed
+    if (this.popup) this.popup.destroy();
   }
 }
