@@ -170,10 +170,10 @@ export default class extends React.Component {
                 self.setState({userRights: rm});
               });
             });
-          })
+          });
+          g.getRightsForUser(self.$f7.data.getUser()).then(r => {self.setState({selfRights: r})});
         });
         self.setState({selfUser: self.$f7.data.getUser()});
-        g.getRightsForUser(self.$f7.data.getUser()).then(r => {self.setState({selfRights: r})});
       }
     });
   }
