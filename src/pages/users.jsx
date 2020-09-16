@@ -86,8 +86,8 @@ export default class extends React.Component {
           </List>
         </ListItem>
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={(this.state.userRights.get(this.state.detailedUser).admin) ? "Adminrechte nehmen" : "Zum Admin machen"} onClick={this.setAdmin.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
-        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Schreibberechtigungen " + ((this.state.userRights.get(this.state.detailedUser).write) ? "nehmen" : "geben")} onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
-        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Leseberechtigungen "+ ((this.state.userRights.get(this.state.detailedUser).read) ? "nehmen" : "geben")} onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Schreibberechtigungen " + ((this.state.userRights.get(this.state.detailedUser).write) ? "nehmen" : "geben")} onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).write)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Leseberechtigungen "+ ((this.state.userRights.get(this.state.detailedUser).read) ? "nehmen" : "geben")} onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).read)}/> : ""}
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Aus Gruppe entfernen" onClick={this.removeUser.bind(this, this.state.detailedUser)}/> : ""}
       </List>
     : <BlockHeader>Rechte unbekannt!</BlockHeader>}
@@ -107,7 +107,7 @@ export default class extends React.Component {
     return (b) ? "Ja" : "Nein";
   }
 
-  setAdmin(usr, val = true) {
+  setAdmin(usr, val) {
     let r = this.state.userRights.get(usr);
     r.admin = val;
     this.state.group.setRightsForUser(usr, r).then((val) => {
@@ -118,7 +118,7 @@ export default class extends React.Component {
     });
   }
 
-  setWrite(usr, val = true) {
+  setWrite(usr, val) {
     let r = this.state.userRights.get(usr);
     r.write = val;
     this.state.group.setRightsForUser(usr, r).then((val) => {
@@ -129,7 +129,7 @@ export default class extends React.Component {
     });
   }
 
-  setRead(usr, val = true) {
+  setRead(usr, val) {
     let r = this.state.userRights.get(usr);
     r.read = val;
     this.state.group.setRightsForUser(usr, r).then((val) => {
