@@ -62,7 +62,7 @@ export default class extends React.Component {
     let qr = qrcode.default(0, 'L');
     qr.addData(this.state.link);
     qr.make();
-    return qr.createImgTag();
+    return {__html: qr.createImgTag()};
   }
 
   componentDidMount() {
