@@ -68,10 +68,10 @@ export default class extends React.Component {
     </List>
 
     <Popover className="popover-details">
+    {(this.state.detailedUser !== undefined && this.state.userRights !== undefined && this.state.userRights.has(this.state.detailedUser)) ? 
       <List>
         <ListItem disabled={true}>
           <p>Aktuelle Rechte</p>
-          {(this.state.detailedUser !== undefined && this.state.userRights !== undefined && this.state.userRights.has(this.state.detailedUser)) ? 
           <List>
             <ListItem>
               <Col><p>Lesen:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).read)}</p></Col>
@@ -83,13 +83,13 @@ export default class extends React.Component {
               <Col><p>Admin:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).admin)}</p></Col>
             </ListItem>
           </List>
-          : ""}
         </ListItem>
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={(this.state.userRights.get(this.state.detailedUser).admin) ? "Adminrechte nehmen" : "Zum Admin machen"} onClick={this.setAdmin.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Schreibberechtigungen " + ((this.state.userRights.get(this.state.detailedUser).write) ? "nehmen" : "geben")} onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title={"Leseberechtigungen "+ ((this.state.userRights.get(this.state.detailedUser).read) ? "nehmen" : "geben")} onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
         {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Aus Gruppe entfernen" onClick={this.removeUser.bind(this, this.state.detailedUser)}/> : ""}
       </List>
+    : ""}
     </Popover>
   </Page>
   )}
