@@ -115,10 +115,9 @@ export default class extends React.Component {
         <Panel right cover themeDark>
           <View>
             <Page>
-              {(this.state.panelMenueContent.length > 0) ? <Navbar title={`${this.state.panelMenueContent.caption}`}/> : ""}
-              {(this.state.panelMenueContent.length > 0) ? 
+              <Navbar title={`${this.getUpperMenuePanelData(this.state.panelMenueContent).caption}`}/>
               <List>
-                {this.state.panelMenueContent.menueItems.map((item) => (
+                {this.getUpperMenuePanelData(this.state.panelMenueContent).menueItems.map((item) => (
                   <ListItem 
                     panelClose="right"
                     title={item.caption}
@@ -133,7 +132,6 @@ export default class extends React.Component {
                 ))}
                 <ListItem panelClose="right"/>
               </List>
-              : ""}
             </Page>
           </View>
         </Panel>
@@ -297,6 +295,13 @@ export default class extends React.Component {
         </LoginScreen>
       </App>
     )
+  }
+
+  getUpperMenuePanelData(stack) {
+    return (stack.length > 0) ? stack[stack.length - 1] : {
+      menueItems: [],
+      caption: ""
+    };
   }
 
   onPressEnter(event) {
