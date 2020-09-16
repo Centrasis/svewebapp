@@ -62,12 +62,12 @@ export default class extends React.Component {
               return app.state.user;
             },
             pushRightPanel: function(content) {
-              app.panelMenueContent.push(content);
-              app.setState({panelMenueContent: app.panelMenueContent});
+              app.state.panelMenueContent.push(content);
+              app.setState({panelMenueContent: app.state.panelMenueContent});
             },
             popRightPanel: function() {
-              app.panelMenueContent.pop();
-              app.setState({panelMenueContent: app.panelMenueContent});
+              app.state.panelMenueContent.pop();
+              app.setState({panelMenueContent: app.state.panelMenueContent});
             },
             updateLeftPanel: function(content) {
               app.setState({panelMenueContentLeft: content});
