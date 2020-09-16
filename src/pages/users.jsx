@@ -25,7 +25,12 @@ export default class extends React.Component {
       group: Number(props.f7route.params.id),
       userRights: new Map(),
       detailedUser: undefined,
-      selfUser: undefined
+      selfUser: undefined,
+      selfRights: {
+        read: false,
+        admin: false,
+        write: false
+      }
     };
   }
   render() {
@@ -80,10 +85,10 @@ export default class extends React.Component {
           </List>
           : ""}
         </ListItem>
-        <ListItem link="#" popoverClose={true} title="Zum Admin machen" onClick={this.setAdmin.bind(this, this.state.detailedUser)}/>
-        <ListItem link="#" popoverClose={true} title="Schreibberechtigungen geben" onClick={this.setWrite.bind(this, this.state.detailedUser)}/>
-        <ListItem link="#" popoverClose={true} title="Leseberechtigungen geben" onClick={this.setRead.bind(this, this.state.detailedUser)}/>
-        <ListItem link="#" popoverClose={true} title="Aus Gruppe entfernen" onClick={this.removeUser.bind(this, this.state.detailedUser)}/>
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Zum Admin machen" onClick={this.setAdmin.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Schreibberechtigungen geben" onClick={this.setWrite.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Leseberechtigungen geben" onClick={this.setRead.bind(this, this.state.detailedUser, !this.state.userRights.get(this.state.detailedUser).admin)}/> : ""}
+        {(this.state.selfRights.admin) ? <ListItem link="#" popoverClose={true} title="Aus Gruppe entfernen" onClick={this.removeUser.bind(this, this.state.detailedUser)}/> : ""}
       </List>
     </Popover>
   </Page>
@@ -101,20 +106,50 @@ export default class extends React.Component {
     return (b) ? "Ja" : "Nein";
   }
 
-  setAdmin(usr) {
-    
+  setAdmin(usr, val = true) {
+    let r = this.state.userRights.get(usr);
+    r.admin = val;
+    this.state.group.setRightsForUser(usr, r).then((val) => {
+      if(val) {
+        this.state.userRights.set(usr, r);
+        this.setState({userRights: this.state.userRights});
+      }
+    });
   }
 
-  setWrite(usr) {
-    
+  setWrite(usr, val = true) {
+    let r = this.state.userRights.get(usr);
+    r.write = val;
+    this.state.group.setRightsForUser(usr, r).then((val) => {
+      if(val) {
+        this.state.userRights.set(usr, r);
+        this.setState({userRights: this.state.userRights});
+      }
+    });
   }
 
-  setRead(usr) {
-    
+  setRead(usr, val = true) {
+    let r = this.state.userRights.get(usr);
+    r.read = val;
+    this.state.group.setRightsForUser(usr, r).then((val) => {
+      if(val) {
+        this.state.userRights.set(usr, r);
+        this.setState({userRights: this.state.userRights});
+      }
+    });
   }
 
   removeUser(usr) {
-    
+    this.state.group.setRightsForUser(usr, {
+      read: false,
+      write: false,
+      admin: false
+    }).then((val) => {
+      if (val) {
+        this.state.userRights.delete(usr);
+        this.setState({userRights: this.state.userRights});
+      }
+    });
   }
 
   onDetailsUser(usr) {
@@ -138,6 +173,7 @@ export default class extends React.Component {
           })
         });
         self.setState({selfUser: self.$f7.data.getUser()});
+        g.getRightsForUser(self.$f7.data.getUser()).then(r => {self.setState({selfRights: r})});
       }
     });
   }
