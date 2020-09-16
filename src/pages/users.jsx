@@ -71,7 +71,7 @@ export default class extends React.Component {
       <List>
         <ListItem disabled={true}>
           <p>Aktuelle Rechte</p>
-          {(this.state.detailedUser !== undefined) ? 
+          {(this.state.detailedUser !== undefined && this.state.userRights !== undefined && this.state.userRights.has(this.state.detailedUser)) ? 
           <List>
             <ListItem>
               <Col><p>Lesen:&nbsp;</p></Col><Col><p>{this.Bool2Str(this.state.userRights.get(this.state.detailedUser).read)}</p></Col>
