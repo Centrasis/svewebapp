@@ -242,7 +242,13 @@ export default class extends React.Component {
 
         <LoginScreen id="login-screen">
           <View>
-            <Page loginScreen>
+            <Page loginScreen style={{
+              backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
+              backgroundRepeat: "no-repeat",
+              backgroundAttachment: "fixed",
+              backgroundPosition: "center",
+              backdropFilter: "blur(5px)"
+            }}>
               <LoginScreenTitle>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
               {(this.state.loginMessages.errorMsg.length > 0) ? (
                 <BlockHeader large color="red" style={{color: "red"}}>
