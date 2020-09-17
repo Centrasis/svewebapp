@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, Preloader, Col, Row } from 'framework7-react';
-import { SVEProject, SVEProjectState } from 'svebaselib';
+import { SVEProject, SVEProjectState, SVESystemInfo } from 'svebaselib';
 import InviteField from './InviteField';
 
 export default class extends React.Component {
