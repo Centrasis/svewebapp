@@ -16,15 +16,15 @@ import {
   Button
 } from 'framework7-react';
 import Dom7 from 'dom7';
-import {SVEGroup} from 'svebaselib';
+import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       groups: [],
-      groupProjects: new Map,
-      showProjects: false
+      showProjects: false,
+      home_display_list: []
     };
   }
   render() {
@@ -61,25 +61,25 @@ export default class extends React.Component {
 
     <BlockTitle large>Deine Urlaubsgruppen</BlockTitle>
     <List className="search-list searchbar-found">
-          {this.state.groups.map((context) => (
+          {this.state.home_display_list.map((context) => (
             <ListItem
-              id={context.getName()}
-              key={context.getID()}
-              title={context.getName()}
-              link={`/context/${context.getID()}/`}
+              id={context.group.getName()}
+              key={context.group.getID()}
+              title={context.group.getName()}
+              link={`/context/${context.group.getID()}/`}
             >
               {(this.state.showProjects) ? (
                 <Block slot="content" mediumInset>
                   <BlockTitle>Projekte</BlockTitle>
                   <List>
-                    {this.state.groupProjects.get(context.getID()).map((project) => (
+                    {context.projects.map((project) => (
                       <ListItem
-                        id={project.name}
-                        key={project.id}
-                        title={project.name}
-                        link={`/project/${project.id}/`}
+                        id={project.getName()}
+                        key={project.getID()}
+                        title={project.getName()}
+                        link={`/project/${project.getID()}/`}
                       >
-                        <Img slot="media" src={this.$f7.apiPath + `/getMedia.php?minimal=1&id=${project.splash_img}&project=${project.id}`} width="60"/>
+                        <Img slot="media" src={project.getSplashImageURI()} width="60"/>
                       </ListItem>
                     ))}
                   </List>
@@ -88,12 +88,14 @@ export default class extends React.Component {
             </ListItem>
           ))}
     </List>
-    <Block strong style={(this.$f7.gameAPIPort != 0) ? {} : {display: "none"}}>
-      <Link style={(this.$f7.gameAPIPort != 0) ? {} : {display: "none"}} href="/gamehub/">Zum Spiele-Hub</Link>
+    <Block strong>
+      <Link href="/gamehub/">Zum Spiele-Hub</Link>
     </Block>
-    <Block strong style={((!this.$f7.device.standalone && this.$f7.device.ios) ? {} : {display: "none"})}>
-      <Link href="/install/">App installieren</Link>
-    </Block>
+    {(this.$f7.device.android || this.$f7.device.ios) ? 
+      <Block strong>
+        <Link href="/install/">App installieren</Link>
+      </Block>
+    : ""}
     <Block strong>
       <Link href="/about/">Über die SVE-API</Link>
     </Block>
@@ -116,24 +118,21 @@ export default class extends React.Component {
     {
       return;
     }
-    var self = this;
-    //this.setState({home_display_list: []});
-    /*this.$f7.request.get(this.$f7.apiPath + "/queryProject.php?q="+encodeURI(query),
-      function(data) { 
-        var raw = JSON.parse(data);
-        let contexts = Array.prototype.filter.call(raw, e => e.type == "context").sort((a, b) => a.distance > b.distance);
-        let projects = Array.prototype.filter.call(raw, e => e.type == "project").sort((a, b) => a.distance > b.distance);
+    SVEProjectQuery.query(query, this.$f7.data.getUser()).then(results => {
+      let groups = results.filter(e => e.constructor.name === SVEGroup.name);
+      let projects = results.filter(e => e.constructor.name === SVEProject.name);
+      console.log("Query result: " + JSON.stringify(groups) + " prjs: -> " + JSON.stringify(projects));
 
-        let list = [];
-        Array.prototype.forEach.call(contexts, (c) => {
-          let prjs = [];
-          Array.prototype.forEach.call(Array.prototype.filter.call(projects, e => e.parent == c.obj.id), (e) => { prjs.push(e.obj) });
-          
-          list.push({id: c.obj.id, name: c.obj.name, projects: prjs});
-        });
+      let list = [];
+      groups.forEach(g => {
+        let prjs = [];
+        projects.filter(e => e.getGroup().getID() === g.getID()).forEach((e) => prjs.push(e));
+        
+        list.push({group: g, projects: prjs});
+      });
 
-        self.setState({home_display_list: list});
-      });*/
+      this.setState({home_display_list: list});
+    });
   }
 
   onClearSearch(sb) {
@@ -143,36 +142,31 @@ export default class extends React.Component {
   onEnableSearch(sb) {
     Dom7("#intro").hide();
     this.onClearSearch(sb);
+    this.setState({showProjects: true});
   }
 
   onDisableSearch(sb) {
     Dom7("#intro").show();
     this.onClearSearch(sb);
-  }
-
-  componentDidUpdate() {
-    var router = this.$f7router;
-    this.$f7ready((f7) => {
-      console.log("-> component update..");
-    });
+    this.setState({showProjects: false});
   }
 
   updateContent() {
-    var self = this;
-
-    console.log("Update content");
-
-    self.setState({groupProjects: new Map()});
+    var self = this;;
 
     if(this.$f7.data.getUser() !== undefined) {
       SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(gs => {
-        gs.forEach(g => {
-          self.state.groupProjects.set(g, []);
-        });
-
         self.setState({
           groups: gs
         });
+        let list = [];
+        gs.forEach(g => {
+          list.push({
+            group: g,
+            projects: []
+          });
+        });
+        self.setState({home_display_list: list});
       }, err => this.$f7.dialog.alert("Can't fetch groups from server!", "Server down!"));
     } else {
       this.$f7.loginScreen.open("#login-screen");
