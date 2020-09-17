@@ -253,17 +253,18 @@ export default class extends React.Component {
               backgroundRepeat: "no-repeat",
               backgroundAttachment: "fixed",
               backgroundPosition: "center",
-              backdropFilter: "blur(5px)"
+              filter: "blur(8px)",
+              WebkitFilter: "blur(8px)"
             }}>
-              <LoginScreenTitle>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
+              <LoginScreenTitle style={{background: "transparent"}}>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
               {(this.state.loginMessages.errorMsg.length > 0) ? (
-                <BlockHeader large color="red" style={{color: "red"}}>
+                <BlockHeader large color="red" style={{background: "transparent", color: "red"}}>
                   <span color="red" style={{color: "red"}}>{this.state.loginMessages.errorMsg}</span>
                 </BlockHeader>
               ) : ''}
               
-              <List form>
-              <ListInput
+              <List form style={{background: "transparent"}}>
+              <ListInput style={{background: "transparent"}}
                 label="Username"
                 type="text"
                 placeholder="Dein Username"
@@ -275,7 +276,7 @@ export default class extends React.Component {
                 }}
                 required
               ></ListInput>
-              <ListInput
+              <ListInput style={{background: "transparent"}}
                 label="Password"
                 type="password"
                 placeholder="Dein Passwort"
@@ -287,18 +288,18 @@ export default class extends React.Component {
                 }}
                 required
               />
-              <ListItem>
-                <span color="#008c0e">Dieses Gerät merken</span>
-                <Toggle 
+              <ListItem style={{background: "transparent"}}>
+                <span color="#008c0e" style={{background: "transparent"}}>Dieses Gerät merken</span>
+                <Toggle style={{background: "transparent"}}
                   color="#11a802"
                   onToggleChange={(e) => { this.setState({saveThisDevice: e}) }}
                 />
               </ListItem>
               </List>
-              <List>
-                <ListButton title="Login" onClick={() => this.onLogin()} />
-                <ListButton title="Register" onClick={() => this.onOpenRegister()} />
-                <BlockFooter>
+              <List style={{background: "transparent"}}>
+                <ListButton style={{background: "transparent"}} title="Login" onClick={() => this.onLogin()} />
+                <ListButton style={{background: "transparent"}} title="Register" onClick={() => this.onOpenRegister()} />
+                <BlockFooter style={{background: "transparent"}}>
                   Die App verwendet die API an: <Link external href={"https://" + window.location.hostname + "/" + SVESystemInfo.getAPIRoot() + "/check"}>{window.location.hostname + "/" + SVESystemInfo.getAPIRoot()}</Link>
                 </BlockFooter>
               </List>
