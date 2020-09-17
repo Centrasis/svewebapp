@@ -379,7 +379,6 @@ export default class extends React.Component {
       self.setState({user: self.state.user, openOverlay: ""});
       self.$f7.loginScreen.close();
 
-      location.search = "";
       if(this.state.routerParams.has("redirectProject")) {
         let pid = Number(this.state.routerParams.get("redirectProject"));
         this.$f7router.navigate("/project/" + pid + "/");
