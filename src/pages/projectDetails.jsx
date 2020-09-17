@@ -29,22 +29,26 @@ export default class extends React.Component {
               project = {this.state.project}
             />
             <Block largeInset>
-              <Row>
-                <Col>Mitglieder</Col>
-                <Col>{this.state.usersCount}</Col>
-              </Row>
-              <Row>
-                <Col>Medien</Col>
-                <Col>{this.state.mediaCount}</Col>
-              </Row>
-              <Row>
-                <Col>Zustand</Col>
-                <Col>{this.state.prjState}</Col>
-              </Row>
-              <Row>
-                <Col>Gründer</Col>
-                <Col>{this.state.ownerName}</Col>
-              </Row>
+              <Col style={{width:"33%"}}></Col>
+              <Col style={{width:"33%"}}>
+                <Row>
+                  <Col>Mitglieder</Col>
+                  <Col>{this.state.usersCount}</Col>
+                </Row>
+                <Row>
+                  <Col>Medien</Col>
+                  <Col>{this.state.mediaCount}</Col>
+                </Row>
+                <Row>
+                  <Col>Zustand</Col>
+                  <Col>{this.state.prjState}</Col>
+                </Row>
+                <Row>
+                  <Col>Gründer</Col>
+                  <Col>{this.state.ownerName}</Col>
+                </Row>
+              </Col>
+              <Col style={{width:"33%"}}></Col>
             </Block>
           </div>
         : <Preloader></Preloader> }
