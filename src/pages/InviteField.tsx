@@ -11,7 +11,7 @@ export type InviteFieldSettings = {
 };
 
 export default class InviteField extends React.Component<InviteFieldSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
-    protected group: SVEGroup;
+    protected group: SVEGroup = undefined;
     protected project: SVEProject = null;
     protected token: string;
     protected link: string;
@@ -26,21 +26,23 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             this.project = this.props.project;
         }
         var self = this;
-        this.$f7ready((f7) => {
-            self.registerToken();
-            Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
-        });
+        this.forceUpdate(() => {
+            self.$f7ready((f7) => {
+                self.registerToken();
+                Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
+            });
+        })
     }
 
     render () {
         return (
             <Block strong>
-                <BlockHeader>Einladung zu {this.group.getName()}</BlockHeader>
+                <BlockHeader>Einladung zu {(this.group !== undefined) ? this.group.getName() : ""}</BlockHeader>
                 <Row 
                     style={{display: "flex", justifyContent: "center", alignContent: "center"}}
                 >
                     <Col></Col>
-                    <Col id={this.group.getName() + "-QRCode"}></Col>
+                    <Col id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"}></Col>
                     <Col></Col>
                 </Row>
                 <BlockFooter>
