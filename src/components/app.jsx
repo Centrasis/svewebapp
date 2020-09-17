@@ -166,6 +166,22 @@ export default class extends React.Component {
         <LoginScreen id="register-screen">
           <View>
             <Page loginScreen>
+              <div
+                style={{
+                  backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
+                  backgroundRepeat: "no-repeat",
+                  backgroundAttachment: "fixed",
+                  backgroundPosition: "center",
+                  backgroundSize: "30%",
+                  filter: "blur(20px) brightness(30%)",
+                  WebkitFilter: "blur(20px) brightness(30%)",
+                  boxSizing: "border-box",
+                  height: "100%",
+                  width: "100%",
+                  zIndex: "-100",
+                  position: "absolute"
+                }}
+              />
               <LoginScreenTitle>Register&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
               <List>
               <ListInput
