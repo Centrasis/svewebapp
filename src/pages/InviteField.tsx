@@ -25,9 +25,11 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         {
             this.project = this.props.project;
         }
-
-        this.registerToken();
-        Dom7("#" + this.group.getName() + "-QRCode").html(this.getQRCode()); 
+        var self = this;
+        this.$f7ready((f7) => {
+            self.registerToken();
+            Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
+        });
     }
 
     render () {
