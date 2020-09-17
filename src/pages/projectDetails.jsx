@@ -28,9 +28,9 @@ export default class extends React.Component {
               group = {this.state.group}
               project = {this.state.project}
             />
-            <Block largeInset>
-              <Col style={{width:"33%"}}></Col>
-              <Col style={{width:"33%"}}>
+            <Block largeInset style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
+              <Col></Col>
+              <Col>
                 <Row>
                   <Col>Mitglieder</Col>
                   <Col>{this.state.usersCount}</Col>
@@ -48,7 +48,7 @@ export default class extends React.Component {
                   <Col>{this.state.ownerName}</Col>
                 </Row>
               </Col>
-              <Col style={{width:"33%"}}></Col>
+              <Col></Col>
             </Block>
           </div>
         : <Preloader></Preloader> }
