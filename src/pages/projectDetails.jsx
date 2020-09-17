@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, Block, Preloader } from 'framework7-react';
+import { Page, Navbar, Block, Preloader, Col, Row } from 'framework7-react';
 import { SVEProject, SVEProjectState } from 'svebaselib';
 import InviteField from './InviteField';
 
