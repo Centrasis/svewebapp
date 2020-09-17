@@ -28,7 +28,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         }
 
         this.toastCopyIcon = this.$f7.toast.create({
-            icon: '<i class="f7-icons">rocket_fill</i>',
+            icon: '<i class="f7-icons">square_on_square</i>',
             text: 'Einladung kopiert!',
             position: 'center',
             closeTimeout: 1000,
@@ -72,7 +72,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
     }
 
     onClickLink() {
-        var tempInput = document.createElement("input");
+        let tempInput = document.createElement("input");
         tempInput.value = this.link;
         document.body.appendChild(tempInput);
         tempInput.select();
@@ -84,7 +84,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
 
     registerToken() {
         this.token = [...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
-        this.link = "https://" + window.location.hostname + "/?page=register&token=" + this.token + "&context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : "");
+        this.link = encodeURI("https://" + window.location.hostname + "/?page=register&token=" + this.token + "&context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : ""));
         console.log("Registered token!");
     }
 
