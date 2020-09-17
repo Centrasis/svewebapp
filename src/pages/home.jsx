@@ -148,6 +148,7 @@ export default class extends React.Component {
   onEnableSearch(sb) {
     Dom7("#intro").hide();
     this.onClearSearch(sb);
+    this.setState({home_display_list: []});
     this.setState({showProjects: true});
   }
 
