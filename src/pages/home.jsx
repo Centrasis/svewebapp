@@ -68,7 +68,7 @@ export default class extends React.Component {
               title={context.group.getName()}
               link={`/context/${context.group.getID()}/`}
             >
-              {(this.state.showProjects) ? (
+              {(this.state.showProjects && context.projects.length > 0) ? (
                 <Block slot="content" mediumInset>
                   <BlockTitle>Projekte</BlockTitle>
                   <List>
