@@ -91,7 +91,7 @@ export default class extends React.Component {
     <Block strong>
       <Link href="/gamehub/">Zum Spiele-Hub</Link>
     </Block>
-    {(this.$f7.device.android || this.$f7.device.ios) ? 
+    {(!this.$f7.device.standalone && (this.$f7.device.android || this.$f7.device.ios)) ? 
       <Block strong>
         <Link href="/install/">App installieren</Link>
       </Block>
@@ -109,7 +109,7 @@ export default class extends React.Component {
   logOut() {
     window.localStorage.removeItem("sve_token");
     window.localStorage.removeItem("sve_user");
-    this.$f7.loginScreen.open("login-screen");
+    this.$f7.loginScreen.open("#login-screen");
   }
 
   onSearch(sb, query, prevQuery) {
@@ -135,7 +135,14 @@ export default class extends React.Component {
   }
 
   onClearSearch(sb) {
-    this.setState({home_display_list: this.state.contexts});
+    let list = [];
+    this.state.groups.forEach(g => {
+      list.push({
+        group: g,
+        projects: []
+      });
+    });
+    self.setState({home_display_list: list});
   }
 
   onEnableSearch(sb) {
