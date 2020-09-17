@@ -37,21 +37,27 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
     render () {
         return (
             <Block strong>
-                <BlockHeader>Einladung zu {(this.group !== undefined) ? this.group.getName() : ""}</BlockHeader>
                 <Row 
                     style={{display: "flex", justifyContent: "center", alignContent: "center"}}
                 >
                     <Col></Col>
-                    <Col id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"} style={{
-                        maxWidth: "1000px",
-                        width: "80vw"
-                    }}></Col>
+                    <Col>
+                        <Row>
+                            <BlockHeader>Einladung zu {(this.group !== undefined) ? this.group.getName() : ""}</BlockHeader>
+                        </Row>
+                        <Row id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"} style={{
+                            maxWidth: "1000px",
+                            width: "80vw"
+                        }}/>
+                        <Row>
+                            <BlockFooter>
+                                <p>Oder kopiere diesen Link:</p><br></br>
+                                <Link tooltip="Kopiere diesen Link" external href={this.link}>{this.link}</Link>
+                            </BlockFooter>
+                        </Row>
+                    </Col>
                     <Col></Col>
                 </Row>
-                <BlockFooter>
-                    <p>Oder kopiere diesen Link:</p><br></br>
-                    <Link tooltip="Kopiere diesen Link" external href={this.link}>{this.link}</Link>
-                </BlockFooter>
             </Block>
         )
     }
