@@ -249,7 +249,7 @@ export default class extends React.Component {
                     required
                   />
                 ) : (
-                  <ListItem color="green"><span color="green">Token akzeptiert</span></ListItem>
+                  <ListItem color="green" style={{color: "green"}}><span color="green" style={{color: "green"}}>Token akzeptiert</span></ListItem>
                 )}
 
                 <ListButton title="Register" onClick={() => this.onRegister()} />
@@ -283,7 +283,7 @@ export default class extends React.Component {
               />
               <LoginScreenTitle>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
               {(this.state.loginMessages.errorMsg.length > 0) ? (
-                <BlockHeader large color="red" style={{background: "transparent", color: "red"}}>
+                <BlockHeader large color="red" style={{color: "red"}}>
                   <span color="red" style={{color: "red"}}>{this.state.loginMessages.errorMsg}</span>
                 </BlockHeader>
               ) : ''}
