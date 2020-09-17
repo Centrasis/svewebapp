@@ -109,8 +109,7 @@ export default class extends React.Component {
   logOut() {
     window.localStorage.removeItem("sve_token");
     window.localStorage.removeItem("sve_user");
-    var nav = this.$f7router;
-    this.$f7.request.get(this.$f7.apiPath + "/doLogout.php", function(data) { nav.refreshPage() });
+    this.$f7.loginScreen.open("login-screen");
   }
 
   onSearch(sb, query, prevQuery) {
