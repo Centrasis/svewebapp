@@ -248,23 +248,34 @@ export default class extends React.Component {
 
         <LoginScreen id="login-screen">
           <View>
-            <Page loginScreen style={{
-              backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
-              backgroundRepeat: "no-repeat",
-              backgroundAttachment: "fixed",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              WebkitFilter: "blur(8px)"
-            }}>
-              <LoginScreenTitle style={{background: "transparent"}}>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
+            <Page loginScreen>
+              <div 
+                style={{
+                  backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
+                  backgroundRepeat: "no-repeat",
+                  backgroundAttachment: "fixed",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                  filter: "blur(8px)",
+                  WebkitFilter: "blur(8px)",
+                  boxSizing: "border-box",
+                  height: "100%",
+                  zIndex: "-100",
+                  position: "absolute",
+                  top: "0",
+                  left: "0",
+                  width: "100%"
+                }}
+              />
+              <LoginScreenTitle>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
               {(this.state.loginMessages.errorMsg.length > 0) ? (
                 <BlockHeader large color="red" style={{background: "transparent", color: "red"}}>
                   <span color="red" style={{color: "red"}}>{this.state.loginMessages.errorMsg}</span>
                 </BlockHeader>
               ) : ''}
               
-              <List form style={{background: "transparent"}}>
-              <ListInput style={{background: "transparent"}}
+              <List form>
+              <ListInput
                 label="Username"
                 type="text"
                 placeholder="Dein Username"
@@ -276,7 +287,7 @@ export default class extends React.Component {
                 }}
                 required
               ></ListInput>
-              <ListInput style={{background: "transparent"}}
+              <ListInput
                 label="Password"
                 type="password"
                 placeholder="Dein Passwort"
@@ -288,18 +299,18 @@ export default class extends React.Component {
                 }}
                 required
               />
-              <ListItem style={{background: "transparent"}}>
-                <span color="#008c0e" style={{background: "transparent"}}>Dieses Gerät merken</span>
-                <Toggle style={{background: "transparent"}}
+              <ListItem>
+                <span color="#008c0e">Dieses Gerät merken</span>
+                <Toggle
                   color="#11a802"
                   onToggleChange={(e) => { this.setState({saveThisDevice: e}) }}
                 />
               </ListItem>
               </List>
-              <List style={{background: "transparent"}}>
-                <ListButton style={{background: "transparent"}} title="Login" onClick={() => this.onLogin()} />
-                <ListButton style={{background: "transparent"}} title="Register" onClick={() => this.onOpenRegister()} />
-                <BlockFooter style={{background: "transparent"}}>
+              <List>
+                <ListButton title="Login" onClick={() => this.onLogin()} />
+                <ListButton title="Register" onClick={() => this.onOpenRegister()} />
+                <BlockFooter>
                   Die App verwendet die API an: <Link external href={"https://" + window.location.hostname + "/" + SVESystemInfo.getAPIRoot() + "/check"}>{window.location.hostname + "/" + SVESystemInfo.getAPIRoot()}</Link>
                 </BlockFooter>
               </List>
