@@ -448,14 +448,12 @@ export default class extends React.Component {
         params.set(pair[0], decodeURI(pair[1]));
       }
 
-      console.log("Route internal page: " + location.search);
-
       this.state.routerParams = params;
 
       if(params.has("page")) {
         console.log("Found page request: " + params.get("page"));
-        if(params.get("page") !== "register" && params.get("page") !== "login") {
-          if(params.get("page") !== "register") {
+        if(params.get("page") === "register" || params.get("page") === "login") {
+          if(params.get("page") === "register") {
             this.onOpenRegister();
           } else {
             this.onOpenLogin();
@@ -470,7 +468,6 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      console.log("App ready!");
       if (!f7.device.standalone && f7.device.ios)
       {
         f7.dialog.confirm("Die Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.", "App ist nicht installiert", function() { router.navigate("/install/"); }, function() {});
