@@ -15,6 +15,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
     protected project: SVEProject = null;
     protected token: string;
     protected link: string;
+    protected toastCopyIcon = null;
 
     componentDidMount() {
         console.log("Init InviteField.." + JSON.stringify(this.props));
@@ -25,6 +26,14 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         {
             this.project = this.props.project;
         }
+
+        this.toastCopyIcon = this.$f7.toast.create({
+            icon: '<i class="f7-icons">rocket_fill</i>',
+            text: 'Einladung kopiert!',
+            position: 'center',
+            closeTimeout: 1000,
+        });
+
         var self = this;
         self.registerToken();
         this.forceUpdate(() => {
@@ -52,7 +61,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
                         <Row>
                             <BlockFooter>
                                 <p>Oder kopiere diesen Link:</p><br></br>
-                                <Link target="_blank" tooltip="Kopiere diesen Link" external href={this.link}>{this.link}</Link>
+                                <Link tooltip="Kopiere diesen Link" onClick={this.onClickLink.bind(this)}>{this.link}</Link>
                             </BlockFooter>
                         </Row>
                     </Col>
@@ -60,6 +69,17 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
                 </Row>
             </Block>
         )
+    }
+
+    onClickLink() {
+        var tempInput = document.createElement("input");
+        tempInput.value = this.link;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); /*For mobile devices*/
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        this.toastCopyIcon.open();
     }
 
     registerToken() {
