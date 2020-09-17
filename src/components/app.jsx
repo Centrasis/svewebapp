@@ -381,7 +381,7 @@ export default class extends React.Component {
 
       if(this.state.routerParams.has("redirectProject")) {
         let pid = Number(this.state.routerParams.get("redirectProject"));
-        this.$f7router.navigate("/project/" + pid + "/");
+        this.$f7.view.current.router.navigate("/project/" + pid + "/");
       }
 
       self.state.onLoginHooks.forEach(h => h());
@@ -476,7 +476,7 @@ export default class extends React.Component {
             this.onOpenLogin();
           }
         } else {
-          this.$f7router.navigate("/" + params.get("page") + "/");
+          this.$f7.view.current.router.navigate("/" + params.get("page") + "/");
         }
       }
     }
