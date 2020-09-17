@@ -246,20 +246,21 @@ export default class extends React.Component {
           </View>
         </LoginScreen>
 
-        <LoginScreen id="login-screen">
-          <View>
-            <Page loginScreen>
-              <div 
+        <LoginScreen id="login-screen" style={{overflow: "visible"}}>
+          <View style={{overflow: "visible"}}>
+            <Page loginScreen style={{overflow: "visible"}}>
+              <div
                 style={{
                   backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
                   backgroundRepeat: "no-repeat",
                   backgroundAttachment: "fixed",
                   backgroundPosition: "center",
-                  backgroundSize: "80%",
-                  filter: "blur(25px) brightness(50%)",
-                  WebkitFilter: "blur(25px) brightness(50%)",
+                  backgroundSize: "30%",
+                  filter: "blur(20px) brightness(40%)",
+                  WebkitFilter: "blur(20px) brightness(40%)",
                   boxSizing: "border-box",
                   height: "100%",
+                  width: "100%",
                   zIndex: "-100",
                   position: "absolute"
                 }}
@@ -355,6 +356,7 @@ export default class extends React.Component {
   }
 
   onLoggedIn(usr) {
+    let self = this;
     if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
       console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
       self.state.user = usr;
