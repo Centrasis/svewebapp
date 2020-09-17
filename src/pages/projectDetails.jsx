@@ -11,6 +11,7 @@ export default class extends React.Component {
       project: Number(props.f7route.params.id),
       group: undefined,
       prjState: "",
+      ownerName: "",
       mediaCount: 0,
       usersCount: 0
     };
@@ -40,6 +41,10 @@ export default class extends React.Component {
                 <Col>Zustand</Col>
                 <Col>{this.state.prjState}</Col>
               </Row>
+              <Row>
+                <Col>Gründer</Col>
+                <Col>{this.state.ownerName}</Col>
+              </Row>
             </Block>
           </div>
         : <Preloader></Preloader> }
@@ -65,6 +70,9 @@ export default class extends React.Component {
           });
           p.getGroup().getUsers().then(us => {
             self.setState({usersCount: us.length});
+          });
+          p.getOwner().then(o => {
+            self.setState({ownerName: o.getName()});
           });
           let pstate = p.getState();
           self.setState({prjState: (pstate === SVEProjectState.Open) ? "Eröffnet" : "Eingefrohren"});
