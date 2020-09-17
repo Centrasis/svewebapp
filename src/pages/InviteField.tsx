@@ -26,9 +26,9 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             this.project = this.props.project;
         }
         var self = this;
+        self.registerToken();
         this.forceUpdate(() => {
             self.$f7ready((f7) => {
-                self.registerToken();
                 Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
             });
         })
@@ -42,7 +42,10 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
                     style={{display: "flex", justifyContent: "center", alignContent: "center"}}
                 >
                     <Col></Col>
-                    <Col id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"}></Col>
+                    <Col id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"} style={{
+                        maxWidth: "1000px",
+                        width: "80vw"
+                    }}></Col>
                     <Col></Col>
                 </Row>
                 <BlockFooter>
@@ -63,6 +66,6 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         let qr = qrcode.default(0, 'L');
         qr.addData(this.link);
         qr.make();
-        return qr.createImgTag();
+        return qr.createSvgTag(5);
     }
 }
