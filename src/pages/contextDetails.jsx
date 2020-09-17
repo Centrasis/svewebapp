@@ -9,7 +9,9 @@ export default class extends React.Component {
     super(props);
 
     this.state = {
-      group: Number(props.f7route.params.id)
+      group: Number(props.f7route.params.id),
+      usersCount: 0,
+      projectsCount: 0
     };
   }
   render() {
@@ -19,9 +21,19 @@ export default class extends React.Component {
         </Navbar>
 
         {(typeof this.state.group !== "number") ? 
-          <InviteField 
-            group = {this.state.group}
-          />
+          <div>
+            <InviteField 
+              group = {this.state.group}
+            />
+            <Block>
+              <Col>Mitglieder</Col>
+              <Col>{this.state.usersCount}</Col>
+            </Block>
+            <Block>
+              <Col>Projekte</Col>
+              <Col>{this.state.projectsCount}</Col>
+            </Block>
+          </div>
         : <Preloader></Preloader> }
       </Page>
     );
@@ -33,6 +45,12 @@ export default class extends React.Component {
       if (typeof self.state.group === "number") {
         new SVEGroup(self.state.group, this.$f7.data.getUser(), g => {
           self.setState({group: g});
+          g.getProjects().then(ps => {
+            self.setState({projectsCount: ps.length});
+          });
+          g.getUsers().then(us => {
+            self.setState({usersCount: us.length});
+          });
         });
       }
     });
