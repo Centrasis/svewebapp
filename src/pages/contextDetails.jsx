@@ -25,13 +25,15 @@ export default class extends React.Component {
             <InviteField 
               group = {this.state.group}
             />
-            <Block>
-              <Col>Mitglieder</Col>
-              <Col>{this.state.usersCount}</Col>
-            </Block>
-            <Block>
+            <Block largeInset>
+              <Row>
+                <Col>Mitglieder</Col>
+                <Col>{this.state.usersCount}</Col>
+              </Row>
+              <Row>
               <Col>Projekte</Col>
               <Col>{this.state.projectsCount}</Col>
+              </Row>
             </Block>
           </div>
         : <Preloader></Preloader> }
