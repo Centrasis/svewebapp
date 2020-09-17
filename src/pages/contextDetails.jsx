@@ -31,8 +31,8 @@ export default class extends React.Component {
                 <Col>{this.state.usersCount}</Col>
               </Row>
               <Row>
-              <Col>Projekte</Col>
-              <Col>{this.state.projectsCount}</Col>
+                <Col>Projekte</Col>
+                <Col>{this.state.projectsCount}</Col>
               </Row>
             </Block>
           </div>

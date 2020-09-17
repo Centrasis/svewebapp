@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, Preloader } from 'framework7-react';
-import { SVEProject } from 'svebaselib';
+import { SVEProject, SVEProjectState } from 'svebaselib';
 import InviteField from './InviteField';
 
 export default class extends React.Component {
@@ -9,7 +9,10 @@ export default class extends React.Component {
 
     this.state = {
       project: Number(props.f7route.params.id),
-      group: undefined
+      group: undefined,
+      prjState: "",
+      mediaCount: 0,
+      usersCount: 0
     };
   }
   render() {
@@ -19,12 +22,27 @@ export default class extends React.Component {
         </Navbar>
 
         {(this.state.group !== undefined) ? 
-          <InviteField 
-            group = {this.state.group}
-            project = {this.state.project}
-          />
+          <div>
+            <InviteField 
+              group = {this.state.group}
+              project = {this.state.project}
+            />
+            <Block largeInset>
+              <Row>
+                <Col>Mitglieder</Col>
+                <Col>{this.state.usersCount}</Col>
+              </Row>
+              <Row>
+                <Col>Medien</Col>
+                <Col>{this.state.mediaCount}</Col>
+              </Row>
+              <Row>
+                <Col>Zustand</Col>
+                <Col>{this.state.prjState}</Col>
+              </Row>
+            </Block>
+          </div>
         : <Preloader></Preloader> }
-        <Block>&nbsp;</Block>
       </Page>
     );
   }
@@ -42,6 +60,14 @@ export default class extends React.Component {
             project: p,
             group: p.getGroup()
           });
+          p.getData().then(ds => {
+            self.setState({mediaCount: ds.length});
+          });
+          p.getGroup().getUsers().then(us => {
+            self.setState({usersCount: us.length});
+          });
+          let pstate = p.getState();
+          self.setState({prjState: (pstate === SVEProjectState.Open) ? "Eröffnet" : "Eingefrohren"});
         });
       }
     });
