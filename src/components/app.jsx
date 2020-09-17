@@ -71,6 +71,9 @@ export default class extends React.Component {
             },
             updateLeftPanel: function(content) {
               app.setState({panelMenueContentLeft: content});
+            },
+            getRouterParams: function() {
+              return app.state.routerParams;
             }
           }
         },
@@ -92,9 +95,12 @@ export default class extends React.Component {
         password: '',
         password2: '',
         loginToken: '',
+        joinToken: '',
         email: ''
       },
+      openOverlay: "",
       onLoginHooks: [],
+      routerParams: new Map(),
       panelMenueContentLeft: undefined,
       panelMenueContent: [{
         caption: "_",
@@ -212,16 +218,16 @@ export default class extends React.Component {
                     }}
                 />
 
-                {(this.state.loginData.loginToken.length == 0) ? (
+                {(this.state.loginData.joinToken.length == 0) ? (
                   <ListInput
                     id="regToken"
                     label="Registrierungs-Token"
                     type="text"
                     placeholder="Übermitteltes Token für die Registrierung"
-                    value={this.state.loginData.loginToken}
+                    value={this.state.loginData.joinToken}
                     onInput={(e) => {
                       let lData = this.state.loginData;
-                      lData.loginToken = e.target.value;
+                      lData.joinToken = e.target.value;
                       this.setState({loginData: lData});
                     }}
                     required
@@ -313,7 +319,12 @@ export default class extends React.Component {
   onPressEnter(event) {
     if (this.$f7.user === undefined) {
       if(event.keyCode === 13) {
-        this.onLogin();
+        if (this.state.openOverlay === "login-screen") {
+          this.onLogin();
+        }
+        if (this.state.openOverlay === "register-screen") {
+          this.onRegister();
+        }
       }
       else
       {
@@ -330,25 +341,35 @@ export default class extends React.Component {
     console.log("Try login..");
     var self = this;
     new SVEAccount({ name: this.state.loginData.username, pass: this.state.loginData.password}, (usr) => {
-      if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
-        console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
-        self.state.user = usr;
-        self.setState({user: self.state.user});
-        self.$f7.loginScreen.close();
-
-        self.state.onLoginHooks.forEach(h => h());
-      } else {
-        Dom7(document).once("keydown", function(e) {
-          self.onPressEnter(e);
-        });
-        
-        if (usr.getState() == LoginState.NotLoggedIn) {
-          self.setState({loginMessages: {errorMsg: 'Es konnte kein Account mit diesen Daten gefunden werden.', loginType: this.state.loginMessages.loginType}});
-        } else {
-          self.setState({loginMessages: {errorMsg: 'SVE Serverfehler! (' + JSON.stringify(usr) + ')', loginType: this.state.loginMessages.loginType}});
-        }
-      }
+      self.onLoggedIn(usr);
     });
+  }
+
+  onLoggedIn(usr) {
+    if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
+      console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
+      self.state.user = usr;
+      self.setState({user: self.state.user, openOverlay: ""});
+      self.$f7.loginScreen.close();
+
+      location.search = "";
+      if(this.state.routerParams.has("redirectProject")) {
+        let pid = Number(this.state.routerParams.get("redirectProject"));
+        this.$f7router.navigate("/project/" + pid + "/");
+      }
+
+      self.state.onLoginHooks.forEach(h => h());
+    } else {
+      Dom7(document).once("keydown", function(e) {
+        self.onPressEnter(e);
+      });
+      
+      if (usr.getState() == LoginState.NotLoggedIn) {
+        self.setState({loginMessages: {errorMsg: 'Es konnte kein Account mit diesen Daten gefunden werden.', loginType: this.state.loginMessages.loginType}});
+      } else {
+        self.setState({loginMessages: {errorMsg: 'SVE Serverfehler! (' + JSON.stringify(usr) + ')', loginType: this.state.loginMessages.loginType}});
+      }
+    }
   }
 
   onRegister() {
@@ -374,51 +395,65 @@ export default class extends React.Component {
     console.log("Try login as: " + user);
     console.log("Use token");
   
-    let usr = new SVEAccount({
+    new SVEAccount({
       name: user,
       token: token
-    }, (s) => {
-      if(s !== LoginState.NotLoggedIn) {
-        self.$f7.user = usr;
-      } else {
-        self.$f7.user = undefined;
-      }
-      self.onLoginComplete(s !== LoginState.NotLoggedIn);
+    }, (usr) => {
+      self.onLoggedIn(usr);
     }, err => {
-      self.$f7.dialog.alert("Login by token at server failed: " + JSON.stringify(err), "Login Error!");
+      let lData = self.state.loginMessages;
+      lData.errorMsg = "Login by token at server failed: " + JSON.stringify(err), "Login Error!";
+      self.setState({loginMessages: lData});
+      this.onOpenLogin();
     });
   }
 
   onOpenRegister() {
     this.$f7.loginScreen.close();
+    if(this.state.routerParams.has("token")) {
+      let lData = this.state.loginData;
+      lData.joinToken = this.state.routerParams.get("token");
+      this.setState({loginData: lData});
+    }
     this.$f7.loginScreen.open("#register-screen");
+    this.setState({openOverlay: "register-screen"});
   }
 
   onOpenLogin() {
     this.$f7.loginScreen.close();
+    if(this.state.routerParams.has("token")) {
+      let lData = this.state.loginData;
+      lData.joinToken = this.state.routerParams.get("token");
+      this.setState({loginData: lData});
+    }
     this.$f7.loginScreen.open("#login-screen");
+    this.setState({openOverlay: "login-screen"});
   }
 
   parseLink() {
-    const parsed = qs.parse(location.search);
-    var router = self.$f7router;
-    if ("page" in parsed)
-    {
-      if ("token" in parsed && "context" in parsed)
-      {
-        // means that we will add this user to the context
-        self.state.addUserRequest = f7.apiPath + "/addUserTo.php?atoken=" + encodeURI(decodeURI(parsed.token)) + "&context=" + parsed.context;
+    if(location.search.length > 1) {
+      let params = new Map();
+      let vars = location.search.substring(1).split('&');
+      for (var i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=');
+        params.set(pair[0], decodeURI(pair[1]));
       }
-      else
-      {
-        var param = "";
-        if ("id" in parsed)
-        {
-          param = "/" + parsed.id;
+
+      console.log("Route internal page: " + location.search);
+
+      this.state.routerParams = params;
+
+      if(params.has("page")) {
+        console.log("Found page request: " + params.get("page"));
+        if(params.get("page") !== "register" && params.get("page") !== "login") {
+          if(params.get("page") !== "register") {
+            this.onOpenRegister();
+          } else {
+            this.onOpenLogin();
+          }
+        } else {
+          this.$f7router.navigate("/" + params.get("page") + "/");
         }
-        
-        router.navigate("/" + parsed.page + param + "/");
-        return;
       }
     }
   }
@@ -440,6 +475,8 @@ export default class extends React.Component {
           self.state.user = state.user;
           self.setState({ loginData: { username: state.user.getName(), password: '', loginToken: '' }, user: state.user});
         }
+
+        this.parseLink();
       }, err => {
         console.log("Error on init: " + JSON.stringify(err));
         f7.dialog.alert("Der SVE Server ist nicht erreichbar! Bitte mit dem Admin kontakt aufnehmen.", "Server nicht erreichbar!");

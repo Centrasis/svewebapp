@@ -84,7 +84,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
 
     registerToken() {
         this.token = [...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
-        this.link = encodeURI("https://" + window.location.hostname + "/?page=register&token=" + this.token + "&context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : ""));
+        this.link = "https://" + window.location.hostname + "/?page=register&token=" + encodeURI(this.token) + "&context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : "");
         console.log("Registered token!");
     }
 
