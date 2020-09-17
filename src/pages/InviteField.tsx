@@ -52,7 +52,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
                         <Row>
                             <BlockFooter>
                                 <p>Oder kopiere diesen Link:</p><br></br>
-                                <Link tooltip="Kopiere diesen Link" external href={this.link}>{this.link}</Link>
+                                <Link target="_blank" tooltip="Kopiere diesen Link" external href={this.link}>{this.link}</Link>
                             </BlockFooter>
                         </Row>
                     </Col>
