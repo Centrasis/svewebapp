@@ -255,16 +255,13 @@ export default class extends React.Component {
                   backgroundRepeat: "no-repeat",
                   backgroundAttachment: "fixed",
                   backgroundPosition: "center",
-                  backgroundSize: "cover",
-                  filter: "blur(8px)",
-                  WebkitFilter: "blur(8px)",
+                  backgroundSize: "80%",
+                  filter: "blur(15px)",
+                  WebkitFilter: "blur(15px)",
                   boxSizing: "border-box",
                   height: "100%",
                   zIndex: "-100",
-                  position: "absolute",
-                  top: "0",
-                  left: "0",
-                  width: "100%"
+                  position: "absolute"
                 }}
               />
               <LoginScreenTitle>Login&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
