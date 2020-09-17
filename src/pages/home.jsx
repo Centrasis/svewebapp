@@ -142,7 +142,7 @@ export default class extends React.Component {
         projects: []
       });
     });
-    self.setState({home_display_list: list});
+    this.setState({home_display_list: list});
   }
 
   onEnableSearch(sb) {
@@ -159,7 +159,7 @@ export default class extends React.Component {
   }
 
   updateContent() {
-    var self = this;;
+    var self = this;
 
     if(this.$f7.data.getUser() !== undefined) {
       SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(gs => {
