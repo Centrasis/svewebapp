@@ -26,8 +26,8 @@ export default class extends React.Component {
               group = {this.state.group}
             />
             <Block largeInset style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <Col></Col>
-              <Col>
+              <Col style={{width: "33%"}}></Col>
+              <Col style={{width: "33%"}}>
                 <Row>
                   <Col>Mitglieder</Col>
                   <Col>{this.state.usersCount}</Col>
@@ -37,7 +37,7 @@ export default class extends React.Component {
                   <Col>{this.state.projectsCount}</Col>
                 </Row>
               </Col>
-              <Col></Col>
+              <Col style={{width: "33%"}}></Col>
             </Block>
           </div>
         : <Preloader></Preloader> }
