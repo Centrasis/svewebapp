@@ -384,7 +384,7 @@ export default class extends React.Component {
       this.setupCamera(video);
     } else {
       this.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
-        self.setState({hasCameraPermission: false});
+        self.setState({hasCameraPermission: true});
       }, () => { 
         // NOP
       });
