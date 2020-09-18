@@ -12,11 +12,11 @@ export default class extends React.Component {
     super();
 
     this.state = {
-      isLoggedIn: this.$f7.isLoggedIn,
       documents_toUpload: [],
       documents_toClassify: [],
       tesseractThreads: 2,
-      scheduler: null
+      scheduler: null,
+      hasCameraPermission: false
     };
   }
   render() {
@@ -36,13 +36,17 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <video 
-            style={{width: "100%", height: "100%", maxWidth: "1000px"}}
-            playsInline
-            autoPlay
-            muted
-            id="camera-input"
-          />
+          {(this.state.hasCameraPermission) ? 
+            <video 
+              style={{width: "100%", height: "100%", maxWidth: "1000px"}}
+              playsInline
+              autoPlay
+              muted
+              id="camera-input"
+            />
+          : 
+            <img src="images/privacy.png" style={{width: "100%", height: "100%", maxWidth: "1000px"}} />
+          }
         </Block>
 
         <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
@@ -370,10 +374,27 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       //self.prepareTesseract("deu");
-      let video = document.getElementById("#camera-input");
-      self.setupCamera(video);
     });
   }
+
+  componentDidUpdate() {
+    var self = this;
+    if(this.state.hasCameraPermission) {
+      let video = document.getElementById("#camera-input");
+      this.setupCamera(video);
+    } else {
+      this.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
+        self.setState({hasCameraPermission: false});
+      }, () => { 
+        // NOP
+      });
+    }
+  }
+
+  componentDidCatch(error, info) {
+    console.log("Got error: " + JSON.stringify(error) + " info: " + JSON.stringify(info));
+  }
+
   /*
   componentWillUnmount() {
     this.postpareTesseract();
