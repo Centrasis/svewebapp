@@ -37,7 +37,7 @@ export default class extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <Page name="project">
+        <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
           <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
           </Navbar> 
           <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
