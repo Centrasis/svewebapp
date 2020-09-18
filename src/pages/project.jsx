@@ -37,7 +37,7 @@ export default class extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <Page name="docs">
+        <Page name="project">
           <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
           </Navbar> 
           <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
