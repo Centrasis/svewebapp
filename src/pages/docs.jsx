@@ -37,7 +37,7 @@ export default class extends React.Component {
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
           <video 
-            style={{width: "100%", height: "100%", maxWidth="1000px"}}
+            style={{width: "100%", height: "100%", maxWidth: "1000px"}}
             playsInline
             autoPlay
             muted
