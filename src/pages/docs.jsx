@@ -99,6 +99,7 @@ export default class extends React.Component {
     };
     navigator.mediaDevices.getUserMedia(constraints).then(stream => {
       elem.srcObject = stream;
+      elem.play();
     });
   }
 
