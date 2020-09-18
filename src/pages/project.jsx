@@ -13,6 +13,8 @@ export default class extends React.Component {
     super(props);
 
     this.state = {
+      errorMsg: "",
+      hasError: false,
       displayCount: 10,
       selectedGalleryImg: 0,
       zlib: require('zlib'),
@@ -33,7 +35,19 @@ export default class extends React.Component {
     };
   }
   render() {
-    return (
+    if (this.state.hasError) {
+      return (
+        <Page name="docs">
+          <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
+          </Navbar> 
+          <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+            <BlockTitle>Es ist ein Fehler aufgetreten!</BlockTitle>
+            <Block>{this.state.errorMsg}</Block>
+          </Block>
+        </Page>
+      );
+    } else {
+      return (
       <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
         <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
           <NavRight>
@@ -144,7 +158,7 @@ export default class extends React.Component {
         </Page>
       </Popup>
     </Page>
-  );
+  );}
 }
 
   getImagesFor(user) {
@@ -316,5 +330,10 @@ export default class extends React.Component {
     this.$f7.data.popRightPanel();
     // Destroy popup when page removed
     if (this.popup) this.popup.destroy();
+  }
+
+  getDerivedStateFromError(error) {
+    console.log("Got error: " + JSON.stringify(error));
+    return { hasError: true, errorMsg: JSON.stringify(error) };
   }
 }

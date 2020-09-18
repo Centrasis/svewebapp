@@ -16,11 +16,25 @@ export default class extends React.Component {
       documents_toClassify: [],
       tesseractThreads: 2,
       scheduler: null,
-      hasCameraPermission: false
+      hasCameraPermission: false,
+      hasError: false,
+      errorMsg: ""
     };
   }
   render() {
-    return (
+    if (this.state.hasError) {
+      return (
+        <Page name="docs">
+          <Navbar title="SVE Docs">
+          </Navbar> 
+          <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+            <BlockTitle>Es ist ein Fehler aufgetreten!</BlockTitle>
+            <Block>{this.state.errorMsg}</Block>
+          </Block>
+        </Page>
+      );
+    } else {
+      return (
       <Page name="docs">
         <Navbar title="SVE Docs">
         <NavRight>
@@ -72,6 +86,7 @@ export default class extends React.Component {
         </Popup>
       </Page>
     );
+    }
   }
 
   setupCamera(elem) {
@@ -396,8 +411,9 @@ export default class extends React.Component {
     }
   }
 
-  componentDidCatch(error, info) {
-    console.log("Got error: " + JSON.stringify(error) + " info: " + JSON.stringify(info));
+  getDerivedStateFromError(error) {
+    console.log("Got error: " + JSON.stringify(error));
+    return { hasError: true, errorMsg: JSON.stringify(error) };
   }
 
   /*
