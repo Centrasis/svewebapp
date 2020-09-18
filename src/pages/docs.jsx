@@ -47,7 +47,7 @@ export default class extends React.Component {
           : 
             <img 
               src="images/privacy.png" 
-              style={{width: "100%", height: "100%", maxWidth: "1000px"}} 
+              style={{width: "100%", height: "100%", maxWidth: "1000px", cursor: "pointer"}} 
               onClick={this.componentDidUpdate.bind(this)}
             />
           }
