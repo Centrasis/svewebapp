@@ -22,7 +22,7 @@ export default class extends React.Component {
   render() {
     return (
       <Page name="docs">
-        {/*<Navbar title="SVE Docs">
+        <Navbar title="SVE Docs">
         <NavRight>
           <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
         </NavRight>
@@ -36,27 +36,13 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <Dropzone onDrop={acceptedFiles => { (this.state.scheduler != null) ? this.onAcceptDocuments(acceptedFiles) : this.rejectFile(acceptedFiles) }}>
-          {({getRootProps, getInputProps}) => (
-              <section style={{
-                backgroundImage: "url(\"images/DragNDropArea.png\")",
-                WebkitFilter: (this.state.scheduler == null) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                filter: (this.state.scheduler == null) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                backgroundRepeat: "no-repeat", 
-                backgroundSize: "100% 100%",
-                width: "100%",
-                height: "20%",
-                maxWidth: "700px", 
-                maxHeight: "350px",
-                padding: "3em"
-              }}>
-                <div {...getRootProps()}>
-                  <input {...getInputProps()}/>
-                  <Block style={{minHeight: "25vh", minWidth: "100%", cursor: "copy"}}>{(this.state.scheduler != null) ? "Ziehe Dokumente zum Hochladen hier hin oder suche diese per Explorer." : "Warte auf Start des OCR Moduls."}</Block>
-                </div>
-              </section>
-            )}
-          </Dropzone>
+          <video 
+            style={{width: "100%", height: "100%", maxWidth="1000px"}}
+            playsInline
+            autoPlay
+            muted
+            id="camera-input"
+          />
         </Block>
 
         <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
@@ -75,9 +61,22 @@ export default class extends React.Component {
               </List>
             </Block>
           </Page>
-        </Popup>*/}
+        </Popup>
       </Page>
     );
+  }
+
+  setupCamera(elem) {
+    let facingMode = "environment"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+    let constraints = {
+      audio: false,
+      video: {
+        facingMode: facingMode
+      }
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+      elem.srcObject = stream;
+    });
   }
 
   /*onManualClassify(doc) {
@@ -366,14 +365,16 @@ export default class extends React.Component {
       preload.close();
     })();
   }
-
+*/
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      self.prepareTesseract("deu");
+      //self.prepareTesseract("deu");
+      let video = document.getElementById("#camera-input");
+      self.setupCamera(video);
     });
   }
-
+  /*
   componentWillUnmount() {
     this.postpareTesseract();
   }*/
