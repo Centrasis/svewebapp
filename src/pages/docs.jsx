@@ -45,7 +45,11 @@ export default class extends React.Component {
               id="camera-input"
             />
           : 
-            <img src="images/privacy.png" style={{width: "100%", height: "100%", maxWidth: "1000px"}} />
+            <img 
+              src="images/privacy.png" 
+              style={{width: "100%", height: "100%", maxWidth: "1000px"}} 
+              onClick={this.componentDidUpdate.bind(this)}
+            />
           }
         </Block>
 
@@ -379,6 +383,7 @@ export default class extends React.Component {
 
   componentDidUpdate() {
     var self = this;
+    console.log("Check for camera");
     if(this.state.hasCameraPermission) {
       let video = document.getElementById("#camera-input");
       this.setupCamera(video);
