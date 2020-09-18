@@ -97,9 +97,13 @@ export default class extends React.Component {
         facingMode: facingMode
       }
     };
+    console.log("Start video stream...");
     navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-      elem.srcObject = stream;
-      elem.play();
+      elem.src = window.URL.createObjectURL(stream);
+      elem.onloadedmetadata = function(e) {
+        // Ready to go. Do some stuff.
+        console.log("Video ready!");
+      };
     });
   }
 
