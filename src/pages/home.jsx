@@ -109,7 +109,7 @@ export default class extends React.Component {
   logOut() {
     window.localStorage.removeItem("sve_token");
     window.localStorage.removeItem("sve_user");
-    this.$f7.loginScreen.open("#login-screen");
+    this.$f7.data.promptLogin();
   }
 
   onSearch(sb, query, prevQuery) {
@@ -176,7 +176,7 @@ export default class extends React.Component {
         self.setState({home_display_list: list});
       }, err => this.$f7.dialog.alert("Can't fetch groups from server!", "Server down!"));
     } else {
-      this.$f7.loginScreen.open("#login-screen");
+      this.$f7.data.promptLogin();
     }
 
     var self = this;

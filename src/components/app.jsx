@@ -74,6 +74,9 @@ export default class extends React.Component {
             },
             getRouterParams: function() {
               return app.state.routerParams;
+            },
+            promptLogin: function() {
+              return app.onOpenLogin();
             }
           }
         },
