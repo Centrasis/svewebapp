@@ -61,7 +61,7 @@ export default class extends React.Component {
           : 
             <img 
               src="images/privacy.png" 
-              style={{width: "100%", height: "100%", maxWidth: "1000px", cursor: "pointer"}} 
+              style={{width: "80%", height: "80%", maxWidth: "1000px", cursor: "pointer"}} 
               onClick={this.setupCamera.bind(this)}
             />
           }
