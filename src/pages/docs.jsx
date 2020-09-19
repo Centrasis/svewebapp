@@ -7,6 +7,7 @@ import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTi
 
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
+import { SVEProject } from 'svebaselib';
 
 export default class extends React.Component {
   constructor() {
@@ -51,7 +52,9 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <CameraDropzone />
+          <CameraDropzone 
+            project={new SVEProject(0)}
+          />
         </Block>
 
         <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
