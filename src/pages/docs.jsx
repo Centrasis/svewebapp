@@ -50,7 +50,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          {(this.state.hasCameraPermission) ? 
+          {(this.$f7.data.hasCameraPermission()) ? 
             <video 
               style={{width: "100%", height: "100%", maxWidth: "1000px"}}
               playsInline
@@ -62,7 +62,7 @@ export default class extends React.Component {
             <img 
               src="images/privacy.png" 
               style={{width: "100%", height: "100%", maxWidth: "1000px", cursor: "pointer"}} 
-              onClick={this.componentDidUpdate.bind(this)}
+              onClick={this.setupCamera.bind(this)}
             />
           }
         </Block>
