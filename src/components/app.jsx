@@ -77,6 +77,45 @@ export default class extends React.Component {
             },
             promptLogin: function() {
               return app.onOpenLogin();
+            },
+            getCameraStream: function() {
+              return new Promise((resolve, reject) => {
+                let createStream = () => {
+                  let facingMode = "environment"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+                  let constraints = {
+                    audio: false,
+                    video: {
+                      facingMode: facingMode
+                    }
+                  };
+                  console.log("Start video stream...");
+                  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                    console.log("Video stream found!");
+                    resolve(stream);
+                  }, (err) => reject(err));
+                };
+
+                if(app.state.hasCameraPermission === true) {
+                  createStream();
+                } else {
+                  if(app.state.hasCameraPermission === undefined) {
+                    this.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
+                      app.state.hasCameraPermission = true;
+                      app.setState({hasCameraPermission: true});
+                      createStream();
+                    }, () => { 
+                      app.state.hasCameraPermission = false;
+                      app.setState({hasCameraPermission: false});
+                      reject({reason: "No permission to access camera stream!"});
+                    });
+                  } else {
+                    reject({reason: "No permission to access camera stream!"});
+                  }
+                }
+              });
+            },
+            hasCameraPermission: function() {
+              return (app.state.hasCameraPermission === true);
             }
           }
         },
@@ -89,6 +128,7 @@ export default class extends React.Component {
         },
       },
       user: undefined,
+      hasCameraPermission: undefined,
       loginMessages: {
         errorMsg: '',
         loginType: ''

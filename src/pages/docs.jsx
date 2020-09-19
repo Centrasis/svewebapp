@@ -89,22 +89,15 @@ export default class extends React.Component {
     }
   }
 
-  setupCamera(elem) {
-    let facingMode = "environment"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
-    let constraints = {
-      audio: false,
-      video: {
-        facingMode: facingMode
-      }
-    };
-    console.log("Start video stream...");
-    navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+  setupCamera() {
+    this.$f7.data.getCameraStream().then(stream => {
+      let elem = document.getElementById("#camera-input");
       elem.src = window.URL.createObjectURL(stream);
       elem.onloadedmetadata = function(e) {
         // Ready to go. Do some stuff.
         console.log("Video ready!");
       };
-    });
+    }, (err) => console.log(JSON.stringify(err)));
   }
 
   /*onManualClassify(doc) {
@@ -398,22 +391,8 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       //self.prepareTesseract("deu");
+      self.setupCamera();
     });
-  }
-
-  componentDidUpdate() {
-    var self = this;
-    console.log("Check for camera");
-    if(this.state.hasCameraPermission) {
-      let video = document.getElementById("#camera-input");
-      this.setupCamera(video);
-    } else {
-      this.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
-        self.setState({hasCameraPermission: true});
-      }, () => { 
-        // NOP
-      });
-    }
   }
 
   getDerivedStateFromError(error) {
