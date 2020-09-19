@@ -94,6 +94,7 @@ export default class extends React.Component {
     this.$f7.data.getCameraStream().then(stream => {
       let elem = document.getElementById("#camera-input");
       elem.src = window.URL.createObjectURL(stream);
+      elem.play();
       elem.onloadedmetadata = function(e) {
         // Ready to go. Do some stuff.
         console.log("Video ready!");
@@ -392,7 +393,7 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       //self.prepareTesseract("deu");
-      self.setupCamera();
+      window.addEventListener('load', self.setupCamera.bind(self));
     });
   }
 
@@ -401,8 +402,9 @@ export default class extends React.Component {
     return { hasError: true, errorMsg: JSON.stringify(error) };
   }
 
-  /*
+  
   componentWillUnmount() {
-    this.postpareTesseract();
-  }*/
+    //this.postpareTesseract();
+    window.removeEventListener('load', this.setupCamera.bind(this));
+  }
 }
