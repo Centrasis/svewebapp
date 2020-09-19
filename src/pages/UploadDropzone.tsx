@@ -66,7 +66,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         )
     }
 
-    onAcceptMedia(media) {
+    onAcceptMedia(media: File[]) {
         this.$f7.progressbar.show(0, "#11a802");
         this.uploadInfo.progressbar = this.$f7.dialog.progress("Hochladen..", 0, "#11a802");
         this.hasError = false;
