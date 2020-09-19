@@ -53,7 +53,7 @@ export default class extends React.Component {
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
           <CameraDropzone 
-            project={new SVEProject(0)}
+            project={new SVEProject(0, this.$f7.data.getUser())}
           />
         </Block>
 
