@@ -120,6 +120,9 @@ export default class extends React.Component {
   createNewGroup() {
     new SVEGroup({name: this.state.newGroupName}, this.$f7.data.getUser(), (g) => {
       g.store();
+      let gs = this.state.documentGroups;
+      gs.push(g);
+      this.setState({documentGroups: gs});
     });
     this.setState({newGroupName: undefined});
   }
