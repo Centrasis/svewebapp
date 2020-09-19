@@ -92,7 +92,7 @@ export default class extends React.Component {
   setupCamera() {
     console.log("DOCS: Try get camera stream..");
     this.$f7.data.getCameraStream().then(stream => {
-      let elem = document.getElementById("#camera-input");
+      let elem = document.getElementById("camera-input");
       elem.src = window.URL.createObjectURL(stream);
       elem.srcObject = stream;
       elem.play();
