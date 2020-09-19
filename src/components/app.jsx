@@ -82,12 +82,12 @@ export default class extends React.Component {
               return new Promise((resolve, reject) => {
                 let facingUser = false;
                 let createStream = () => {
-                  let facingMode = (app.$f7.device.android || app.$f7.device.ios) ? ((facingUser) ? "user" : { exact: "environment" }) : true; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+                  let facingMode = (facingUser) ? "user" : { exact: "environment" }; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
                   let constraints = {
                     audio: false,
-                    video: {
+                    video: (app.$f7.device.android || app.$f7.device.ios) ? {
                       facingMode: facingMode
-                    }
+                    } : true
                   };
                   console.log("Start video stream...");
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
