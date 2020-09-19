@@ -30,7 +30,7 @@ export default class CameraDropzone extends UploadDropzone {
                 )}
                 </Dropzone>
                 {(this.$f7.data.hasCameraPermission()) ? 
-                    <Block>
+                    <div style={{zIndex: 9, margin: "20px", position: "absolute", top: "0", left: "0", background: "transparent"}}>
                         <video
                             style={{zIndex: 9, margin: "20px", position: "absolute", top: "0", left: "0"}}
                             playsInline
@@ -39,7 +39,7 @@ export default class CameraDropzone extends UploadDropzone {
                             id="camera-input"
                         />
                         <Button onClick={this.takePicture.bind(this)}>Scan</Button>
-                    </Block>
+                    </div>
                 :
                     <img 
                         src="images/privacy.png" 
