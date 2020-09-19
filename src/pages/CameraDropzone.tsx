@@ -38,7 +38,7 @@ export default class CameraDropzone extends UploadDropzone {
                             muted
                             id="camera-input"
                         />
-                        <Button onClick={this.takePicture.bind(this)}>Scan</Button>
+                        <Button style={{position: "absolute", bottom: "0"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                     </div>
                 :
                     <img 
