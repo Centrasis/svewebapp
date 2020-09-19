@@ -1,21 +1,19 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, Button } from 'framework7-react';
-//import Dropzone from 'react-dropzone'
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput } from 'framework7-react';
 
 //import Tesseract from 'tesseract.js'
 //import { pdfjs } from 'react-pdf';
 
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
-import { SVEProject } from 'svebaselib';
+import { SVEProject, SVEGroup, SVEProjectType } from 'svebaselib';
 
 export default class extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      documents_toUpload: [],
-      documents_toClassify: [],
+      documentGroups: [],
       tesseractThreads: 2,
       scheduler: null,
       hasCameraPermission: false,
@@ -52,6 +50,23 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+          <List>
+            <ListInput
+              label="Dokumentengruppe"
+              type="select"
+              smartSelect
+              smartSelectParams={{openIn: 'sheet'}}
+              value={"Wähle Gruppe"}
+              onInput={(e) => {
+                this.setState({ server: {api: e.target.value, host: this.state.server.host }});
+              }}
+            >
+              <option value="__newDoc__">Neue Gruppe</option>
+              {this.state.documentGroups.map(doc => (
+                <option value={doc.getID()}>{doc.getName()}</option>
+              ))}
+            </ListInput>
+          </List>
           <CameraDropzone 
             project={new SVEProject(0, this.$f7.data.getUser())}
           />
@@ -369,7 +384,29 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      //self.prepareTesseract("deu");
+      SVEGroup.getGroupsOf(self.$f7.data.getUser()).then(groups => {
+        let groupsWithOnlyDocs = [];
+        let i = 0;
+        groups.forEach(g => {
+          g.getProjects().then(ps => {
+            let vacType = false;
+            ps.forEach(p => {
+              if (p.getType() === SVEProjectType.Vacation) {
+                vacType = true;
+              }
+            });
+
+            if(!vacType) {
+              groupsWithOnlyDocs.push(g.getID());
+            }
+
+            i++;
+            if(i === groups.length) {
+              self.setState({documentGroups: groups.filter(e => groupsWithOnlyDocs.includes(e.getID()))});
+            }
+          });
+        })
+      });
     });
   }
 
