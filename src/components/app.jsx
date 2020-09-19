@@ -116,6 +116,10 @@ export default class extends React.Component {
             },
             hasCameraPermission: function() {
               return (app.state.hasCameraPermission === true);
+            },
+            resetCameraPermissions: function() {
+              app.state.hasCameraPermission = undefined;
+              app.setState({hasCameraPermission: undefined});
             }
           }
         },
@@ -128,7 +132,7 @@ export default class extends React.Component {
         },
       },
       user: undefined,
-      hasCameraPermission: undefined,
+      hasCameraPermission: false,
       loginMessages: {
         errorMsg: '',
         loginType: ''
@@ -191,7 +195,7 @@ export default class extends React.Component {
           {/* Tabbar for switching views-tabs */}
           <Toolbar tabbar labels bottom>
           <Link tabLink="#view-home" tabLinkActive iconIos="f7:photo_fill_on_rectangle_fill" iconAurora="f7:photo_fill_on_rectangle_fill" iconF7="photo_fill_on_rectangle_fill" text="SVE Media" />
-            <Link tabLink="#view-catalog" iconIos="f7:arrow_up_doc_fill" iconAurora="f7:arrow_up_doc_fill" iconF7="arrow_up_doc_fill" text="SVE Documents" />
+            <Link tabLink="#view-catalog" iconIos="f7:arrow_up_doc_fill" iconAurora="f7:arrow_up_doc_fill" iconF7="arrow_up_doc_fill" text="SVE Documents" onClick={this.onOpenDocs.bind(this)} />
             <Link tabLink="#view-settings" iconIos="f7:gear" iconAurora="f7:gear" iconMd="material:settings" text="Settings" />
           </Toolbar>
 
@@ -376,6 +380,10 @@ export default class extends React.Component {
         </LoginScreen>
       </App>
     )
+  }
+
+  onOpenDocs() {
+    this.$f7.data.resetCameraPermissions();
   }
 
   getUpperMenuePanelData(stack) {
