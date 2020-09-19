@@ -80,8 +80,9 @@ export default class extends React.Component {
             },
             getCameraStream: function() {
               return new Promise((resolve, reject) => {
+                let facingUser = false;
                 let createStream = () => {
-                  let facingMode = "environment"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+                  let facingMode = (app.$f7.device.android || app.$f7.device.ios) ? ((facingUser) ? "user" : { exact: "environment" }) : true; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
                   let constraints = {
                     audio: false,
                     video: {
