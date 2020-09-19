@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton } from 'framework7-react';
 
 //import Tesseract from 'tesseract.js'
 //import { pdfjs } from 'react-pdf';
@@ -18,7 +18,8 @@ export default class extends React.Component {
       scheduler: null,
       hasCameraPermission: false,
       hasError: false,
-      errorMsg: ""
+      errorMsg: "",
+      newGroupName: undefined
     };
   }
   render() {
@@ -72,6 +73,28 @@ export default class extends React.Component {
           />
         </Block>
 
+        <Popup className="image-upload" swipeToClose opened={this.state.newGroupName !== undefined} onPopupClosed={() => this.setState({newGroupName : undefined})}>
+          <Page>
+            <BlockTitle large style={{justifySelf: "center"}}>Neue Gruppe</BlockTitle>
+            <List>
+              <ListInput
+                label="Name"
+                type="text"
+                placeholder={"Name"}
+                value={this.state.newGroupName}
+                onInput={(e) => {
+                  this.setState({ newGroupName: e.target.value });
+                }}
+              />
+              <ListButton
+                onClick={this.createNewGroup.bind(this)}
+              >
+                Erstellen
+              </ListButton>
+            </List>
+          </Page>
+        </Popup>
+
         <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
           <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
             <BlockTitle medium>Dokumente klassifizieren</BlockTitle>
@@ -92,6 +115,13 @@ export default class extends React.Component {
       </Page>
     );
     }
+  }
+
+  createNewGroup() {
+    new SVEGroup({name: this.state.newGroupName}, this.$f7.data.getUser(), (g) => {
+      g.store();
+    });
+    this.setState({newGroupName: undefined});
   }
 
   /*onManualClassify(doc) {
