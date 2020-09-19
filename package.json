@@ -23,11 +23,13 @@
   "dependencies": {
     "@types/qrcode-generator": "^1.0.6",
     "@types/socket.io": "^2.1.11",
+    "@types/w3c-image-capture": "^1.0.2",
     "dom7": "^2.1.5",
     "framework7": "^5.7.12",
     "framework7-icons": "^3.0.1",
     "framework7-react": "^5.7.12",
     "huge-uploader": "^1.0.6",
+    "image-capture": "^0.4.0",
     "prop-types": "^15.7.2",
     "qrcode-generator": "^1.4.4",
     "react": "^16.13.1",

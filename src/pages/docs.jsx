@@ -6,6 +6,7 @@ import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTi
 //import { pdfjs } from 'react-pdf';
 
 import Dom7 from 'dom7';
+import CameraDropzone from './CameraDropzone';
 
 export default class extends React.Component {
   constructor() {
@@ -50,24 +51,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          {(this.$f7.data.hasCameraPermission()) ? 
-          <Block>
-            <video 
-              style={{width: "100%", height: "100%", maxWidth: "1000px"}}
-              playsInline
-              autoPlay
-              muted
-              id="camera-input"
-            /> 
-            <Button onClick={this.takePicture.bind(this)}>Scan</Button>
-          </Block>
-          : 
-            <img 
-              src="images/privacy.png" 
-              style={{width: "80%", height: "80%", maxWidth: "1000px", cursor: "pointer"}} 
-              onClick={this.setupCamera.bind(this)}
-            />
-          }
+          <CameraDropzone />
         </Block>
 
         <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
@@ -90,26 +74,6 @@ export default class extends React.Component {
       </Page>
     );
     }
-  }
-
-  takePicture() {
-    let elem = document.getElementById("camera-input");
-    let track = elem.srcObject.getVideoTracks()[0];
-    let imageCapture = new ImageCapture(track);
-    imageCapture.takePhoto().then(blob => {
-      console.log("Took photo!");
-    });
-  }
-
-  setupCamera() {
-    this.$f7.data.getCameraStream().then(stream => {
-      let elem = document.getElementById("camera-input");
-      elem.srcObject = stream;
-      elem.play();
-      elem.onloadedmetadata = function(e) {
-        // Ready to go. Do some stuff.
-      };
-    }, (err) => console.log(JSON.stringify(err)));
   }
 
   /*onManualClassify(doc) {
@@ -403,7 +367,6 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       //self.prepareTesseract("deu");
-      window.addEventListener('load', self.setupCamera.bind(self));
     });
   }
 
@@ -415,6 +378,5 @@ export default class extends React.Component {
   
   componentWillUnmount() {
     //this.postpareTesseract();
-    window.removeEventListener('load', this.setupCamera.bind(this));
   }
 }

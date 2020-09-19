@@ -26,6 +26,7 @@
   },
   "include": [
     "src/**/*",
-    "node_modules/huge-uploader/src/index.js"
+    "node_modules/huge-uploader/src/index.js",
+    "node_modules/image-capture/src/imagecapture.js"
  ]
 }
