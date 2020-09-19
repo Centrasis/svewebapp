@@ -94,6 +94,7 @@ export default class extends React.Component {
     this.$f7.data.getCameraStream().then(stream => {
       let elem = document.getElementById("#camera-input");
       elem.src = window.URL.createObjectURL(stream);
+      elem.srcObject = stream;
       elem.play();
       elem.onloadedmetadata = function(e) {
         // Ready to go. Do some stuff.

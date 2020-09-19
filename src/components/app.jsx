@@ -99,7 +99,7 @@ export default class extends React.Component {
                   createStream();
                 } else {
                   if(app.state.hasCameraPermission === undefined) {
-                    this.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
+                    app.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
                       app.state.hasCameraPermission = true;
                       app.setState({hasCameraPermission: true});
                       createStream();
