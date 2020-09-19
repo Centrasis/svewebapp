@@ -89,9 +89,7 @@ export default class extends React.Component {
                       facingMode: facingMode
                     } : true
                   };
-                  console.log("Start video stream...");
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                    console.log("Video stream found!");
                     resolve(stream);
                   }, (err) => reject(err));
                 };

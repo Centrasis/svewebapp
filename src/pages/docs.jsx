@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, Button } from 'framework7-react';
 //import Dropzone from 'react-dropzone'
 
 //import Tesseract from 'tesseract.js'
@@ -51,13 +51,16 @@ export default class extends React.Component {
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
           {(this.$f7.data.hasCameraPermission()) ? 
+          <Block>
             <video 
               style={{width: "100%", height: "100%", maxWidth: "1000px"}}
               playsInline
               autoPlay
               muted
               id="camera-input"
-            />
+            /> 
+            <Button onClick={this.takePicture.bind(this)}>Scan</Button>
+          </Block>
           : 
             <img 
               src="images/privacy.png" 
@@ -89,6 +92,15 @@ export default class extends React.Component {
     }
   }
 
+  takePicture() {
+    let elem = document.getElementById("camera-input");
+    let track = elem.srcObject.getVideoTracks()[0];
+    let imageCapture = new ImageCapture(track);
+    imageCapture.takePhoto().then(blob => {
+      console.log("Took photo!");
+    });
+  }
+
   setupCamera() {
     this.$f7.data.getCameraStream().then(stream => {
       let elem = document.getElementById("camera-input");
@@ -96,7 +108,6 @@ export default class extends React.Component {
       elem.play();
       elem.onloadedmetadata = function(e) {
         // Ready to go. Do some stuff.
-        console.log("Video ready!");
       };
     }, (err) => console.log(JSON.stringify(err)));
   }
