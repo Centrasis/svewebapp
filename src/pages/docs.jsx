@@ -6,7 +6,7 @@ import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTi
 
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
-import { SVEProject, SVEGroup, SVEProjectType } from 'svebaselib';
+import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState } from 'svebaselib';
 
 export default class extends React.Component {
   constructor() {
@@ -19,7 +19,9 @@ export default class extends React.Component {
       hasCameraPermission: false,
       hasError: false,
       errorMsg: "",
-      newGroupName: undefined
+      newGroupName: undefined,
+      selectedGroup: undefined,
+      selectedProject: undefined
     };
   }
   render() {
@@ -59,7 +61,20 @@ export default class extends React.Component {
               smartSelectParams={{openIn: 'sheet'}}
               value={"Wähle Gruppe"}
               onInput={(e) => {
-                this.setState({ server: {api: e.target.value, host: this.state.server.host }});
+                if(e.target.value !== "__newDoc__") {
+                  new SVEGroup(Number(e.target.value), this.$f7.data.getUser(), (g) => {
+                    this.setState({ selectedGroup: g });
+                    g.getProjects().then(ps => {
+                      if(ps.length > 0) {
+                        this.setState({selectedProject: ps[0]});
+                      } else {
+                        this.setState({selectedProject: undefined});
+                      }
+                    });
+                  });
+                } else {
+                  this.setState({ newGroupName: "", selectedGroup: undefined });
+                }
               }}
             >
               <option value="__newDoc__">Neue Gruppe</option>
@@ -68,9 +83,13 @@ export default class extends React.Component {
               ))}
             </ListInput>
           </List>
-          <CameraDropzone 
-            project={new SVEProject(0, this.$f7.data.getUser())}
-          />
+          {(this.state.selectedProject !== undefined) ? 
+            <CameraDropzone 
+              project={this.state.selectedProject}
+            />
+          : 
+            <BlockTitle>Wähle eine Gruppe</BlockTitle>
+          }
         </Block>
 
         <Popup className="image-upload" swipeToClose opened={this.state.newGroupName !== undefined} onPopupClosed={() => this.setState({newGroupName : undefined})}>
@@ -124,6 +143,27 @@ export default class extends React.Component {
           let gs = this.state.documentGroups;
           gs.push(g);
           this.setState({documentGroups: gs});
+          new SVEProject({
+            id: NaN,
+            name: "Documents",
+            group: g,
+            splashImg: "",
+            owner: this.$f7.data.getUser(),
+            state: SVEProjectState.Open,
+            resultsURI: "",
+            type: SVEProjectType.Sales
+          }, 
+          this.$f7.data.getUser(),
+          p => {
+            p.store().then(val => {
+              if(val) {
+                this.setState({selectedProject: p});
+              } else {
+                this.setState({selectedProject: undefined});
+                this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
+              }
+            });
+          });
         } else {
           this.$f7.dialog.alert("Fehler beim Anlegen der Gruppe!");
         }
