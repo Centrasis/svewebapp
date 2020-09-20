@@ -161,7 +161,7 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       if (typeof self.state.group === "number") {
-        new SVEGroup(self.state.group, self.$f7.data.getUser(), g => {
+        new SVEGroup({id: self.state.group}, self.$f7.data.getUser(), g => {
           self.setState({group: g});
           g.getUsers().then(usrs => {
             usrs.forEach(u => {

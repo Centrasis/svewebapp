@@ -62,7 +62,7 @@ export default class extends React.Component {
               value={"Wähle Gruppe"}
               onInput={(e) => {
                 if(e.target.value !== "__newDoc__") {
-                  new SVEGroup(Number(e.target.value), this.$f7.data.getUser(), (g) => {
+                  new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
                     this.setState({ selectedGroup: g });
                     g.getProjects().then(ps => {
                       if(ps.length > 0) {

@@ -249,7 +249,7 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       if (typeof self.state.group === "number") {
-        self.setState({group: new SVEGroup(self.state.group, this.$f7.data.getUser(), g => self.onGroupReady(g))});
+        self.setState({group: new SVEGroup({id: self.state.group}, this.$f7.data.getUser(), g => self.onGroupReady(g))});
       }
       Dom7(document).on('page:reinit', function (e) {
         if (typeof self.state.group !== "number")
