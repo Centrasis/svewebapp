@@ -114,7 +114,7 @@ export default class extends React.Component {
           </Page>
         </Popup>
 
-        <Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
+        {/*<Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
           <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
             <BlockTitle medium>Dokumente klassifizieren</BlockTitle>
             <Block strong>
@@ -130,7 +130,7 @@ export default class extends React.Component {
               </List>
             </Block>
           </Page>
-        </Popup>
+        </Popup>*/}
       </Page>
     );
     }
