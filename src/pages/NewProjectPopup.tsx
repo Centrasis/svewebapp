@@ -107,7 +107,8 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
             owner: this.owningUser,
             state: SVEProjectState.Open,
             resultsURI: "",
-            type: this.projectType
+            type: this.projectType,
+            dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: this.beginDate, end: this.endDate} : undefined
           } as ProjectInitializer,
           this.owningUser,
           p => {
