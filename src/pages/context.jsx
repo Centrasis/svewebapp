@@ -214,7 +214,7 @@ export default class extends React.Component {
   }
 
   onGroupReady(group) {
-    if (group.getID() == NaN) // safety first!
+    if (isNaN(group.getID())) // safety first!
       return;
 
     var router = this.$f7router;
