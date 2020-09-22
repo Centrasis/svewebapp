@@ -61,7 +61,7 @@ export default class extends React.Component {
                   type="select"
                   smartSelect
                   smartSelectParams={{openIn: 'sheet'}}
-                  value={"Wähle Gruppe"}
+                  value={this.state.selectedGroup}
                   onInput={(e) => {
                       new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
                         this.setState({ selectedGroup: g });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
 import NewGroupPopup from './NewGroupPopup';
+import NewProjectPopup from './NewProjectPopup';
 import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
@@ -19,7 +20,8 @@ export default class extends React.Component {
       selectedProject: undefined, //desktop version only
       setCameraType: (t) => {},
       showCamera: false,
-      showNewGroupPopup: false
+      showNewGroupPopup: false,
+      showNewProjectPopup: false
     };
   }
   render() {
@@ -135,35 +137,14 @@ export default class extends React.Component {
           onGroupCreated={this.onGroupCreated.bind(this)}
         />
 
-        {/* 
-        <Popup className="camera-view" swipeToClose opened={this.state.showCamera} onPopupClosed={() => this.setState({showCamera: false})}>
-          <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
-            <Camera style={{ flex: 1 }} type={this.state.cameraType}>
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: 'transparent',
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity
-                  style={{
-                    flex: 0.1,
-                    alignSelf: 'flex-end',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    this.state.setCameraType(
-                      this.state.cameraType === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back
-                    );
-                  }}>
-                  <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
-                </TouchableOpacity>
-              </View>
-            </Camera>
-          </Page>
-        </Popup>*/}
+        {(typeof this.state.group !== "number") ? 
+          <NewProjectPopup
+            owningUser={this.$f7.data.getUser()}
+            visible={this.state.showNewProjectPopup}
+            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.setState({showNewProjectPopup: false, projects: prjs}); })}
+            parentGroup={this.state.group}
+          />
+        : ""}
       </Page>
     );
   }
@@ -225,7 +206,7 @@ export default class extends React.Component {
         menueItems: [
           {
             caption: "Neuer Urlaub",
-            onClick: function() { router.navigate("/newproject/" + group.getID() + "/") }
+            onClick: function() { self.setState({showNewProjectPopup: true}) }
           },
           {
             caption: "Einladen",
