@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
-import { SVEGroup, SVEAccount } from 'svebaselib';
+import { SVEGroup, SVEAccount, GroupInitializer } from 'svebaselib';
 
 export type NewGroupPopupSettings = {
     owningUser: SVEAccount,
@@ -49,7 +49,9 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     createNewGroup() {
-        new SVEGroup({name: this.newGroupName, id: NaN}, this.owningUser, (g) => {
+        let init: GroupInitializer = {name: this.newGroupName, id: NaN} as GroupInitializer;
+        console.log("Init group with: " + JSON.stringify(init));
+        new SVEGroup(init, this.owningUser, (g) => {
           g.store().then(val => {
             if(val) {
               this.newGroupName = undefined;
@@ -72,7 +74,10 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     componentDidUpdate() { this.updateProps(); }
 
     updateProps() {
-        this.newGroupName = (this.props.visible) ? "" : undefined;
+        this.newGroupName = (this.props.visible && this.newGroupName !== undefined) ? "" : this.newGroupName;
+        if(!this.props.visible) {
+            this.newGroupName = undefined;
+        }
         this.owningUser = this.props.owningUser;
 
         if (this.props.onGroupCreated)
