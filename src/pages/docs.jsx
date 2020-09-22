@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col } from 'framework7-react';
 
 //import Tesseract from 'tesseract.js'
 //import { pdfjs } from 'react-pdf';
@@ -53,36 +53,37 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <List>
-            <ListInput
-              label="Dokumentengruppe"
-              type="select"
-              smartSelect
-              smartSelectParams={{openIn: 'sheet'}}
-              value={"Wähle Gruppe"}
-              onInput={(e) => {
-                if(e.target.value !== "__newDoc__") {
-                  new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
-                    this.setState({ selectedGroup: g });
-                    g.getProjects().then(ps => {
-                      if(ps.length > 0) {
-                        this.setState({selectedProject: ps[0]});
-                      } else {
-                        this.setState({selectedProject: undefined});
-                      }
-                    });
-                  });
-                } else {
-                  this.setState({ newGroupName: "", selectedGroup: undefined });
-                }
-              }}
-            >
-              <option value="__newDoc__">Neue Gruppe</option>
-              {this.state.documentGroups.map(doc => (
-                <option value={doc.getID()}>{doc.getName()}</option>
-              ))}
-            </ListInput>
-          </List>
+          <Row>
+            <Col>
+              <List>
+                <ListInput
+                  label="Dokumentengruppe"
+                  type="select"
+                  smartSelect
+                  smartSelectParams={{openIn: 'sheet'}}
+                  value={"Wähle Gruppe"}
+                  onInput={(e) => {
+                      new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
+                        this.setState({ selectedGroup: g });
+                        g.getProjects().then(ps => {
+                          if(ps.length > 0) {
+                            this.setState({selectedProject: ps[0]});
+                          } else {
+                            this.setState({selectedProject: undefined});
+                          }
+                        });
+                      });
+                  }}
+                >
+                  {this.state.documentGroups.map(doc => (
+                    <option value={doc.getID()}>{doc.getName()}</option>
+                  ))}
+                </ListInput>
+              </List>
+            </Col>
+            <Col><Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ newGroupName: "", selectedGroup: undefined })}></Link></Col>
+          </Row>
+
           {(this.state.selectedProject !== undefined) ? 
             <CameraDropzone 
               project={this.state.selectedProject}
@@ -152,7 +153,7 @@ export default class extends React.Component {
             state: SVEProjectState.Open,
             resultsURI: "",
             type: SVEProjectType.Sales
-          }, 
+          },
           this.$f7.data.getUser(),
           p => {
             p.store().then(val => {
