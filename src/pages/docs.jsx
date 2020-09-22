@@ -53,7 +53,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <Row>
+          <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
             <Col style={{width: "50vw"}}>
               <List style={{width: "50vw"}}>
                 <ListInput
@@ -90,7 +90,7 @@ export default class extends React.Component {
               </Col>
             : ""}
           </Row>
-          <Row>
+          <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
             {(this.state.selectedProject !== undefined) ? 
               <CameraDropzone 
                 project={this.state.selectedProject}
@@ -458,7 +458,7 @@ export default class extends React.Component {
   }
 */
   updateGroupsList() {
-    SVEGroup.getGroupsOf(self.$f7.data.getUser()).then(groups => {
+    SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(groups => {
       let groupsWithOnlyDocs = [];
       let i = 0;
       groups.forEach(g => {
@@ -476,7 +476,7 @@ export default class extends React.Component {
 
           i++;
           if(i === groups.length) {
-            self.setState({documentGroups: groups.filter(e => groupsWithOnlyDocs.includes(e.getID()))});
+            this.setState({documentGroups: groups.filter(e => groupsWithOnlyDocs.includes(e.getID()))});
           }
         });
       })
