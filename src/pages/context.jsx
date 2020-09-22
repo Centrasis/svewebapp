@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
-import Framework7 from 'framework7';
+import NewGroupPopup from './NewGroupPopup';
 import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
@@ -18,7 +18,8 @@ export default class extends React.Component {
       projectToEdit: undefined,
       selectedProject: undefined, //desktop version only
       setCameraType: (t) => {},
-      showCamera: false
+      showCamera: false,
+      showNewGroupPopup: false
     };
   }
   render() {
@@ -128,6 +129,12 @@ export default class extends React.Component {
           </Page>
         </Popup>
 
+        <NewGroupPopup
+          owningUser={this.$f7.data.getUser()}
+          visible={this.state.showNewGroupPopup}
+          onGroupCreated={this.onGroupCreated.bind(this)}
+        />
+
         {/* 
         <Popup className="camera-view" swipeToClose opened={this.state.showCamera} onPopupClosed={() => this.setState({showCamera: false})}>
           <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
@@ -198,6 +205,10 @@ export default class extends React.Component {
     }
   }
 
+  onGroupCreated(group) {
+    this.setState({showNewGroupPopup: false});
+  }
+
   openCamera() {
     this.setState({showCamera: true});
   }
@@ -222,7 +233,7 @@ export default class extends React.Component {
           },
           {
             caption: "Neue Gruppe",
-            onClick: function() { self.$f7.dialog.alert("Neue Gruppe!"); }
+            onClick: function() { self.setState({showNewGroupPopup: true}) }
           },
           {
             caption: "Mitglieder",

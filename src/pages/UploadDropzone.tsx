@@ -25,8 +25,6 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     };
 
     componentDidMount() {
-        console.log("Init UploadDropzone.." + JSON.stringify(this.props));
-
         this.project = this.props.project;
 
         if (this.props.maxParallelUploads)

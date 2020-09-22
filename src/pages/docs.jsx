@@ -1,11 +1,12 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row } from 'framework7-react';
 
 //import Tesseract from 'tesseract.js'
 //import { pdfjs } from 'react-pdf';
 
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
+import NewGroupPopup from './NewGroupPopup';
 import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState } from 'svebaselib';
 
 export default class extends React.Component {
@@ -18,8 +19,7 @@ export default class extends React.Component {
       scheduler: null,
       hasCameraPermission: false,
       hasError: false,
-      errorMsg: "",
-      newGroupName: undefined,
+      showNewGroupPopup: false,
       selectedGroup: undefined,
       selectedProject: undefined
     };
@@ -82,7 +82,7 @@ export default class extends React.Component {
               </List>
             </Col>
             <Col>
-              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ newGroupName: "", selectedGroup: undefined })}></Link>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
             </Col>
           </Row>
 
@@ -95,27 +95,11 @@ export default class extends React.Component {
           }
         </Block>
 
-        <Popup className="image-upload" swipeToClose opened={this.state.newGroupName !== undefined} onPopupClosed={() => this.setState({newGroupName : undefined})}>
-          <Page>
-            <BlockTitle large style={{justifySelf: "center"}}>Neue Gruppe</BlockTitle>
-            <List>
-              <ListInput
-                label="Name"
-                type="text"
-                placeholder={"Name"}
-                value={this.state.newGroupName}
-                onInput={(e) => {
-                  this.setState({ newGroupName: e.target.value });
-                }}
-              />
-              <ListButton
-                onClick={this.createNewGroup.bind(this)}
-              >
-                Erstellen
-              </ListButton>
-            </List>
-          </Page>
-        </Popup>
+        <NewGroupPopup
+          owningUser={this.$f7.data.getUser()}
+          onGroupCreated={this.newGroupCreated.bind(this)}
+          visible={this.state.showNewGroupPopup}
+        />
 
         {/*<Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
           <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
@@ -139,40 +123,33 @@ export default class extends React.Component {
     }
   }
 
-  createNewGroup() {
-    new SVEGroup({name: this.state.newGroupName}, this.$f7.data.getUser(), (g) => {
-      g.store().then(val => {
+  newGroupCreated(g) {
+    this.setState({showNewGroupPopup: false});
+
+    let gs = this.state.documentGroups;
+    gs.push(g);
+    this.setState({documentGroups: gs});
+    new SVEProject({
+      id: NaN,
+      name: "Documents",
+      group: g,
+      splashImg: "",
+      owner: this.$f7.data.getUser(),
+      state: SVEProjectState.Open,
+      resultsURI: "",
+      type: SVEProjectType.Sales
+    },
+    this.$f7.data.getUser(),
+    p => {
+      p.store().then(val => {
         if(val) {
-          let gs = this.state.documentGroups;
-          gs.push(g);
-          this.setState({documentGroups: gs});
-          new SVEProject({
-            id: NaN,
-            name: "Documents",
-            group: g,
-            splashImg: "",
-            owner: this.$f7.data.getUser(),
-            state: SVEProjectState.Open,
-            resultsURI: "",
-            type: SVEProjectType.Sales
-          },
-          this.$f7.data.getUser(),
-          p => {
-            p.store().then(val => {
-              if(val) {
-                this.setState({selectedProject: p});
-              } else {
-                this.setState({selectedProject: undefined});
-                this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
-              }
-            });
-          });
+          this.setState({selectedProject: p});
         } else {
-          this.$f7.dialog.alert("Fehler beim Anlegen der Gruppe!");
+          this.setState({selectedProject: undefined});
+          this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
         }
       });
     });
-    this.setState({newGroupName: undefined});
   }
 
   /*onManualClassify(doc) {
