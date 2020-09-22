@@ -17,6 +17,8 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     protected errorMsg: string = undefined;
     protected caption: string = "Neues Projekt";
     protected projectType: SVEProjectType = SVEProjectType.Vacation;
+    protected beginDate: Date = undefined;
+    protected endDate: Date = undefined;
     protected onProjectCreated: (prj?: SVEProject) => void = (prj?: SVEProject) => {};
 
     render () {
@@ -52,6 +54,28 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                             <option value={SVEProjectType.Vacation}>Urlaub</option>
                             <option value={SVEProjectType.Sales}>Dokumentensammlung</option>
                         </ListInput>
+                        <ListInput
+                            label="Beginn"
+                            type="date"
+                            placeholder="Beginn-Datum"
+                            defaultValue={undefined}
+                            value={this.beginDate}
+                            onInput={(e) => {
+                                this.beginDate = new Date(e.target.value);
+                                this.forceUpdate();
+                            }}
+                        ></ListInput>
+                        <ListInput
+                            label="Ende"
+                            type="date"
+                            placeholder="End-Datum"
+                            defaultValue={undefined}
+                            value={this.endDate}
+                            onInput={(e) => {
+                                this.endDate = new Date(e.target.value);
+                                this.forceUpdate();
+                            }}
+                        ></ListInput>
                         {(this.parentGroup !== undefined) ? 
                         <ListInput
                             label="Gruppe"
