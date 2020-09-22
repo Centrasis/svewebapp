@@ -538,9 +538,11 @@ export default class extends React.Component {
       if (!f7.device.standalone && f7.device.ios)
       {
         f7.dialog.confirm("Die Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.", "App ist nicht installiert", 
-        () => { self.$f7.view.current.router.navigate("/install/"); 
-      }, 
-      function() {});
+          () => { 
+            self.$f7.view.current.router.navigate("/install/"); 
+          },
+          () => {}
+        );
       }
 
       SVESystemInfo.getFullSystemState().then(state => {
