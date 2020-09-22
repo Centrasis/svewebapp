@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader } from 'framework7-react';
+import { Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
 import { SVEGroup, SVEAccount } from 'svebaselib';
 
 export type NewGroupPopupSettings = {
@@ -25,21 +25,21 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                         </BlockHeader>
                     ) : ''}
                     <List>
-                    <ListInput
-                        label="Name"
-                        type="text"
-                        placeholder={"Name"}
-                        value={this.newGroupName}
-                        onInput={(e) => {
-                            this.newGroupName = e.target.value;
-                        }}
-                    />
-                    <ListButton
-                        onClick={this.createNewGroup.bind(this)}
-                    >
-                        <Icon slot="media" f7="folder_badge_plus"></Icon>
-                        Erstellen
-                    </ListButton>
+                        <ListInput
+                            label="Name"
+                            type="text"
+                            placeholder={"Name"}
+                            value={this.newGroupName}
+                            onInput={(e) => {
+                                this.newGroupName = e.target.value;
+                            }}
+                        />
+                        <ListItem
+                            title="Erstellen"
+                            onClick={this.createNewGroup.bind(this)}
+                        >
+                            <Icon slot="media" f7="folder_badge_plus"></Icon>
+                        </ListItem>
                     </List>
                 </Page>
             </Popup>
@@ -65,6 +65,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     componentDidMount() { 
         this.errorMsg = undefined;
         this.updateProps();
+        this.forceUpdate();
     }
     componentDidUpdate() { this.updateProps(); }
 
@@ -76,7 +77,5 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         {
             this.onGroupCreated = this.props.onGroupCreated;
         }
-
-        this.forceUpdate();
     }
 }
