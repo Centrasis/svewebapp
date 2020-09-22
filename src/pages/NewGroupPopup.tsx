@@ -38,6 +38,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                         <ListItem
                             title="Erstellen"
                             onClick={this.createNewGroup.bind(this)}
+                            style={{cursor: "pointer"}}
                         >
                             <Icon slot="media" f7="folder_badge_plus"></Icon>
                         </ListItem>
