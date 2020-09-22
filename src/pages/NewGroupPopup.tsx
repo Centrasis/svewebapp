@@ -32,6 +32,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                             value={this.newGroupName}
                             onInput={(e) => {
                                 this.newGroupName = e.target.value;
+                                this.forceUpdate();
                             }}
                         />
                         <ListItem
