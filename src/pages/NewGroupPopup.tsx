@@ -12,6 +12,8 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     protected newGroupName: string = undefined;
     protected owningUser: SVEAccount = undefined;
     protected errorMsg: string = undefined;
+    protected beginDate: Date = undefined;
+    protected endDate: Date = undefined;
     protected onGroupCreated: (group?: SVEGroup) => void = (group?: SVEGroup) => {};
 
     render () {   
@@ -35,6 +37,28 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                                 this.forceUpdate();
                             }}
                         />
+                        <ListInput
+                            label="Beginn"
+                            type="date"
+                            placeholder="Beginn-Datum"
+                            defaultValue={undefined}
+                            value={this.beginDate}
+                            onInput={(e) => {
+                                this.beginDate = new Date(e.target.value);
+                                this.forceUpdate();
+                            }}
+                        ></ListInput>
+                        <ListInput
+                            label="Ende"
+                            type="date"
+                            placeholder="End-Datum"
+                            defaultValue={undefined}
+                            value={this.endDate}
+                            onInput={(e) => {
+                                this.endDate = new Date(e.target.value);
+                                this.forceUpdate();
+                            }}
+                        ></ListInput>
                         <ListItem
                             title="Erstellen"
                             onClick={this.createNewGroup.bind(this)}

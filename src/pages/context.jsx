@@ -143,6 +143,7 @@ export default class extends React.Component {
             visible={this.state.showNewProjectPopup}
             onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.setState({showNewProjectPopup: false, projects: prjs}); })}
             parentGroup={this.state.group}
+            caption="Neuer Urlaub"
           />
         : ""}
       </Page>
