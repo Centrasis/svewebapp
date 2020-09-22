@@ -286,7 +286,20 @@ export default class extends React.Component {
         {
           caption: "Mitglieder",
           onClick: function() { router.navigate("/users/" + self.state.project.getGroup().getID() + "/") }
-        }/*,
+        },
+        {
+          caption: "Herunterladen",
+          onClick: function() { 
+            fetch(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', {
+              method: 'GET',
+              headers: {
+                  'Accept': '*',
+                  'Content-Type': 'application/json' 
+              }
+            });
+          }
+        }
+        /*,
         {
           caption: "Karte",
           onClick: function() { self.showOnMap(); }
