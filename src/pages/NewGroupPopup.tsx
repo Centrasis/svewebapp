@@ -20,7 +20,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                 <Page>
                     <BlockTitle large style={{justifySelf: "center"}}>Neue Gruppe</BlockTitle>
                     {(this.errorMsg !== undefined) ? (
-                        <BlockHeader color="red" style={{color: "red"}}>
+                        <BlockHeader color="red" style={{color: "red", justifySelf: "center", justifyItems: "center"}}>
                             <span color="red" style={{color: "red"}}>{this.errorMsg}</span>
                         </BlockHeader>
                     ) : ''}

@@ -84,6 +84,11 @@ export default class extends React.Component {
             <Col>
               <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
             </Col>
+            {(this.state.selectedGroup !== undefined) ? 
+              <Col>
+                <Link iconF7="folder_badge_minus" color="red" style={{color: "red"}} tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
+              </Col>
+            : ""}
           </Row>
 
           {(this.state.selectedProject !== undefined) ? 
@@ -128,7 +133,7 @@ export default class extends React.Component {
 
     if (g === undefined)
       return;
-      
+
     let gs = this.state.documentGroups;
     gs.push(g);
     this.setState({documentGroups: gs});
