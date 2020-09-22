@@ -49,7 +49,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     createNewGroup() {
-        new SVEGroup({name: this.newGroupName}, this.owningUser, (g) => {
+        new SVEGroup({name: this.newGroupName, id: NaN}, this.owningUser, (g) => {
           g.store().then(val => {
             if(val) {
               this.newGroupName = undefined;
