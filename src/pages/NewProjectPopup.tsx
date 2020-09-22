@@ -52,6 +52,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                             <option value={SVEProjectType.Vacation}>Urlaub</option>
                             <option value={SVEProjectType.Sales}>Dokumentensammlung</option>
                         </ListInput>
+                        {(this.parentGroup !== undefined) ? 
                         <ListInput
                             label="Gruppe"
                             type="text"
@@ -59,6 +60,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                             placeholder={"Gruppe"}
                             value={this.parentGroup.getName()}
                         />
+                        : ""}
                         <ListItem
                             title="Erstellen"
                             onClick={this.createNewProject.bind(this)}
