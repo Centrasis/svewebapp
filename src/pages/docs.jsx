@@ -54,8 +54,8 @@ export default class extends React.Component {
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
           <Row>
-            <Col>
-              <List>
+            <Col style={{width: "50vw"}}>
+              <List style={{width: "50vw"}}>
                 <ListInput
                   label="Dokumentengruppe"
                   type="select"
@@ -81,12 +81,12 @@ export default class extends React.Component {
                 </ListInput>
               </List>
             </Col>
-            <Col>
+            <Col style={{width: "10vw"}}>
               <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
             </Col>
             {(this.state.selectedGroup !== undefined) ? 
-              <Col>
-                <Link iconF7="folder_badge_minus" color="red" style={{color: "red"}} tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
+              <Col style={{width: "10vw"}}>
+                <Link iconF7="folder_badge_minus" color="red" style={{color: "red"}} tooltip="Lösche Dokumentengruppe" onClick={this.removeCurrentGroup.bind(this)}></Link>
               </Col>
             : ""}
           </Row>
@@ -126,6 +126,15 @@ export default class extends React.Component {
       </Page>
     );
     }
+  }
+
+  removeCurrentGroup() {
+    this.state.selectedGroup.remove().then(val => {
+      this.updateGroupsList();
+      if (val) {
+        this.setState({selectedGroup: undefined});
+      }
+    });
   }
 
   newGroupCreated(g) {
@@ -447,32 +456,36 @@ export default class extends React.Component {
     })();
   }
 */
+  updateGroupsList() {
+    SVEGroup.getGroupsOf(self.$f7.data.getUser()).then(groups => {
+      let groupsWithOnlyDocs = [];
+      let i = 0;
+      groups.forEach(g => {
+        g.getProjects().then(ps => {
+          let vacType = false;
+          ps.forEach(p => {
+            if (p.getType() === SVEProjectType.Vacation) {
+              vacType = true;
+            }
+          });
+
+          if(!vacType) {
+            groupsWithOnlyDocs.push(g.getID());
+          }
+
+          i++;
+          if(i === groups.length) {
+            self.setState({documentGroups: groups.filter(e => groupsWithOnlyDocs.includes(e.getID()))});
+          }
+        });
+      })
+    });
+  }
+
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      SVEGroup.getGroupsOf(self.$f7.data.getUser()).then(groups => {
-        let groupsWithOnlyDocs = [];
-        let i = 0;
-        groups.forEach(g => {
-          g.getProjects().then(ps => {
-            let vacType = false;
-            ps.forEach(p => {
-              if (p.getType() === SVEProjectType.Vacation) {
-                vacType = true;
-              }
-            });
-
-            if(!vacType) {
-              groupsWithOnlyDocs.push(g.getID());
-            }
-
-            i++;
-            if(i === groups.length) {
-              self.setState({documentGroups: groups.filter(e => groupsWithOnlyDocs.includes(e.getID()))});
-            }
-          });
-        })
-      });
+      this.updateGroupsList();
     });
   }
 
