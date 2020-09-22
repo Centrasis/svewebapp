@@ -90,14 +90,15 @@ export default class extends React.Component {
               </Col>
             : ""}
           </Row>
-
-          {(this.state.selectedProject !== undefined) ? 
-            <CameraDropzone 
-              project={this.state.selectedProject}
-            />
-          : 
-            <BlockTitle>Wähle eine Gruppe</BlockTitle>
-          }
+          <Row>
+            {(this.state.selectedProject !== undefined) ? 
+              <CameraDropzone 
+                project={this.state.selectedProject}
+              />
+            : 
+              <BlockTitle>Wähle eine Gruppe</BlockTitle>
+            }
+          </Row>
         </Block>
 
         <NewGroupPopup
