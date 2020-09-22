@@ -81,7 +81,9 @@ export default class extends React.Component {
                 </ListInput>
               </List>
             </Col>
-            <Col><Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ newGroupName: "", selectedGroup: undefined })}></Link></Col>
+            <Col>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ newGroupName: "", selectedGroup: undefined })}></Link>
+            </Col>
           </Row>
 
           {(this.state.selectedProject !== undefined) ? 
