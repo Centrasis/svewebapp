@@ -43,7 +43,7 @@ export default class CameraDropzone extends UploadDropzone {
                 :
                     <img 
                         src="images/privacy.png" 
-                        style={{width: "80%", height: "80%", maxWidth: "80vw", maxHeight: "80vh", cursor: "pointer", zIndex: 9, margin: "20px", position: "absolute"}} 
+                        style={{justifyContent: "center", alignContent: "center", zIndex: 9, margin: "20px", width: "100%", height: "100%", position: "absolute", top: "0", left: "0"}} 
                         onClick={this.setupCamera.bind(this)}
                     />
                 }
