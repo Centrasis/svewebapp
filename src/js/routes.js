@@ -10,7 +10,6 @@ import SettingsPage from '../pages/settings.jsx';
 import UsersPage from '../pages/users.jsx';
 import ProjectdetailsPage from '../pages/projectDetails.jsx';
 import ContextdetailsPage from '../pages/contextDetails';
-import NewProjectPage from '../pages/newProject.jsx';
 
 import DynamicRoutePage from '../pages/dynamic-route.jsx';
 import RequestAndLoad from '../pages/request-and-load.jsx';
@@ -94,13 +93,6 @@ var routes = [
     component: ProjectPage,
     options: {
       transition: 'f7-push',
-    },
-  },
-  {
-    path: '/newproject/:id/',
-    component: NewProjectPage,
-    options: {
-      transition: 'f7-cover-v',
     },
   },
   {
