@@ -4,7 +4,7 @@ import { SVEGroup, SVEAccount } from 'svebaselib';
 
 export type NewGroupPopupSettings = {
     owningUser: SVEAccount,
-    onGroupCreated?: (group: SVEGroup) => void,
+    onGroupCreated?: (group?: SVEGroup) => void,
     visible: boolean
 };
 
@@ -12,11 +12,11 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     protected newGroupName: string = undefined;
     protected owningUser: SVEAccount = undefined;
     protected errorMsg: string = undefined;
-    protected onGroupCreated: (group: SVEGroup) => void = (group: SVEGroup) => {};
+    protected onGroupCreated: (group?: SVEGroup) => void = (group?: SVEGroup) => {};
 
     render () {   
         return (
-            <Popup className="group-create" swipeToClose opened={this.newGroupName !== undefined} onPopupClosed={() => this.newGroupName = undefined}>
+            <Popup swipeToClose opened={this.newGroupName !== undefined} onPopupClosed={() => { this.newGroupName = undefined; this.onGroupCreated(undefined); }}>
                 <Page>
                     <BlockTitle large style={{justifySelf: "center"}}>Neue Gruppe</BlockTitle>
                     {(this.errorMsg !== undefined) ? (
@@ -64,7 +64,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.updateProps(); 
+        this.updateProps();
     }
     componentDidUpdate() { this.updateProps(); }
 
@@ -76,5 +76,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         {
             this.onGroupCreated = this.props.onGroupCreated;
         }
+
+        this.forceUpdate();
     }
 }

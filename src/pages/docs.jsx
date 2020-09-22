@@ -126,6 +126,9 @@ export default class extends React.Component {
   newGroupCreated(g) {
     this.setState({showNewGroupPopup: false});
 
+    if (g === undefined)
+      return;
+      
     let gs = this.state.documentGroups;
     gs.push(g);
     this.setState({documentGroups: gs});
