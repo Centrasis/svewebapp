@@ -99,28 +99,33 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     }
 
     createNewProject() {
-        new SVEProject({
-            id: NaN,
-            name: this.newProjectName,
-            group: this.parentGroup,
-            splashImg: 0,
-            owner: this.owningUser,
-            state: SVEProjectState.Open,
-            resultsURI: "",
-            type: this.projectType,
-            dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: this.beginDate, end: this.endDate} : undefined
-          } as ProjectInitializer,
-          this.owningUser,
-          p => {
-            p.store().then(val => {
-              if(val) {
-                this.onProjectCreated(p);
-              } else {
-                this.errorMsg = "Fehler beim Anlegen des Projektes!";
-                this.forceUpdate();
-              }
+        if(this.newProjectName === undefined || this.newProjectName.length < 3) {
+            this.errorMsg = "Projektname ist zu kurz ('" + JSON.stringify(this.newProjectName) + "')!";
+            this.forceUpdate();
+        } else {
+            new SVEProject({
+                id: NaN,
+                name: this.newProjectName,
+                group: this.parentGroup,
+                splashImg: 0,
+                owner: this.owningUser,
+                state: SVEProjectState.Open,
+                resultsURI: "",
+                type: this.projectType,
+                dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: this.beginDate, end: this.endDate} : undefined
+            } as ProjectInitializer,
+            this.owningUser,
+            p => {
+                p.store().then(val => {
+                if(val) {
+                    this.onProjectCreated(p);
+                } else {
+                    this.errorMsg = "Fehler beim Anlegen des Projektes!";
+                    this.forceUpdate();
+                }
+                });
             });
-        });
+        }
     }
 
     componentDidMount() { 
