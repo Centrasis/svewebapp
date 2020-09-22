@@ -49,9 +49,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     createNewGroup() {
-        let init: GroupInitializer = {name: this.newGroupName, id: NaN} as GroupInitializer;
-        console.log("Init group with: " + JSON.stringify(init));
-        new SVEGroup(init, this.owningUser, (g) => {
+        new SVEGroup({name: this.newGroupName, id: NaN} as GroupInitializer, this.owningUser, (g) => {
           g.store().then(val => {
             if(val) {
               this.newGroupName = undefined;
@@ -74,7 +72,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     componentDidUpdate() { this.updateProps(); }
 
     updateProps() {
-        this.newGroupName = (this.props.visible && this.newGroupName !== undefined) ? "" : this.newGroupName;
+        this.newGroupName = (this.props.visible && this.newGroupName === undefined) ? "" : this.newGroupName;
         if(!this.props.visible) {
             this.newGroupName = undefined;
         }
