@@ -290,13 +290,7 @@ export default class extends React.Component {
         {
           caption: "Herunterladen",
           onClick: function() { 
-            fetch(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', {
-              method: 'GET',
-              headers: {
-                  'Accept': '*',
-                  'Content-Type': 'application/json' 
-              }
-            });
+            window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', "_system");
           }
         }
         /*,
