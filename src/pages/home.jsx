@@ -63,11 +63,16 @@ export default class extends React.Component {
     <List className="search-list searchbar-found">
           {this.state.home_display_list.map((context) => (
             <ListItem
+              swipeout
               id={context.group.getName()}
               key={context.group.getID()}
               title={context.group.getName()}
               link={`/context/${context.group.getID()}/`}
+              onSwipeoutDeleted={this.onRemoveGroup.bind(this, context.group)}
             >
+              <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                <SwipeoutButton delete confirmText={`Möchten Sie die Gruppe ${context.group.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
+              </SwipeoutActions>
               {(this.state.showProjects && context.projects.length > 0) ? (
                 <Block slot="content" mediumInset>
                   <BlockTitle>Projekte</BlockTitle>
@@ -104,6 +109,12 @@ export default class extends React.Component {
     </Block>
   </Page>
     );
+  }
+
+  onRemoveGroup(group) {
+    group.remove().then(v => {
+      this.updateContent();
+    });
   }
 
   logOut() {

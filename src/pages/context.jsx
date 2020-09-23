@@ -202,35 +202,56 @@ export default class extends React.Component {
     var router = this.$f7router;
     var f7 = this.$f7;
     var self = this;
-    let panelContent = {
-        caption: "Gruppenoptionen",
-        menueItems: [
-          {
-            caption: "Neuer Urlaub",
-            onClick: function() { self.setState({showNewProjectPopup: true}) }
-          },
-          {
-            caption: "Einladen",
-            onClick: function() { router.navigate("/contextdetails/" + group.getID() + "/") }
-          },
-          {
-            caption: "Neue Gruppe",
-            onClick: function() { self.setState({showNewGroupPopup: true}) }
-          },
-          {
-            caption: "Mitglieder",
-            onClick: function() { router.navigate("/users/" + group.getID() + "/") }
-          }
-        ]
-    };
-    if (this.state.hasCameraPermission)
-    {
-      panelContent.menueItems.push({
-        caption: "Beitreten",
-        onClick: function() { self.openCamera() }
+    if (typeof this.state.group !== "number") {
+      this.state.group.getRightsForUser(this.$f7.data.getUser()).then(rights => {
+        let panelContent = {
+            caption: "Gruppenoptionen",
+            menueItems: [
+              {
+                caption: "Neuer Urlaub",
+                onClick: function() { self.setState({showNewProjectPopup: true}) }
+              },
+              {
+                caption: "Einladen",
+                onClick: function() { router.navigate("/contextdetails/" + group.getID() + "/") }
+              },
+              {
+                caption: "Neue Gruppe",
+                onClick: function() { self.setState({showNewGroupPopup: true}) }
+              },
+              {
+                caption: "Mitglieder",
+                onClick: function() { router.navigate("/users/" + group.getID() + "/") }
+              }
+            ]
+        };
+        if (rights.admin)
+        {
+          panelContent.menueItems.push({
+            caption: "Gruppe löschen",
+            onClick: function() { 
+              self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
+                self.state.group.remove().then(v => {
+                  if(v) {
+                    router.back();
+                  } else {
+                    self.$f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
+                  }
+                });
+              }, () =>  {});
+            }
+          });
+        }
+        if (this.state.hasCameraPermission)
+        {
+          panelContent.menueItems.push({
+            caption: "Beitreten",
+            onClick: function() { self.openCamera() }
+          });
+        }
+        self.$f7.data.pushRightPanel(panelContent);
       });
     }
-    self.$f7.data.pushRightPanel(panelContent);
 
     self.setState({projects: []});
     group.getProjects().then(prjs => {
