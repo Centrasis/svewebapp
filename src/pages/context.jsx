@@ -242,7 +242,7 @@ export default class extends React.Component {
             }
           });
         }
-        if (this.state.hasCameraPermission)
+        if (this.$f7.data.hasCameraPermission())
         {
           panelContent.menueItems.push({
             caption: "Beitreten",
