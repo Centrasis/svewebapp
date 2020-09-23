@@ -62,6 +62,7 @@ export default class extends React.Component {
               return app.state.user;
             },
             pushRightPanel: function(content) {
+              content.menueItems = content.menueItems.filter(e => e != {});
               app.state.panelMenueContent.push(content);
               app.setState({panelMenueContent: app.state.panelMenueContent});
             },

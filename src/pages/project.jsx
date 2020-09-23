@@ -272,36 +272,56 @@ export default class extends React.Component {
 
     Dom7("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
 
-    let panelContent = {
-      caption: "Urlaubsaktionen",
-      menueItems: [
-        {
-          caption: "Medien hochladen",
-          onClick: function() { self.setState({showUpload : true}) }
-        },
-        {
-          caption: "Details",
-          onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
-        },
-        {
-          caption: "Mitglieder",
-          onClick: function() { router.navigate("/users/" + self.state.project.getGroup().getID() + "/") }
-        },
-        {
-          caption: "Herunterladen",
-          onClick: function() { 
-            window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', "_system");
-          }
-        }
-        /*,
-        {
-          caption: "Karte",
-          onClick: function() { self.showOnMap(); }
-        }*/
-      ]
-    };
+    if (typeof this.state.project !== "number") {
+      this.state.project.getGroup().getRightsForUser(this.$f7.data.getUser()).then(rights => {
+        let panelContent = {
+          caption: "Urlaubsaktionen",
+          menueItems: [
+            (rights.write) ?
+            {
+              caption: "Medien hochladen",
+              onClick: function() { self.setState({showUpload : true}) }
+            } : {}, 
+            {
+              caption: "Details",
+              onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
+            },
+            {
+              caption: "Mitglieder",
+              onClick: function() { router.navigate("/users/" + self.state.project.getGroup().getID() + "/") }
+            },
+            {
+              caption: "Herunterladen",
+              onClick: function() { 
+                window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', "_system");
+              }
+            },
+            (rights.admin) ?
+            {
+              caption: "Projekt löschen",
+              onClick: function() { 
+                self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
+                  self.state.project.remove().then(v => {
+                    if(v) {
+                      router.back();
+                    } else {
+                      self.$f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
+                    }
+                  });
+                }, () =>  {});
+              }
+            } : {}
+            /*,
+            {
+              caption: "Karte",
+              onClick: function() { self.showOnMap(); }
+            }*/
+          ]
+        };
 
-    self.$f7.data.pushRightPanel(panelContent);
+        self.$f7.data.pushRightPanel(panelContent);
+      });
+    }
 
     if (typeof this.state.project !== "number") {
       this.state.project.getOwner().then(user => {
