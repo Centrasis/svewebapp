@@ -10,6 +10,7 @@ export type QRCodeScannerSettings = {
 export default class QRCodeScanner extends React.Component<QRCodeScannerSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected result: string = "";
     protected visible: boolean = false;
+    protected cameraActive: boolean = false;
     protected onDecoded: (result: string) => void = (result: string) => {};
 
     render () {   
@@ -32,27 +33,38 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     setupCamera() {
-        this.$f7.data.getCameraStream().then((stream: MediaStream) => {
-          let elem = document.getElementById("camera-input") as HTMLVideoElement;
-          elem.srcObject = stream;
-          elem.play();
-          var self = this;
-          var qr = new QrcodeDecoder();
-          elem.onloadedmetadata = function(e) {
-            console.log("Meta data ready! Starting QR detection...");
-            (qr as any).decodeFromCamera(elem).then(res => {
-                self.result = res;
-                self.onDecoded(self.result);
-              });
-          };
-        }, (err) => console.log(JSON.stringify(err)));
+        if (!this.cameraActive) {
+            this.$f7.data.getCameraStream().then((stream: MediaStream) => {
+            let elem = document.getElementById("camera-input") as HTMLVideoElement;
+            elem.srcObject = stream;
+            elem.play();
+            var self = this;
+            var qr = new QrcodeDecoder();
+            this.cameraActive = true;
+            elem.onloadedmetadata = function(e) {
+                console.log("Meta data ready! Starting QR detection...");
+                (qr as any).decodeFromCamera(elem).then(res => {
+                    self.result = res;
+                    self.onDecoded(self.result);
+                });
+            };
+            }, (err) => console.log(JSON.stringify(err)));
+        }
     }
 
     componentWillUpdate() {
         this.visible = this.props.visible;
+        var self = this;
+        this.$f7ready((f7) => {
+            self.setupCamera();
+        });
     }
     componentDidUpdate() {
         this.visible = this.props.visible;
+        var self = this;
+        this.$f7ready((f7) => {
+            self.setupCamera();
+        });
     }
 
     componentDidMount() {
