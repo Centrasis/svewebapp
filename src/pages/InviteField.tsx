@@ -1,5 +1,5 @@
 import React from 'react';
-import { Block, Row, Link, BlockHeader, BlockFooter, Col } from 'framework7-react';
+import { Block, Row, Link, BlockHeader, BlockFooter, Col, Button } from 'framework7-react';
 //import { WhatsappShareButton, EmailShareButton } from "react-share";
 import * as qrcode from 'qrcode-generator';
 import { SVESystemInfo, SVEGroup, SVEProject } from 'svebaselib';
@@ -7,24 +7,30 @@ import Dom7 from 'dom7';
 
 export type InviteFieldSettings = {
     group: SVEGroup,
-    project?: SVEProject
+    project?: SVEProject,
+    allowShareOnly?: boolean
 };
 
 export default class InviteField extends React.Component<InviteFieldSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected group: SVEGroup = undefined;
     protected project: SVEProject = null;
     protected token: string;
-    protected link: string;
+    protected inviteLink: string = "";
+    protected shareLink: string;
+    protected allowShareOnly: boolean = false;
     protected toastCopyIcon = null;
 
     componentDidMount() {
-        console.log("Init InviteField.." + JSON.stringify(this.props));
-
         this.group = this.props.group;
 
         if (this.props.project)
         {
             this.project = this.props.project;
+        }
+
+        if (this.props.allowShareOnly)
+        {
+            this.allowShareOnly = this.props.allowShareOnly;
         }
 
         this.toastCopyIcon = this.$f7.toast.create({
@@ -34,13 +40,15 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             closeTimeout: 1000,
         });
 
+        this.shareLink = "https://" + window.location.hostname + "/?context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : "");
+        this.inviteLink = "";
+
         var self = this;
-        self.registerToken();
         this.forceUpdate(() => {
             self.$f7ready((f7) => {
                 Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
             });
-        })
+        });
     }
 
     render () {
@@ -52,16 +60,29 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
                     <Col></Col>
                     <Col>
                         <Row>
-                            <BlockHeader>Einladung zu {(this.group !== undefined) ? this.group.getName() : ""}</BlockHeader>
+                            <BlockHeader>{(this.inviteLink.length > 1) ? "Einladung zu" : "Teilen von "} {(this.group !== undefined) ? this.group.getName() : ""}</BlockHeader>
                         </Row>
                         <Row id={((this.group !== undefined) ? this.group.getName() : "") + "-QRCode"} style={{
                             maxWidth: "1000px",
                             width: "80vw"
                         }}/>
+                        {(!this.allowShareOnly) ?
+                            <Row>
+                                <Button raisedIos onClick={this.onInviteClick.bind(this)}>Neue Einladung generieren</Button>
+                            </Row>
+                        : ""}
+                        {(this.inviteLink.length > 1) ?
+                            <Row>
+                                <BlockFooter>
+                                    <p>Zum Einladen:</p><br></br>
+                                    <Link tooltip="Kopiere diesen Link" onClick={this.onClickLink.bind(this, this.inviteLink)}>{this.inviteLink}</Link>
+                                </BlockFooter>
+                            </Row>
+                        : ""}
                         <Row>
                             <BlockFooter>
-                                <p>Oder kopiere diesen Link:</p><br></br>
-                                <Link tooltip="Kopiere diesen Link" onClick={this.onClickLink.bind(this)}>{this.link}</Link>
+                                <p>Zum Teilen:</p><br></br>
+                                <Link tooltip="Kopiere diesen Link" onClick={this.onClickLink.bind(this, this.shareLink)}>{this.shareLink}</Link>
                             </BlockFooter>
                         </Row>
                     </Col>
@@ -71,9 +92,23 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         )
     }
 
-    onClickLink() {
+    onInviteClick() {
+        if (this.allowShareOnly) {
+            return;
+        }
+
+        var self = this;
+        self.registerToken();
+        this.forceUpdate(() => {
+            self.$f7ready((f7) => {
+                Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
+            });
+        });
+    }
+
+    onClickLink(link: string) {
         let tempInput = document.createElement("input");
-        tempInput.value = this.link;
+        tempInput.value = link;
         document.body.appendChild(tempInput);
         tempInput.select();
         tempInput.setSelectionRange(0, 99999); /*For mobile devices*/
@@ -84,13 +119,13 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
 
     registerToken() {
         this.token = [...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
-        this.link = "https://" + window.location.hostname + "/?page=register&token=" + encodeURI(this.token) + "&context=" + this.group.getID() + ((this.project !== null) ? "&redirectProject=" + this.project.getID() : "");
+        this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
         console.log("Registered token!");
     }
 
     getQRCode() {
         let qr = qrcode.default(0, 'L');
-        qr.addData(this.link);
+        qr.addData((this.inviteLink.length > 1) ? this.inviteLink : this.shareLink);
         qr.make();
         return qr.createSvgTag(5);
     }
