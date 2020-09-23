@@ -157,14 +157,28 @@ export default class extends React.Component {
   }
 
   joinGroup(link) {
-    let toast = this.$f7.toast.create({
-      text: "Found Link: " + link,
-      closeButton: true,
-      closeButtonText: 'Ok',
-      closeButtonColor: 'green',
-    });
-    toast.open();
-    this.setState({showCamera: false});
+    if (link.includes("felixlehner.de") && (link.includes("token=") || link.includes("redirectProject="))) {
+      let toast = this.$f7.toast.create({
+        text: "Beitrittslink gefunden",
+        closeButton: true,
+        closeButtonText: 'Beitritt',
+        closeButtonColor: 'green',
+        on: {
+          close: () => {
+            window.open(link, "_self");
+          }
+        }
+      });
+      toast.open();
+      this.setState({showCamera: false});
+    } else {
+      let toast = this.$f7.toast.create({
+        text: "Found Link: " + link,
+        closeButton: false,
+        closeTimeout: 1000,
+      });
+      toast.open();
+    }
   }
 
   applyProjectEdit() {
