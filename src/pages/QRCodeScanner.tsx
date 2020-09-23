@@ -16,8 +16,8 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
         return (
             <Popup swipeToClose opened={this.visible} onPopupClosed={() => { this.visible = false; }}>
                 <Page>
-                    <Block style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-                        <BlockTitle large style={{justifySelf: "center"}}>Scanne QR Code..</BlockTitle>
+                    <BlockTitle large style={{justifySelf: "center"}}>Scanne QR Code..</BlockTitle>
+                    <Block style={{justifyContent: "center", alignContent: "center"}}>
                         <video
                             style={{margin: "20px", width: "100%", height: "100%"}}
                             playsInline
@@ -49,16 +49,27 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
 
     componentWillUpdate() {
         this.visible = this.props.visible;
+        var self = this;
+        this.$f7ready((f7) => {
+            self.setupCamera();
+            self.forceUpdate();
+        });
     }
     componentDidUpdate() {
         this.visible = this.props.visible;
+        var self = this;
+        this.$f7ready((f7) => {
+            self.setupCamera();
+        });
     }
 
     componentDidMount() {
         this.visible = this.props.visible;
         this.onDecoded = this.props.onDecoded;
-
-        this.setupCamera();
-        this.forceUpdate();
+        var self = this;
+        this.$f7ready((f7) => {
+            self.setupCamera();
+            self.forceUpdate();
+        });
     }
 }

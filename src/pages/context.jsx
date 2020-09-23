@@ -223,7 +223,9 @@ export default class extends React.Component {
   }
 
   openCamera() {
+    this.$f7.data.resetCameraPermissions();
     this.setState({showCamera: true});
+    console.log("Open Camera");
   }
 
   onGroupReady(group) {
