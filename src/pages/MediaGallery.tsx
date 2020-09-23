@@ -258,7 +258,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             {
             displayed = [
                 {
-                caption: 'Foto',
+                caption: img.getName(),
                 url: img.getURI(SVEDataVersion.Full)
                 }
             ];
