@@ -72,8 +72,21 @@ export default class CameraDropzone extends UploadDropzone {
         }, (err) => console.log(JSON.stringify(err)));
     }
 
+    stopCamera() {
+        let elem = document.getElementById("camera-input") as HTMLVideoElement;
+        elem.pause();
+        if (elem.srcObject !== undefined) {
+            (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+            elem.srcObject = undefined;
+        }
+    }
+
     componentDidMount() {
         super.componentDidMount();
         this.setupCamera();
+    }
+
+    componentWillUnmount() {
+        this.stopCamera();
     }
 }
