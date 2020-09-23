@@ -229,6 +229,7 @@ export default class extends React.Component {
         {
           panelContent.menueItems.push({
             caption: "Gruppe löschen",
+            color: "red",
             onClick: function() { 
               self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
                 self.state.group.remove().then(v => {

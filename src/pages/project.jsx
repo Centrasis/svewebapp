@@ -299,6 +299,7 @@ export default class extends React.Component {
             (rights.admin) ?
             {
               caption: "Projekt löschen",
+              color: "red",
               onClick: function() { 
                 self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
                   self.state.project.remove().then(v => {

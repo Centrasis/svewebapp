@@ -181,6 +181,7 @@ export default class extends React.Component {
                       this.$f7.panel.close("left", true);
                     }}
                     className="button"
+                    style={(item.color !== undefined) ? {color: item.color} : {}}
                   />
                 ))}
                 <ListItem panelClose="right"/>
