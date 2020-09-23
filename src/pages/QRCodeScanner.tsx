@@ -34,13 +34,13 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
 
     setupCamera() {
         if (!this.cameraActive) {
+            this.cameraActive = true;
             this.$f7.data.getCameraStream().then((stream: MediaStream) => {
             let elem = document.getElementById("camera-input") as HTMLVideoElement;
             elem.srcObject = stream;
             elem.play();
             var self = this;
             var qr = new QrcodeDecoder();
-            this.cameraActive = true;
             elem.onloadedmetadata = function(e) {
                 console.log("Meta data ready! Starting QR detection...");
                 (qr as any).decodeFromCamera(elem).then(res => {
@@ -48,7 +48,10 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                     self.onDecoded(self.result);
                 });
             };
-            }, (err) => console.log(JSON.stringify(err)));
+            }, (err) => {
+                this.cameraActive = false;
+                console.log(JSON.stringify(err));
+            });
         }
     }
 
