@@ -120,6 +120,29 @@ export default class extends React.Component {
             resetCameraPermissions: function() {
               app.state.hasCameraPermission = undefined;
               app.setState({hasCameraPermission: undefined});
+            },
+            joinGroup: (link) => {
+              if (link.includes("felixlehner.de") && (link.includes("token=") || link.includes("redirectProject="))) {
+                let toast = app.$f7.toast.create({
+                  text: "Beitrittslink gefunden",
+                  closeButton: true,
+                  closeButtonText: 'Beitritt',
+                  closeButtonColor: 'green',
+                  on: {
+                    close: () => {
+                      window.open(link, "_self");
+                    }
+                  }
+                });
+                toast.open();
+              } else {
+                let toast = app.$f7.toast.create({
+                  text: "Found Link: " + link,
+                  closeButton: false,
+                  closeTimeout: 1000,
+                });
+                toast.open();
+              }
             }
           }
         },

@@ -19,6 +19,7 @@ import {
 } from 'framework7-react';
 import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
+import QRCodeScanner from './QRCodeScanner';
 
 export default class extends React.Component {
   constructor(props) {
@@ -26,6 +27,7 @@ export default class extends React.Component {
     this.state = {
       groups: [],
       showProjects: false,
+      searchQR: false,
       home_display_list: []
     };
   }
@@ -37,6 +39,7 @@ export default class extends React.Component {
       <NavTitle sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitle>
       <NavTitleLarge sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitleLarge>
       <NavRight>
+        <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
         <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
       </NavRight>
       <Searchbar
@@ -109,8 +112,21 @@ export default class extends React.Component {
     <Block strong>
       <Link href="#" color="red" textColor="red" onClick={this.logOut.bind(this)}>Logout</Link>
     </Block>
+
+    <QRCodeScanner
+      visible={this.state.searchQR}
+      onDecoded={(link) => {
+        this.$f7.data.joinGroup(link);
+        this.setState({searchQR: false});
+      }}
+    />
   </Page>
     );
+  }
+
+  joinGroup() {
+    this.$f7.data.resetCameraPermissions();
+    this.setState({searchQR: true});
   }
 
   onRemoveGroup(group) {
