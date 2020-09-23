@@ -239,6 +239,10 @@ export default class extends React.Component {
               {
                 caption: "Mitglieder",
                 onClick: function() { router.navigate("/users/" + group.getID() + "/") }
+              },
+              {
+                caption: "Beitreten",
+                onClick: function() { self.openCamera() }
               }
             ]
         };
@@ -258,13 +262,6 @@ export default class extends React.Component {
                 });
               }, () =>  {});
             }
-          });
-        }
-        if (this.$f7.data.hasCameraPermission())
-        {
-          panelContent.menueItems.push({
-            caption: "Beitreten",
-            onClick: function() { self.openCamera() }
           });
         }
         self.$f7.data.pushRightPanel(panelContent);

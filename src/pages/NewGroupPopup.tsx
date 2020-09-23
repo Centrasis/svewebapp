@@ -70,6 +70,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         this.forceUpdate();
     }
     componentDidUpdate() { this.updateProps(); }
+    componentWillUpdate() { this.updateProps(); }
 
     updateProps() {
         this.newGroupName = (this.props.visible && this.newGroupName === undefined) ? "" : this.newGroupName;
