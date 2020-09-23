@@ -133,8 +133,14 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
         this.updateProps();
         this.forceUpdate();
     }
-    componentDidUpdate() { this.updateProps(); }
-    componentWillUpdate() { this.updateProps(); }
+    componentDidUpdate() { 
+        this.updateProps(); 
+        this.$f7ready((f7) => {});
+    }
+    componentWillUpdate() { 
+        this.updateProps();
+        this.$f7ready((f7) => {});
+    }
 
     updateProps() {
         this.newProjectName = (this.props.visible && this.newProjectName === undefined) ? "" : this.newProjectName;
