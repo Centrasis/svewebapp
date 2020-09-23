@@ -15,12 +15,12 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
 
     render () {   
         return (
-            <Popup swipeToClose opened={this.visible} onPopupClosed={() => { this.visible = false; }}>
+            <Popup swipeToClose opened={this.visible} onPopupClosed={() => { this.visible = false; this.stopCamera(); }}>
                 <Page>
                     <BlockTitle large style={{justifySelf: "center"}}>Scanne QR Code..</BlockTitle>
                     <Block style={{justifyContent: "center", alignContent: "center"}}>
                         <video
-                            style={{margin: "20px", width: "100%", height: "100%"}}
+                            style={{margin: "5%", width: "90%", height: "90%"}}
                             playsInline
                             autoPlay
                             muted
@@ -32,9 +32,17 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
         )
     }
 
+    stopCamera() {
+        let elem = document.getElementById("camera-input") as HTMLVideoElement;
+        elem.pause();
+        if (elem.srcObject !== undefined) {
+            (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+            elem.srcObject = undefined;
+        }
+    }
+
     setupCamera() {
         if (!this.cameraActive) {
-            console.log("Access camera!");
             this.cameraActive = true;
             this.$f7.data.getCameraStream().then((stream: MediaStream) => {
                 let elem = document.getElementById("camera-input") as HTMLVideoElement;
