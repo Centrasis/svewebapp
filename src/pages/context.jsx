@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
 import NewGroupPopup from './NewGroupPopup';
 import NewProjectPopup from './NewProjectPopup';
+import QRCodeScanner from './QRCodeScanner';
 import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
@@ -137,6 +138,11 @@ export default class extends React.Component {
           onGroupCreated={this.onGroupCreated.bind(this)}
         />
 
+        <QRCodeScanner
+          visible={this.state.showCamera}
+          onDecoded={this.joinGroup.bind(this)}
+        />
+
         {(typeof this.state.group !== "number") ? 
           <NewProjectPopup
             owningUser={this.$f7.data.getUser()}
@@ -148,6 +154,17 @@ export default class extends React.Component {
         : ""}
       </Page>
     );
+  }
+
+  joinGroup(link) {
+    let toast = this.$f7.toast.create({
+      text: "Found Link: " + link,
+      closeButton: true,
+      closeButtonText: 'Ok',
+      closeButtonColor: 'green',
+    });
+    toast.open();
+    this.setState({showCamera: false});
   }
 
   applyProjectEdit() {

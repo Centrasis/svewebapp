@@ -31,6 +31,7 @@
     "huge-uploader": "^1.0.6",
     "image-capture": "^0.4.0",
     "prop-types": "^15.7.2",
+    "qrcode-decoder": "^0.1.2",
     "qrcode-generator": "^1.4.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
