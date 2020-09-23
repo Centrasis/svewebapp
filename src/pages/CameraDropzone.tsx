@@ -32,7 +32,7 @@ export default class CameraDropzone extends UploadDropzone {
                 {(this.$f7.data.hasCameraPermission()) ? 
                     <div style={{justifyContent: "center", alignContent: "center", zIndex: 9, margin: "20px", width: "100%", height: "100%", position: "absolute", top: "0", left: "0", background: "transparent"}}>
                         <video
-                            style={{margin: "20px", width: "100%", height: "100%", top: "0", left: "0"}}
+                            style={{position: "absolute", margin: "10%", width: "90%", height: "90%", top: "5%", left: "5%"}}
                             playsInline
                             autoPlay
                             muted
