@@ -13,7 +13,9 @@ import {
   ListItem,
   Row,
   Col,
-  Button
+  Button,
+  SwipeoutActions,
+  SwipeoutButton
 } from 'framework7-react';
 import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';

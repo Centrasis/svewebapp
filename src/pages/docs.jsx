@@ -53,7 +53,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+          <Row style={{justifyContent: "center", alignContent: "center"}}>
             <Col style={{width: "50vw"}}>
               <List style={{width: "50vw"}}>
                 <ListInput
@@ -90,7 +90,7 @@ export default class extends React.Component {
               </Col>
             : ""}
           </Row>
-          <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+          <Row style={{justifyContent: "center", alignContent: "center"}}>
             {(this.state.selectedProject !== undefined) ? 
               <CameraDropzone 
                 project={this.state.selectedProject}
