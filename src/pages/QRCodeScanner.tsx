@@ -39,28 +39,20 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
           var self = this;
           var qr = new QrcodeDecoder();
           elem.onloadedmetadata = function(e) {
+            console.log("Meta data ready! Starting QR detection...");
             (qr as any).decodeFromCamera(elem).then(res => {
                 self.result = res;
                 self.onDecoded(self.result);
-            });
+              });
           };
         }, (err) => console.log(JSON.stringify(err)));
     }
 
     componentWillUpdate() {
-        console.log("QR Scanner will update");
         this.visible = this.props.visible;
-        var self = this;
-        this.$f7ready((f7) => {
-            self.setupCamera();
-        });
     }
     componentDidUpdate() {
         this.visible = this.props.visible;
-        var self = this;
-        this.$f7ready((f7) => {
-            self.setupCamera();
-        });
     }
 
     componentDidMount() {
