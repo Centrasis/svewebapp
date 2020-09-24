@@ -17,12 +17,17 @@ import {
   ListInput,
   ListButton,
   BlockFooter,
-  BlockHeader
+  BlockHeader,
+  NavTitle,
+  NavTitleLarge,
+  Block,
+  BlockTitle
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
 import routes from '../js/routes';
 import {SVESystemInfo, SVEAccount, LoginState} from 'svebaselib';
+import BlockComponent from 'framework7/components/block/block';
 
 export default class extends React.Component {
   constructor() {
@@ -158,6 +163,10 @@ export default class extends React.Component {
           path: '/service-worker.js',
         },
       },
+      hasError: {
+        has: false,
+        msg: ""
+      },
       popupComponent: new Map(),
       user: undefined,
       hasCameraPermission: false,
@@ -189,7 +198,29 @@ export default class extends React.Component {
     }
   }
   render() {
-    return (
+    return (this.state.hasError.has) ? (
+      <App params={ this.state.f7params } themeDark>
+        <View>
+          <Page>
+            <Navbar large sliding={false}>
+              <NavTitle sliding>Ein kritischer Fehler trat auf!</NavTitle>
+              <NavTitleLarge sliding>Ein kritischer Fehler trat auf!</NavTitleLarge>
+              <NavRight>
+                <Link external iconF7="text_bubble" tooltip="Fehler melden" href={"mailto:info@felixlehner.de?subject=Webseitenfehler&body=Fehler%20trat%20auf%3A%0D%0A" + this.state.hasError.msg} />
+                <Link iconF7="tornado" tooltip="Fehler auflösen" onClick={() => window.location.reload()} />
+              </NavRight>
+            </Navbar>
+            <Block>
+              <BlockTitle>Fehler Details:</BlockTitle>
+              <Block strong inset>
+                {this.state.hasError.msg}
+              </Block>
+            </Block>
+          </Page>
+        </View>
+      </App>
+    ) 
+    :(
       <App params={ this.state.f7params } themeDark>
 
         {/* Right panel with cover effect*/}
@@ -409,6 +440,13 @@ export default class extends React.Component {
         </LoginScreen>
       </App>
     )
+  }
+
+  static getDerivedStateFromError(error) {
+    return {hasError: {
+      has: true,
+      msg: JSON.stringify(error)
+    }};
   }
 
   onOpenDocs() {
