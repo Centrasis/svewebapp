@@ -43,14 +43,17 @@ export default class CameraDropzone extends UploadDropzone {
                         </div>
                     </div>
                 :
-                    <img 
-                        src="images/privacy.png" 
-                        style={{justifyContent: "center", alignContent: "center", zIndex: 9, margin: "20px", width: "100%", height: "100%", position: "absolute", top: "0", left: "0"}} 
-                        onClick={this.setupCamera.bind(this)}
-                    />
+                    <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                        <Button fill round onClick={this.ractivateCamera.bind(this)}>Kamera aktivieren</Button>
+                    </div>
                 }
             </Block>
         )
+    }
+
+    ractivateCamera() {
+        this.$f7.data.resetCameraPermissions();
+        this.setupCamera();
     }
 
     takePicture() {
