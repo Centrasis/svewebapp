@@ -6,7 +6,6 @@ export type NewProjectPopupSettings = {
     owningUser: SVEAccount,
     parentGroup: SVEGroup,
     onProjectCreated?: (prj?: SVEProject) => void,
-    visible: boolean,
     caption?: string
 };
 
@@ -130,6 +129,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
 
     componentDidMount() { 
         this.errorMsg = undefined;
+        this.$f7.data.setPopupComponent(this.constructor.name, this);
         this.updateProps();
         this.forceUpdate();
     }
@@ -143,10 +143,6 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     }
 
     updateProps() {
-        this.newProjectName = (this.props.visible && this.newProjectName === undefined) ? "" : this.newProjectName;
-        if(!this.props.visible) {
-            this.newProjectName = undefined;
-        }
         this.owningUser = this.props.owningUser;
         this.parentGroup = this.props.parentGroup;
 
@@ -159,5 +155,17 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
         {
             this.caption = this.props.caption;
         }
+    }
+
+    setComponentVisible(val: boolean) {
+        this.newProjectName = (val && this.newProjectName === undefined) ? "" : this.newProjectName;
+        if(!val) {
+            this.newProjectName = undefined;
+        }
+        this.forceUpdate();
+    }
+
+    componentWillUnmount() {
+        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
     }
 }

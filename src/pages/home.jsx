@@ -20,6 +20,7 @@ import {
 import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
+import NewGroupPopup from './NewGroupPopup';
 
 export default class extends React.Component {
   constructor(props) {
@@ -27,7 +28,6 @@ export default class extends React.Component {
     this.state = {
       groups: [],
       showProjects: false,
-      searchQR: false,
       home_display_list: []
     };
   }
@@ -39,6 +39,7 @@ export default class extends React.Component {
       <NavTitle sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitle>
       <NavTitleLarge sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitleLarge>
       <NavRight>
+        <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(true)}></Link>
         <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
         <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
       </NavRight>
@@ -114,19 +115,25 @@ export default class extends React.Component {
     </Block>
 
     <QRCodeScanner
-      visible={this.state.searchQR}
       onDecoded={(link) => {
         this.$f7.data.joinGroup(link);
-        this.setState({searchQR: false});
+        this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(false);
       }}
     />
+
+    {(this.$f7.data.getUser() !== undefined) ?
+      <NewGroupPopup
+        owningUser={this.$f7.data.getUser()}
+        onGroupCreated={(group) => { this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(false); this.updateContent(); }}
+      />
+    : ""}
   </Page>
     );
   }
 
   joinGroup() {
     this.$f7.data.resetCameraPermissions();
-    this.setState({searchQR: true});
+    this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(true);
   }
 
   onRemoveGroup(group) {
@@ -207,23 +214,6 @@ export default class extends React.Component {
     } else {
       this.$f7.data.promptLogin();
     }
-
-    var self = this;
-    let panelContent = {
-        caption: "Allgemein",
-        menueItems: [
-          {
-            caption: "Neue Gruppe",
-            onClick: function() { self.$f7.dialog.alert("Neue Gruppe!"); }
-          },
-          {
-            caption: "Zum SVE System einladen",
-            onClick: function() { self.$f7.dialog.alert("Zum SVE System einladen!"); }
-          }
-        ]
-    };
-    console.log("Update context menue");
-    self.$f7.data.updateLeftPanel(panelContent);
   }
 
   componentDidMount() {

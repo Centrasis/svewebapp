@@ -19,7 +19,6 @@ export default class extends React.Component {
       scheduler: null,
       hasCameraPermission: false,
       hasError: false,
-      showNewGroupPopup: false,
       selectedGroup: undefined,
       selectedProject: undefined
     };
@@ -82,7 +81,7 @@ export default class extends React.Component {
               </List>
             </Col>
             <Col style={{width: "10vw"}}>
-              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => this.setState({ showNewGroupPopup: true, selectedGroup: undefined })}></Link>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => { this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(true); this.setState({ selectedGroup: undefined })} }></Link>
             </Col>
             {(this.state.selectedGroup !== undefined) ? 
               <Col style={{width: "10vw"}}>
@@ -104,26 +103,7 @@ export default class extends React.Component {
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
           onGroupCreated={this.newGroupCreated.bind(this)}
-          visible={this.state.showNewGroupPopup}
         />
-
-        {/*<Popup className="docs-pre-view" swipeToClose opened={this.state.documents_toClassify.length > 0} onPopupClosed={() => this.setState({documents_toClassify : []})}>
-          <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
-            <BlockTitle medium>Dokumente klassifizieren</BlockTitle>
-            <Block strong>
-              <List style={{width: "100%"}}>
-                {this.state.documents_toClassify.map((doc) => (
-                  <ListItem
-                    title={doc.name}
-                    onClick={this.onManualClassify.bind(this, doc)}
-                  >
-                    <p slot="after-title">{this.getDocType(doc)}</p>
-                  </ListItem>
-                ))}
-              </List>
-            </Block>
-          </Page>
-        </Popup>*/}
       </Page>
     );
     }
@@ -139,7 +119,7 @@ export default class extends React.Component {
   }
 
   newGroupCreated(g) {
-    this.setState({showNewGroupPopup: false});
+    this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(false);
 
     if (g === undefined)
       return;

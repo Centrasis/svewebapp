@@ -4,8 +4,7 @@ import { SVEGroup, SVEAccount, GroupInitializer } from 'svebaselib';
 
 export type NewGroupPopupSettings = {
     owningUser: SVEAccount,
-    onGroupCreated?: (group?: SVEGroup) => void,
-    visible: boolean
+    onGroupCreated?: (group?: SVEGroup) => void
 };
 
 export default class NewGroupPopup extends React.Component<NewGroupPopupSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
@@ -48,6 +47,14 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         )
     }
 
+    setComponentVisible(val: boolean) {
+        this.newGroupName = (val && this.newGroupName === undefined) ? "" : this.newGroupName;
+        if(!val) {
+            this.newGroupName = undefined;
+        }
+        this.forceUpdate();
+    }
+
     createNewGroup() {
         new SVEGroup({name: this.newGroupName, id: NaN} as GroupInitializer, this.owningUser, (g) => {
           g.store().then(val => {
@@ -66,6 +73,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     componentDidMount() { 
         this.errorMsg = undefined;
+        this.$f7.data.setPopupComponent(this.constructor.name, this);
         this.updateProps();
         this.forceUpdate();
     }
@@ -79,15 +87,15 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     updateProps() {
-        this.newGroupName = (this.props.visible && this.newGroupName === undefined) ? "" : this.newGroupName;
-        if(!this.props.visible) {
-            this.newGroupName = undefined;
-        }
         this.owningUser = this.props.owningUser;
 
         if (this.props.onGroupCreated)
         {
             this.onGroupCreated = this.props.onGroupCreated;
         }
+    }
+
+    componentWillUnmount() {
+        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
     }
 }

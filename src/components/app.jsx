@@ -79,16 +79,14 @@ export default class extends React.Component {
             promptLogin: function() {
               return app.onOpenLogin();
             },
-            getCameraStream: function() {
+            getCameraStream: function(facingUser = false) {
               return new Promise((resolve, reject) => {
-                let facingUser = false;
                 let createStream = () => {
-                  let facingMode = (facingUser) ? "user" : { exact: "environment" }; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
                   let constraints = {
                     audio: false,
-                    video: (app.$f7.device.android || app.$f7.device.ios) ? {
-                      facingMode: facingMode
-                    } : true
+                    video: ((app.$f7.device.android || app.$f7.device.ios) ? {
+                      facingMode: { exact: (facingUser) ? "user" : "environment" }
+                    } : true)
                   };
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     resolve(stream);
@@ -143,6 +141,12 @@ export default class extends React.Component {
                 });
                 toast.open();
               }
+            },
+            getPopupComponent: (name) => {return app.state.popupComponent.get(name)},
+            setPopupComponent: (name, comp) => {
+              let m = app.state.popupComponent;
+              m.set(name, comp);
+              app.setState({popupComponent: m})
             }
           }
         },
@@ -154,6 +158,7 @@ export default class extends React.Component {
           path: '/service-worker.js',
         },
       },
+      popupComponent: new Map(),
       user: undefined,
       hasCameraPermission: false,
       loginMessages: {

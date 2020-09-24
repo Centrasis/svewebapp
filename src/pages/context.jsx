@@ -15,33 +15,11 @@ export default class extends React.Component {
     this.state = {
       group: Number(props.f7route.params.id),
       projects: [],
-      hasCameraPermission: false,
-      cameraType: '',
       projectToEdit: undefined,
       selectedProject: undefined, //desktop version only
-      setCameraType: (t) => {},
-      showCamera: false,
-      showNewGroupPopup: false,
-      showNewProjectPopup: false
     };
   }
   render() {
-    {/*const [hasPermission, setHasPermission] = useState(undefined);
-    const [type, setType] = useState(Camera.Constants.Type.back);
-
-    useEffect(() => {
-      (async () => {
-        const { status } = await Camera.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-      })();
-    }, []);
-    
-    this.setState({
-      hasCameraPermission: hasPermission,
-      cameraType: type,
-      setCameraType: setType
-    });
-    */}
     return (
       <Page name="context" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)}>
         <Navbar title="Urlaube" backLink="Back">
@@ -134,23 +112,20 @@ export default class extends React.Component {
 
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
-          visible={this.state.showNewGroupPopup}
           onGroupCreated={this.onGroupCreated.bind(this)}
         />
 
         <QRCodeScanner
-          visible={this.state.showCamera}
           onDecoded={(link) => {
             this.$f7.data.joinGroup(link);
-            this.setState({showCamera: false});
+            this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(false);
           }}
         />
 
         {(typeof this.state.group !== "number") ? 
           <NewProjectPopup
             owningUser={this.$f7.data.getUser()}
-            visible={this.state.showNewProjectPopup}
-            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.setState({showNewProjectPopup: false, projects: prjs}); })}
+            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(false); this.setState({projects: prjs}); })}
             parentGroup={this.state.group}
             caption="Neuer Urlaub"
           />
@@ -197,12 +172,12 @@ export default class extends React.Component {
   }
 
   onGroupCreated(group) {
-    this.setState({showNewGroupPopup: false});
+    this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(false);
   }
 
   openCamera() {
     this.$f7.data.resetCameraPermissions();
-    this.setState({showCamera: true});
+    this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(true);
     console.log("Open Camera");
   }
 
@@ -220,7 +195,7 @@ export default class extends React.Component {
             menueItems: [
               {
                 caption: "Neuer Urlaub",
-                onClick: function() { self.setState({showNewProjectPopup: true}) }
+                onClick: function() { self.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(true); }
               },
               {
                 caption: "Einladen",
@@ -228,7 +203,7 @@ export default class extends React.Component {
               },
               {
                 caption: "Neue Gruppe",
-                onClick: function() { self.setState({showNewGroupPopup: true}) }
+                onClick: function() { self.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(true); }
               },
               {
                 caption: "Mitglieder",

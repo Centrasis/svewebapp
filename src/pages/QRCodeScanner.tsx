@@ -3,7 +3,6 @@ import React from 'react';
 import { Block, Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
 
 export type QRCodeScannerSettings = {
-    visible: boolean,
     onDecoded: (result: string) => void
 };
 
@@ -61,15 +60,18 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
         }
     }
 
+    setComponentVisible(val: boolean) {
+        this.visible = val;
+        this.forceUpdate();
+    }
+
     componentWillUpdate() {
-        this.visible = this.props.visible;
         var self = this;
         this.$f7ready((f7) => {
             self.setupCamera();
         });
     }
     componentDidUpdate() {
-        this.visible = this.props.visible;
         var self = this;
         this.$f7ready((f7) => {
             self.setupCamera();
@@ -77,12 +79,16 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     componentDidMount() {
-        this.visible = this.props.visible;
+        this.$f7.data.setPopupComponent(this.constructor.name, this);
         this.onDecoded = this.props.onDecoded;
         var self = this;
         this.$f7ready((f7) => {
             self.setupCamera();
             self.forceUpdate();
         });
+    }
+
+    componentWillUnmount() {
+        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
     }
 }
