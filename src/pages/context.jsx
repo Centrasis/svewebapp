@@ -54,61 +54,6 @@ export default class extends React.Component {
             <ListItem link="#" popoverClose={true} title="Löschen" style={{color: "#FF1111"}} onClick={this.onRemoveProject.bind(this, this.state.selectedProject, true)}/>
           </List>
         </Popover>
-        
-        <Popup className="project-edit" swipeToClose opened={(this.state.projectToEdit != undefined)} onPopupClosed={() => this.setState({projectToEdit: undefined})}>
-          <Page style={{display: "flex", alignContent: "center", justifyContent: "center", WebkitAlignContent: "center", WebkitAlignSelf: "center"}}>
-            <BlockHeader large>{(this.state.projectToEdit != undefined) ? this.state.projectToEdit.getName() : "Undefined"}&nbsp;bearbeiten</BlockHeader>
-            <Block>
-              <List>
-                <ListInput
-                  label="Name"
-                  type="text"
-                  placeholder={(this.state.projectToEdit != undefined) ? this.state.projectToEdit.getName() : ""}
-                  value={(this.state.projectToEdit != undefined) ? this.state.projectToEdit.getName() : ""}
-                  onInput={(e) => {
-                    var old = this.state.projectToEdit;
-                    old.name = e.target.value;
-                    this.setState({ projectToEdit: old});
-                  }}
-                ></ListInput>
-                {(this.state.projectToEdit != undefined && this.state.projectToEdit.getDateRange() !== undefined) ? (
-                  <ListInput
-                  label="Urlaubsbeginn"
-                  type="date"
-                  placeholder={this.state.projectToEdit.getDateRange().begin.toLocaleDateString()}
-                  defaultValue={this.state.projectToEdit.getDateRange().begin.toLocaleDateString()}
-                  onInput={(e) => {
-                      var old = this.state.projectToEdit;
-                      old.begin_point = e.target.value;
-                      console.log("Set new begin date: " + JSON.stringify(old));
-                      this.setState({ projectToEdit: old});
-                    }}
-                  ></ListInput>
-                ) : (
-                  <ListItem>---</ListItem>
-                )}
-                {(this.state.projectToEdit != undefined && this.state.projectToEdit.getDateRange() !== undefined) ? (
-                  <ListInput
-                  label="Urlaubsende"
-                  type="date"
-                  placeholder={this.state.projectToEdit.getDateRange().end.toLocaleDateString()}
-                  defaultValue={this.state.projectToEdit.getDateRange().end.toLocaleDateString()}
-                  onInput={(e) => {
-                      var old = this.state.projectToEdit;
-                      old.end_point = e.target.value;
-                      this.setState({ projectToEdit: old});
-                    }}
-                ></ListInput>
-                ) : ''}
-              </List>
-            </Block>
-            <Block strong mediumInset>
-              <Row tag="p">
-                <Button className="col" raised fill onClick={this.applyProjectEdit.bind(this)}>Übernehmen</Button>
-              </Row>
-            </Block>
-          </Page>
-        </Popup>
 
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
@@ -127,7 +72,8 @@ export default class extends React.Component {
             owningUser={this.$f7.data.getUser()}
             onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(false); this.setState({projects: prjs}); })}
             parentGroup={this.state.group}
-            caption="Neuer Urlaub"
+            caption={(this.state.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.state.selectedProject.getName()}
+            projectToEdit={this.state.selectedProject}
           />
         : ""}
       </Page>
@@ -150,6 +96,7 @@ export default class extends React.Component {
 
   onShowEdit(prj) {
     this.setState({ projectToEdit: prj});
+    this.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(true);
   }
 
   desktopOpenDetails(prj) {
