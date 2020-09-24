@@ -36,7 +36,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{justifyContent: "center", alignContent: "center"}} inset={(!this.$f7.device.android && !this.$f7.device.ios)} strong>
-          <List style={(this.$f7.device.android ||this.$f7.device.ios) ? {width: "50vw"} : {}}>
+          <List style={(this.$f7.device.android || this.$f7.device.ios) ? {} : {width: "50vw"}}>
             <ListInput
               label="Dokumentengruppe"
               type="select"
