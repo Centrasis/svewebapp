@@ -35,7 +35,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-          <Row style={{justifyContent: "center", alignContent: "center"}}>
+          <Block style={{justifyContent: "center", alignContent: "center"}} inset strong>
             <List style={{width: "50vw"}}>
               <ListInput
                 label="Dokumentengruppe"
@@ -61,8 +61,8 @@ export default class extends React.Component {
                 ))}
               </ListInput>
             </List>
-          </Row>
-          <Row style={{justifyContent: "center", alignContent: "center"}}>
+          </Block>
+          <Block style={{justifyContent: "center", alignContent: "center"}} largeInset strong>
             {(this.state.selectedProject !== undefined) ? 
               <CameraDropzone 
                 project={this.state.selectedProject}
@@ -72,7 +72,7 @@ export default class extends React.Component {
                 <BlockTitle>Wähle eine Gruppe</BlockTitle>
               </Block>
             }
-          </Row>
+          </Block>
         </Block>
 
         <NewGroupPopup
