@@ -36,7 +36,7 @@ export default class extends React.Component {
         </Navbar> 
 
         <Block style={{justifyContent: "center", alignContent: "center", width: "100vw"}} strong>
-          <List style={{width: "1000px"}}>
+          <List>
             <ListInput
               label="Dokumentengruppe"
               type="select"
@@ -67,7 +67,7 @@ export default class extends React.Component {
                 <option value={doc.getID()}>{doc.getName()}</option>
               ))}
             </ListInput>
-            <ListItem>
+            <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
                 {(this.state.selectedProject !== undefined) ? 
                   <CameraDropzone 
                     id="CameraDropzone"
