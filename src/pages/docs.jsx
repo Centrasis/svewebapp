@@ -37,9 +37,9 @@ export default class extends React.Component {
 
         <Block style={{justifyContent: "center", alignContent: "center"}} inset={(!this.$f7.device.android && !this.$f7.device.ios)} strong>
           <Row>
-          <Col style={(!this.$f7.device.android && !this.$f7.device.ios) ? {width: "25vw"} : {width: "0"}}></Col>
-          <Col style={(!this.$f7.device.android && !this.$f7.device.ios) ? {width: "50vw"} : {}}>
-            <List style={(this.$f7.device.android || this.$f7.device.ios) ? {} : {width: "50vw"}}>
+          <Col style={{width: "0"}}></Col>
+          <Col>
+            <List>
               <ListInput
                 label="Dokumentengruppe"
                 type="select"
@@ -78,7 +78,7 @@ export default class extends React.Component {
                       project={this.state.selectedProject}
                       maxParallelUploads={1}
                       onImageUploaded={this.classifyImage.bind(this)}
-                      style={(this.$f7.device.android || this.$f7.device.ios) ? {width: "90vw"} : {}}
+                      style={{width: "90vw"}}
                     />
                   :
                     <Block largeInset strong style={{height: "20vh"}}>
@@ -89,7 +89,7 @@ export default class extends React.Component {
               </ListItem>
             </List>
             </Col>
-            <Col style={(!this.$f7.device.android && !this.$f7.device.ios) ? {width: "25vw"} : {width: "0"}}></Col>
+            <Col style={{width: "0"}}></Col>
           </Row>
         </Block>
 
