@@ -44,6 +44,9 @@ export default class extends React.Component {
                 smartSelectParams={{openIn: 'sheet'}}
                 value={this.state.selectedGroup}
                 onInput={(e) => {
+                  if (isNaN(e.target.value)) {
+                    this.setState({selectedProject: undefined});
+                  } else {
                     new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
                       this.setState({ selectedGroup: g });
                       g.getProjects().then(ps => {
@@ -54,8 +57,10 @@ export default class extends React.Component {
                         }
                       });
                     });
+                  }
                 }}
               >
+                <option value={NaN}>Wähle</option>
                 {this.state.documentGroups.map(doc => (
                   <option value={doc.getID()}>{doc.getName()}</option>
                 ))}
@@ -127,9 +132,7 @@ export default class extends React.Component {
   }
 
   updateGroupsList() {
-    console.log("Start update of docs groups list");
     SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(groups => {
-      console.log("Found groups: " + groups.length);
       let groupsWithOnlyDocs = [];
       let i = 0;
       groups.forEach(g => {

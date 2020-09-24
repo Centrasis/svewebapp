@@ -90,6 +90,8 @@ export default class extends React.Component {
                   let constraints = {
                     audio: false,
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
+                      width: { min: 1280, ideal: 4096, max: 4096 },
+                      height: { min: 720, ideal: 2160, max: 2160 },
                       facingMode: { exact: (facingUser === true) ? "user" : "environment" }
                     } : true)
                   };
