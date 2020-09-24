@@ -79,7 +79,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     componentDidMount() {
-        this.$f7.data.setPopupComponent(this.constructor.name, this);
+        this.$f7.data.setPopupComponent(QRCodeScanner, this);
         this.onDecoded = this.props.onDecoded;
         var self = this;
         this.$f7ready((f7) => {
@@ -89,6 +89,6 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
+        this.$f7.data.setPopupComponent(QRCodeScanner, undefined);
     }
 }

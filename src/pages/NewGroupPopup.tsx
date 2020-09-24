@@ -75,7 +75,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.$f7.data.setPopupComponent(this.constructor.name, this);
+        this.$f7.data.setPopupComponent(NewGroupPopup, this);
         this.updateProps();
         this.forceUpdate();
     }
@@ -103,6 +103,6 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
+        this.$f7.data.setPopupComponent(NewGroupPopup, undefined);
     }
 }

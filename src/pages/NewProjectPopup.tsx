@@ -131,7 +131,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.$f7.data.setPopupComponent(this.constructor.name, this);
+        this.$f7.data.setPopupComponent(NewProjectPopup, this);
         this.updateProps();
         this.forceUpdate();
     }
@@ -180,6 +180,6 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent(this.constructor.name, undefined);
+        this.$f7.data.setPopupComponent(NewProjectPopup, undefined);
     }
 }
