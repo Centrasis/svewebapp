@@ -125,7 +125,9 @@ export default class extends React.Component {
   }
 
   updateGroupsList() {
+    console.log("Start update of docs groups list");
     SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(groups => {
+      console.log("Found groups: " + groups.length);
       let groupsWithOnlyDocs = [];
       let i = 0;
       groups.forEach(g => {
@@ -155,7 +157,7 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      this.updateGroupsList();
+      self.updateGroupsList();
     });
   }
   
