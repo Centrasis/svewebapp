@@ -9,9 +9,7 @@ import * as crypto from 'crypto';
 
 export default class CameraDropzone extends UploadDropzone {
     render () {   
-        return (
-            <Block style={{justifyContent: "center", alignContent: "center"}}>
-                {(this.$f7.data.hasCameraPermission()) ? 
+        return (this.$f7.data.hasCameraPermission()) ? (
                     <div style={{justifyContent: "center", alignContent: "center"}}>
                         <video
                             style={{width: "100%", height: "100%"}}
@@ -25,7 +23,8 @@ export default class CameraDropzone extends UploadDropzone {
                             <Button fill round style={{width: "50%", left: "25%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
-                :
+                )
+                : (
                     <div style={{justifyContent: "center", alignContent: "center"}}>
                         <Dropzone onDrop={acceptedFiles => { this.onAcceptMedia(acceptedFiles) }}>
                         {({getRootProps, getInputProps}) => (
@@ -50,9 +49,7 @@ export default class CameraDropzone extends UploadDropzone {
                             <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
                         </div>
                     </div>
-                }
-            </Block>
-        )
+                )
     }
 
     reactivateCamera() {
