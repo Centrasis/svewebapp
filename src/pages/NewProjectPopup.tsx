@@ -6,10 +6,12 @@ export type NewProjectPopupSettings = {
     owningUser: SVEAccount,
     parentGroup: SVEGroup,
     onProjectCreated?: (prj?: SVEProject) => void,
-    caption?: string
+    caption?: string,
+    projectToEdit?: SVEProject
 };
 
 export default class NewProjectPopup extends React.Component<NewProjectPopupSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
+    protected oldProject?: SVEProject = undefined;
     protected newProjectName: string = undefined;
     protected owningUser: SVEAccount = undefined;
     protected parentGroup: SVEGroup = undefined;
@@ -103,12 +105,12 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
             this.forceUpdate();
         } else {
             new SVEProject({
-                id: NaN,
+                id: (this.oldProject !== undefined) ? this.oldProject.getID() : NaN,
                 name: this.newProjectName,
                 group: this.parentGroup,
-                splashImg: 0,
+                splashImg: (this.oldProject !== undefined) ? this.oldProject.getSplashImgID() : 0,
                 owner: this.owningUser,
-                state: SVEProjectState.Open,
+                state: (this.oldProject !== undefined) ? this.oldProject.getState() : SVEProjectState.Open,
                 resultsURI: "",
                 type: this.projectType,
                 dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: this.beginDate, end: this.endDate} : undefined
@@ -155,10 +157,22 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
         {
             this.caption = this.props.caption;
         }
+
+        if (this.props.projectToEdit)
+        {
+            this.oldProject = this.props.projectToEdit;
+            this.parentGroup = this.oldProject!.getGroup();
+            if(this.oldProject.getDateRange() !== undefined) {
+                this.beginDate = this.oldProject.getDateRange().begin;
+                this.endDate = this.oldProject.getDateRange().end;
+                this.projectType = this.oldProject.getType();
+                this.oldProject.getOwner().then(owner => this.owningUser = owner);
+            }
+        }
     }
 
     setComponentVisible(val: boolean) {
-        this.newProjectName = (val && this.newProjectName === undefined) ? "" : this.newProjectName;
+        this.newProjectName = (val && this.newProjectName === undefined) ? ((this.oldProject !== undefined) ? this.oldProject.getName() : "") : this.newProjectName;
         if(!val) {
             this.newProjectName = undefined;
         }
