@@ -90,9 +90,10 @@ export default class extends React.Component {
                   let constraints = {
                     audio: false,
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
-                      facingMode: { exact: (facingUser) ? "user" : "environment" }
+                      facingMode: { exact: (facingUser === true) ? "user" : "environment" }
                     } : true)
                   };
+                  console.log("Request camera stream: " + JSON.stringify(constraints));
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     resolve(stream);
                   }, (err) => reject(err));

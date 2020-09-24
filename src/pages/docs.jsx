@@ -60,18 +60,20 @@ export default class extends React.Component {
                   <option value={doc.getID()}>{doc.getName()}</option>
                 ))}
               </ListInput>
+              <ListItem>
+                <Block style={{justifyContent: "center", alignContent: "center"}} largeInset strong>
+                  {(this.state.selectedProject !== undefined) ? 
+                    <CameraDropzone 
+                      project={this.state.selectedProject}
+                    />
+                  :
+                    <Block largeInset strong style={{height: "20vh"}}>
+                      <BlockTitle>Wähle eine Gruppe</BlockTitle>
+                    </Block>
+                  }
+                </Block>
+              </ListItem>
             </List>
-          </Block>
-          <Block style={{justifyContent: "center", alignContent: "center"}} largeInset strong>
-            {(this.state.selectedProject !== undefined) ? 
-              <CameraDropzone 
-                project={this.state.selectedProject}
-              />
-            :
-              <Block largeInset strong>
-                <BlockTitle>Wähle eine Gruppe</BlockTitle>
-              </Block>
-            }
           </Block>
         </Block>
 
