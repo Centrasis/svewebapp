@@ -70,6 +70,8 @@ export default class extends React.Component {
                   {(this.state.selectedProject !== undefined) ? 
                     <CameraDropzone 
                       project={this.state.selectedProject}
+                      maxParallelUploads={1}
+                      onImageUploaded={this.classifyImage.bind(this)}
                     />
                   :
                     <Block largeInset strong style={{height: "20vh"}}>
@@ -89,6 +91,15 @@ export default class extends React.Component {
       </Page>
     );
 }
+
+  classifyImage(img) {
+    this.$f7.toast.create({
+      icon: '<i class="f7-icons">tray_arrow_up_fill</i>',
+      text: 'Archiviert!',
+      position: 'center',
+      closeTimeout: 1000,
+    }).open();
+  }
 
   removeCurrentGroup() {
     this.state.selectedGroup.remove().then(val => {
