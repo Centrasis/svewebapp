@@ -180,6 +180,10 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
+      self.$f7.data.addLoginHook(() => {
+        self.updateGroupsList();
+      });
+
       self.updateGroupsList();
     });
   }
