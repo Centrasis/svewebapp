@@ -28,6 +28,10 @@ export default class extends React.Component {
       return (
         <Page name="docs">
           <Navbar title="SVE Docs">
+          <NavRight>
+            <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true)}></Link>
+            <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
+          </NavRight>
           </Navbar> 
           <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
             <BlockTitle>Es ist ein Fehler aufgetreten!</BlockTitle>

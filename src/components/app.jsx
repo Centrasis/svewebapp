@@ -28,7 +28,6 @@ import {
 import Dom7 from 'dom7';
 import routes from '../js/routes';
 import {SVESystemInfo, SVEAccount, LoginState} from 'svebaselib';
-import BlockComponent from 'framework7/components/block/block';
 
 export default class extends React.Component {
   constructor() {
@@ -567,14 +566,16 @@ export default class extends React.Component {
   }
 
   onOpenLogin() {
-    this.$f7.loginScreen.close();
-    if(this.state.routerParams.has("token")) {
-      let lData = this.state.loginData;
-      lData.joinToken = this.state.routerParams.get("token");
-      this.setState({loginData: lData});
+    if(this.state.openOverlay !== "login-screen") {
+      this.$f7.loginScreen.close();
+      if(this.state.routerParams.has("token")) {
+        let lData = this.state.loginData;
+        lData.joinToken = this.state.routerParams.get("token");
+        this.setState({loginData: lData});
+      }
+      this.$f7.loginScreen.open("#login-screen");
+      this.setState({openOverlay: "login-screen"});
     }
-    this.$f7.loginScreen.open("#login-screen");
-    this.setState({openOverlay: "login-screen"});
   }
 
   parseLink() {
@@ -597,9 +598,19 @@ export default class extends React.Component {
             this.onOpenLogin();
           }
         } else {
+          if (params.get("page") === "404") {
+            this.$f7.loginScreen.close();
+            this.setState({openOverlay: ""});
+          }
           this.$f7.view.current.router.navigate("/" + params.get("page") + "/");
         }
       }
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.user === undefined) {
+      this.onOpenLogin();
     }
   }
 
@@ -615,6 +626,8 @@ export default class extends React.Component {
           () => {}
         );
       }
+
+      self.onOpenLogin();
 
       SVESystemInfo.getFullSystemState().then(state => {
         if(state.user === undefined) {

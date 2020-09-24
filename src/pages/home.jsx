@@ -212,7 +212,7 @@ export default class extends React.Component {
         self.setState({home_display_list: list});
       }, err => this.$f7.dialog.alert("Can't fetch groups from server!", "Server down!"));
     } else {
-      this.$f7.data.promptLogin();
+      //this.$f7.data.promptLogin();
     }
   }
 

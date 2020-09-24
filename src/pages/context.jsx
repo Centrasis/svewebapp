@@ -16,6 +16,7 @@ export default class extends React.Component {
       group: Number(props.f7route.params.id),
       projects: [],
       projectToEdit: undefined,
+      selectedGroup: undefined,
       selectedProject: undefined, //desktop version only
     };
   }
@@ -58,6 +59,7 @@ export default class extends React.Component {
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
           onGroupCreated={this.onGroupCreated.bind(this)}
+          groupToEdit={this.state.selectedGroup}
         />
 
         <QRCodeScanner
@@ -119,6 +121,7 @@ export default class extends React.Component {
   }
 
   onGroupCreated(group) {
+    this.setState({selectedGroup: undefined});
     this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(false);
   }
 
@@ -151,6 +154,10 @@ export default class extends React.Component {
               {
                 caption: "Neue Gruppe",
                 onClick: function() { self.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true); }
+              },
+              {
+                caption: "Gruppe bearbeiten",
+                onClick: function() { self.setState({selectedGroup: self.state.group}); self.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true); }
               },
               {
                 caption: "Mitglieder",
