@@ -39,10 +39,10 @@ export default class CameraDropzone extends UploadDropzone {
                             muted
                             id={this.props.id + "-camera-input"}
                         >
-                            <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                                <Button fill round onClick={this.takePicture.bind(this)}>Scan</Button>
-                            </div>
                         </video>
+                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                            <Button fill round style={{width: "50%", minWidth: "500px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
+                        </div>
                     </div>
                 :
                     <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
