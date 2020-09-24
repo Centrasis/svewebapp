@@ -27,7 +27,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                             id={this.props.id + "-camera-input"}
                         />
                     : 
-                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                        <div style={{position: "relative", width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
                             <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
                         </div>
                     }
