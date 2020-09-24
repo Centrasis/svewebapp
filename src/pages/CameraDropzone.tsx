@@ -32,13 +32,15 @@ export default class CameraDropzone extends UploadDropzone {
                 {(this.$f7.data.hasCameraPermission()) ? 
                     <div style={{justifyContent: "center", alignContent: "center", zIndex: 9, margin: "20px", width: "100%", height: "100%", position: "absolute", top: "0", left: "0", background: "transparent"}}>
                         <video
-                            style={{position: "absolute", margin: "10%", width: "90%", height: "90%", top: "5%", left: "5%"}}
+                            style={{margin: "5%", width: "90%", height: "90%"}}
                             playsInline
                             autoPlay
                             muted
-                            id="camera-input"
+                            id={this.props.id + "-camera-input"}
                         />
-                        <Button raisedIos style={{bottom: "0px", marginBottom: "0px", margin: "auto"}} onClick={this.takePicture.bind(this)}>Scan</Button>
+                        <div style={{position: "absolute", zIndex: 11, top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                            <Button raisedIos onClick={this.takePicture.bind(this)}>Scan</Button>
+                        </div>
                     </div>
                 :
                     <img 
@@ -52,7 +54,7 @@ export default class CameraDropzone extends UploadDropzone {
     }
 
     takePicture() {
-        let elem = document.getElementById("camera-input") as HTMLVideoElement;
+        let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
         let track = (elem.srcObject as MediaStream).getVideoTracks()[0];
         let imageCapture = new ImageCapture(track);
         imageCapture.takePhoto().then((blob: Blob) => {
@@ -63,7 +65,7 @@ export default class CameraDropzone extends UploadDropzone {
     
     setupCamera() {
         this.$f7.data.getCameraStream().then((stream: MediaStream) => {
-          let elem = document.getElementById("camera-input") as HTMLVideoElement;
+          let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
           elem.srcObject = stream;
           elem.play();
           elem.onloadedmetadata = function(e) {
@@ -73,7 +75,7 @@ export default class CameraDropzone extends UploadDropzone {
     }
 
     stopCamera() {
-        let elem = document.getElementById("camera-input") as HTMLVideoElement;
+        let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
         elem.pause();
         if (elem.srcObject !== undefined) {
             (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());

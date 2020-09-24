@@ -115,6 +115,7 @@ export default class extends React.Component {
     </Block>
 
     <QRCodeScanner
+      id="QRScanner"
       onDecoded={(link) => {
         this.$f7.data.joinGroup(link);
         this.$f7.data.getPopupComponent(QRCodeScanner).setComponentVisible(false);

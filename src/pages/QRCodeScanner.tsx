@@ -23,7 +23,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                             playsInline
                             autoPlay
                             muted
-                            id="camera-input"
+                            id={this.props.id + "-camera-input"}
                         />
                     </Block>
                 </Page>
@@ -32,7 +32,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     stopCamera() {
-        let elem = document.getElementById("camera-input") as HTMLVideoElement;
+        let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
         elem.pause();
         if (elem.srcObject !== undefined) {
             (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
@@ -44,7 +44,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
         if (!this.cameraActive) {
             this.cameraActive = true;
             this.$f7.data.getCameraStream().then((stream: MediaStream) => {
-                let elem = document.getElementById("camera-input") as HTMLVideoElement;
+                let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
                 elem.srcObject = stream;
                 elem.play();
                 var self = this;

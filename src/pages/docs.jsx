@@ -73,6 +73,7 @@ export default class extends React.Component {
                 <Block style={{justifyContent: "center", alignContent: "center"}} inset strong>
                   {(this.state.selectedProject !== undefined) ? 
                     <CameraDropzone 
+                      id="CameraDropzone"
                       project={this.state.selectedProject}
                       maxParallelUploads={1}
                       onImageUploaded={this.classifyImage.bind(this)}
