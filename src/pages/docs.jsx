@@ -78,6 +78,7 @@ export default class extends React.Component {
                       project={this.state.selectedProject}
                       maxParallelUploads={1}
                       onImageUploaded={this.classifyImage.bind(this)}
+                      style={(this.$f7.device.android || this.$f7.device.ios) ? {width: "90vw"} : {}}
                     />
                   :
                     <Block largeInset strong style={{height: "20vh"}}>
