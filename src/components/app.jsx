@@ -124,7 +124,7 @@ export default class extends React.Component {
               app.state.hasCameraPermission = undefined;
               app.setState({hasCameraPermission: undefined});
             },
-            joinGroup: (link) => {
+            joinGroup: function(link) {
               if (link.includes("felixlehner.de") && (link.includes("token=") || link.includes("redirectProject="))) {
                 let toast = app.$f7.toast.create({
                   text: "Beitrittslink gefunden",
@@ -147,8 +147,10 @@ export default class extends React.Component {
                 toast.open();
               }
             },
-            getPopupComponent: (name) => {return app.state.popupComponent.get(name)},
-            setPopupComponent: (name, comp) => {
+            getPopupComponent: function(name) {
+              return app.state.popupComponent.get(name)
+            },
+            setPopupComponent: function(name, comp) {
               let m = app.state.popupComponent;
               m.set(name, comp);
               app.setState({popupComponent: m})
