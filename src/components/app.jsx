@@ -21,7 +21,8 @@ import {
   NavTitle,
   NavTitleLarge,
   Block,
-  BlockTitle
+  BlockTitle,
+  NavRight
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
