@@ -16,6 +16,7 @@ export default class extends React.Component {
 
     this.state = {
       documentGroups: [],
+      selectedGroupID: NaN,
       tesseractThreads: 2,
       scheduler: null,
       hasCameraPermission: false,
@@ -42,8 +43,9 @@ export default class extends React.Component {
                 type="select"
                 smartSelect
                 smartSelectParams={{openIn: 'sheet'}}
-                value={this.state.selectedGroup}
+                value={this.state.selectedGroupID}
                 onInput={(e) => {
+                  this.setState({selectedGroupID: e.target.value});
                   if (isNaN(e.target.value)) {
                     this.setState({selectedProject: undefined});
                   } else {
@@ -54,6 +56,7 @@ export default class extends React.Component {
                           this.setState({selectedProject: ps[0]});
                         } else {
                           this.setState({selectedProject: undefined});
+                          this.setState({selectedGroupID: NaN});
                         }
                       });
                     });
