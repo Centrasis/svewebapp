@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 export default class CameraDropzone extends UploadDropzone {
     render () {   
         return (this.$f7.data.hasCameraPermission()) ? (
-                    <div style={{justifyContent: "center", alignContent: "center"}}>
+                    <div>
                         <video
                             style={{width: "100%", height: "100%"}}
                             playsInline
@@ -25,7 +25,7 @@ export default class CameraDropzone extends UploadDropzone {
                     </div>
                 )
                 : (
-                    <div style={{justifyContent: "center", alignContent: "center"}}>
+                    <div>
                         <Dropzone onDrop={acceptedFiles => { this.onAcceptMedia(acceptedFiles) }}>
                         {({getRootProps, getInputProps}) => (
                             <section style={{
