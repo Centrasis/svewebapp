@@ -63,7 +63,7 @@ export default class CameraDropzone extends UploadDropzone {
         let imageCapture = new ImageCapture(track);
         imageCapture.takePhoto().then((blob: Blob) => {
           console.log("Took photo!");
-          let name = ((+new Date()) + Math.random()* 100).toString(32)
+          let name = ((+new Date()) + Math.random()* 100).toString(32);
           this.onAcceptMedia([new File([blob], "ScanPhoto_" + name +".png")]);
         });
     }
