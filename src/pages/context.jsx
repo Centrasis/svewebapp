@@ -70,7 +70,7 @@ export default class extends React.Component {
         {(typeof this.state.group !== "number") ? 
           <NewProjectPopup
             owningUser={this.$f7.data.getUser()}
-            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(false); this.setState({projects: prjs}); })}
+            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent(NewProjectPopup.constructor.name).setComponentVisible(false); this.setState({projectToEdit: undefined, projects: prjs}); })}
             parentGroup={this.state.group}
             caption={(this.state.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.state.selectedProject.getName()}
             projectToEdit={this.state.selectedProject}
