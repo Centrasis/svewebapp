@@ -35,7 +35,7 @@ export default class extends React.Component {
           </NavRight>
         </Navbar> 
 
-        <Block style={{justifyContent: "center", alignContent: "center"}} inset={(!this.$f7.device.android && !this.$f7.device.ios)} strong>
+        <Block style={{justifyContent: "center", alignContent: "center"}} strong>
           <Row>
           <Col style={{width: "0"}}></Col>
           <Col>
