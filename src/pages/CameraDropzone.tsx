@@ -5,6 +5,7 @@ import { SVEProject, SVESystemInfo, SVEData } from 'svebaselib';
 import { Block, Button } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import { ImageCapture } from 'image-capture/src/imagecapture';
+import * as crypto from 'crypto';
 
 export default class CameraDropzone extends UploadDropzone {
     render () {   
@@ -63,8 +64,9 @@ export default class CameraDropzone extends UploadDropzone {
         let imageCapture = new ImageCapture(track);
         imageCapture.takePhoto().then((blob: Blob) => {
           console.log("Took photo!");
-          let name = ((+new Date()) + Math.random()* 100).toString(32);
-          this.onAcceptMedia([new File([blob], "ScanPhoto_" + name +".png")]);
+          let name = new Date().toISOString();
+          name = crypto.createHash('sha1').update(name).digest('hex');
+          this.onAcceptMedia([new File([blob], "ScanPhoto_" + name + ".png")]);
         });
     }
     
