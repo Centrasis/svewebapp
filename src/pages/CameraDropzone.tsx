@@ -10,18 +10,18 @@ import * as crypto from 'crypto';
 export default class CameraDropzone extends UploadDropzone {
     render () {   
         return (
-            <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+            <Block style={{justifyContent: "center", alignContent: "center"}}>
                 {(this.$f7.data.hasCameraPermission()) ? 
-                    <div style={{justifyContent: "center", alignContent: "center", margin: "20px", width: "100%", height: "100%", minWidth: "800px"}}>
+                    <div style={{justifyContent: "center", alignContent: "center"}}>
                         <video
-                            style={{width: "100%", height: "100%", minWidth: "800px"}}
+                            style={{width: "100%", height: "100%", minWidth: "50vw"}}
                             playsInline
                             autoPlay
                             muted
                             id={this.props.id + "-camera-input"}
                         >
                         </video>
-                        <div style={{position: "absolute", zIndex: 9, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                        <div style={{position: "relative", width: "100%", display: "grid", alignContent: "end"}}>
                             <Button fill round style={{width: "50%", left: "25%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
