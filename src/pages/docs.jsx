@@ -45,7 +45,6 @@ export default class extends React.Component {
                 smartSelectParams={{openIn: 'sheet'}}
                 value={this.state.selectedGroupID}
                 onInput={(e) => {
-                  console.log("Select: " + e.target.value);
                   this.setState({selectedGroupID: e.target.value});
                   if (isNaN(e.target.value)) {
                     this.setState({selectedProject: undefined});

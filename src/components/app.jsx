@@ -96,7 +96,8 @@ export default class extends React.Component {
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
                       width: { min: 1280, ideal: 4096, max: 4096 },
                       height: { min: 720, ideal: 2160, max: 2160 },
-                      facingMode: { exact: (facingUser === true) ? "user" : "environment" }
+                      facingMode: { exact: (facingUser === true) ? "user" : "environment" },
+                      deviceId: { exact: (facingUser === true) ? "user" : "environment" }
                     } : true)
                   };
                   console.log("Request camera stream: " + JSON.stringify(constraints));
