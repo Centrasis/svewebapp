@@ -61,7 +61,7 @@ export default class extends React.Component {
                 ))}
               </ListInput>
               <ListItem>
-                <Block style={{justifyContent: "center", alignContent: "center"}} largeInset strong>
+                <Block style={{justifyContent: "center", alignContent: "center"}} inset strong>
                   {(this.state.selectedProject !== undefined) ? 
                     <CameraDropzone 
                       project={this.state.selectedProject}
