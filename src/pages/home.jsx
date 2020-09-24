@@ -39,7 +39,7 @@ export default class extends React.Component {
       <NavTitle sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitle>
       <NavTitleLarge sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitleLarge>
       <NavRight>
-        <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(true)}></Link>
+        <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true)}></Link>
         <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
         <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
       </NavRight>
@@ -117,14 +117,14 @@ export default class extends React.Component {
     <QRCodeScanner
       onDecoded={(link) => {
         this.$f7.data.joinGroup(link);
-        this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(false);
+        this.$f7.data.getPopupComponent(QRCodeScanner).setComponentVisible(false);
       }}
     />
 
     {(this.$f7.data.getUser() !== undefined) ?
       <NewGroupPopup
         owningUser={this.$f7.data.getUser()}
-        onGroupCreated={(group) => { this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(false); this.updateContent(); }}
+        onGroupCreated={(group) => { this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(false); this.updateContent(); }}
       />
     : ""}
   </Page>
@@ -133,7 +133,7 @@ export default class extends React.Component {
 
   joinGroup() {
     this.$f7.data.resetCameraPermissions();
-    this.$f7.data.getPopupComponent(QRCodeScanner.constructor.name).setComponentVisible(true);
+    this.$f7.data.getPopupComponent(QRCodeScanner).setComponentVisible(true);
   }
 
   onRemoveGroup(group) {

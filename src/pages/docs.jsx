@@ -81,7 +81,7 @@ export default class extends React.Component {
               </List>
             </Col>
             <Col style={{width: "10vw"}}>
-              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => { this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(true); this.setState({ selectedGroup: undefined })} }></Link>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe" onClick={() => { this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true); this.setState({ selectedGroup: undefined })} }></Link>
             </Col>
             {(this.state.selectedGroup !== undefined) ? 
               <Col style={{width: "10vw"}}>
@@ -119,7 +119,7 @@ export default class extends React.Component {
   }
 
   newGroupCreated(g) {
-    this.$f7.data.getPopupComponent(NewGroupPopup.constructor.name).setComponentVisible(false);
+    this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(false);
 
     if (g === undefined)
       return;

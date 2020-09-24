@@ -163,7 +163,7 @@ export default class extends React.Component {
           path: '/service-worker.js',
         },
       },
-      hasError: {
+      error: {
         has: false,
         msg: ""
       },
@@ -198,7 +198,7 @@ export default class extends React.Component {
     }
   }
   render() {
-    return (this.state.hasError.has) ? (
+    return (this.state.error.has) ? (
       <App params={ this.state.f7params } themeDark>
         <View>
           <Page>
@@ -206,14 +206,14 @@ export default class extends React.Component {
               <NavTitle sliding>Ein kritischer Fehler trat auf!</NavTitle>
               <NavTitleLarge sliding>Ein kritischer Fehler trat auf!</NavTitleLarge>
               <NavRight>
-                <Link external iconF7="text_bubble" tooltip="Fehler melden" href={"mailto:info@felixlehner.de?subject=Webseitenfehler&body=Fehler%20trat%20auf%3A%0D%0A" + this.state.hasError.msg} />
+                <Link external iconF7="text_bubble" tooltip="Fehler melden" href={"mailto:info@felixlehner.de?subject=Webseitenfehler&body=Fehler%20trat%20auf%3A%0D%0A" + this.state.error.msg} />
                 <Link iconF7="tornado" tooltip="Fehler auflösen" onClick={() => window.location.reload()} />
               </NavRight>
             </Navbar>
             <Block>
               <BlockTitle>Fehler Details:</BlockTitle>
               <Block strong inset>
-                {this.state.hasError.msg}
+                {this.state.error.msg}
               </Block>
             </Block>
           </Page>
@@ -443,7 +443,7 @@ export default class extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    return {hasError: {
+    return {error: {
       has: true,
       msg: JSON.stringify(error)
     }};
