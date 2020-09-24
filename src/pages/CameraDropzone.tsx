@@ -39,7 +39,7 @@ export default class CameraDropzone extends UploadDropzone {
                             id={this.props.id + "-camera-input"}
                         />
                         <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                            <Button raisedIos onClick={this.takePicture.bind(this)}>Scan</Button>
+                            <Button fill round onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
                 :
