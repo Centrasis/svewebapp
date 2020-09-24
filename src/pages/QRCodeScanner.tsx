@@ -1,6 +1,6 @@
 import QrcodeDecoder from 'qrcode-decoder';
 import React from 'react';
-import { Block, Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
+import { Block, Page, List, Icon, BlockTitle, Popup, ListInput, Button, BlockHeader, ListItem } from 'framework7-react';
 
 export type QRCodeScannerSettings = {
     onDecoded: (result: string) => void
@@ -18,6 +18,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                 <Page>
                     <BlockTitle large style={{justifySelf: "center"}}>Scanne QR Code..</BlockTitle>
                     <Block style={{justifyContent: "center", alignContent: "center"}}>
+                    {(this.$f7.data.hasCameraPermission()) ? 
                         <video
                             style={{margin: "5%", width: "90%", height: "90%"}}
                             playsInline
@@ -25,10 +26,20 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                             muted
                             id={this.props.id + "-camera-input"}
                         />
+                    : 
+                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                            <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
+                        </div>
+                    }
                     </Block>
                 </Page>
             </Popup>
         )
+    }
+
+    reactivateCamera() {
+        this.$f7.data.resetCameraPermissions();
+        this.setupCamera();
     }
 
     stopCamera() {
