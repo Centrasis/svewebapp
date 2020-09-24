@@ -35,61 +35,53 @@ export default class extends React.Component {
           </NavRight>
         </Navbar> 
 
-        <Block style={{justifyContent: "center", alignContent: "center"}} strong>
-          <Row>
-          <Col style={{width: "0"}}></Col>
-          <Col>
-            <List>
-              <ListInput
-                label="Dokumentengruppe"
-                type="select"
-                smartSelect
-                smartSelectParams={{openIn: 'sheet'}}
-                value={this.state.selectedGroupID}
-                onInput={(e) => {
-                  this.setState({selectedGroupID: e.target.value});
-                  if (isNaN(e.target.value)) {
-                    this.setState({selectedProject: undefined});
-                  } else {
-                    new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
-                      this.setState({ selectedGroup: g });
-                      g.getProjects().then(ps => {
-                        if(ps.length > 0) {
-                          this.setState({selectedProject: ps[0]});
-                        } else {
-                          this.setState({selectedProject: undefined});
-                          this.setState({selectedGroupID: NaN});
-                        }
-                      });
+        <Block style={{justifyContent: "center", alignContent: "center", width: "100vw"}} strong>
+          <List style={{width: "1000px"}}>
+            <ListInput
+              label="Dokumentengruppe"
+              type="select"
+              smartSelect
+              smartSelectParams={{openIn: 'sheet'}}
+              value={this.state.selectedGroupID}
+              onInput={(e) => {
+                this.setState({selectedGroupID: e.target.value});
+                if (isNaN(e.target.value)) {
+                  this.setState({selectedProject: undefined});
+                } else {
+                  new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
+                    this.setState({ selectedGroup: g });
+                    g.getProjects().then(ps => {
+                      if(ps.length > 0) {
+                        this.setState({selectedProject: ps[0]});
+                      } else {
+                        this.setState({selectedProject: undefined});
+                        this.setState({selectedGroupID: NaN});
+                      }
                     });
-                  }
-                }}
-              >
-                <option value={NaN}>Wähle</option>
-                {this.state.documentGroups.map(doc => (
-                  <option value={doc.getID()}>{doc.getName()}</option>
-                ))}
-              </ListInput>
-              <ListItem>
-                <Block style={{justifyContent: "center", alignContent: "center"}} inset strong>
-                  {(this.state.selectedProject !== undefined) ? 
-                    <CameraDropzone 
-                      id="CameraDropzone"
-                      project={this.state.selectedProject}
-                      maxParallelUploads={1}
-                      onImageUploaded={this.classifyImage.bind(this)}
-                    />
-                  :
-                    <Block largeInset strong style={{height: "20vh"}}>
-                      <BlockTitle>Wähle eine Gruppe</BlockTitle>
-                    </Block>
-                  }
-                </Block>
-              </ListItem>
-            </List>
-            </Col>
-            <Col style={{width: "0"}}></Col>
-          </Row>
+                  });
+                }
+              }}
+            >
+              <option value={NaN}>Wähle</option>
+              {this.state.documentGroups.map(doc => (
+                <option value={doc.getID()}>{doc.getName()}</option>
+              ))}
+            </ListInput>
+            <ListItem>
+                {(this.state.selectedProject !== undefined) ? 
+                  <CameraDropzone 
+                    id="CameraDropzone"
+                    project={this.state.selectedProject}
+                    maxParallelUploads={1}
+                    onImageUploaded={this.classifyImage.bind(this)}
+                  />
+                :
+                  <Block largeInset strong style={{height: "20vh"}}>
+                    <BlockTitle>Wähle eine Gruppe</BlockTitle>
+                  </Block>
+                }
+            </ListItem>
+          </List>
         </Block>
 
         <NewGroupPopup
