@@ -41,7 +41,7 @@ export default class CameraDropzone extends UploadDropzone {
                         >
                         </video>
                         <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                            <Button fill round style={{width: "50%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
+                            <Button fill round style={{width: "50%", left: "25%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
                 :
