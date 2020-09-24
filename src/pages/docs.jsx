@@ -78,7 +78,6 @@ export default class extends React.Component {
                       project={this.state.selectedProject}
                       maxParallelUploads={1}
                       onImageUploaded={this.classifyImage.bind(this)}
-                      style={{width: "90vw"}}
                     />
                   :
                     <Block largeInset strong style={{height: "20vh"}}>
