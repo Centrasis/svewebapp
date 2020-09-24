@@ -12,7 +12,7 @@ export default class CameraDropzone extends UploadDropzone {
         return (
             <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
                 {(this.$f7.data.hasCameraPermission()) ? 
-                    <div style={{justifyContent: "center", alignContent: "center", margin: "20px", width: "100%", height: "100%"}}>
+                    <div style={{justifyContent: "center", alignContent: "center", margin: "20px", width: "100%", height: "100%", minWidth: "800px"}}>
                         <video
                             style={{width: "100%", height: "100%", minWidth: "800px"}}
                             playsInline
