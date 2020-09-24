@@ -66,6 +66,10 @@ export default class extends React.Component {
             getUser: function() {
               return app.state.user;
             },
+            clearUser: function() {
+              app.state.user = undefined;
+              app.setState({user: undefined});
+            },
             pushRightPanel: function(content) {
               content.menueItems = content.menueItems.filter(e => e != {});
               app.state.panelMenueContent.push(content);

@@ -37,21 +37,22 @@ export default class CameraDropzone extends UploadDropzone {
                             autoPlay
                             muted
                             id={this.props.id + "-camera-input"}
-                        />
-                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                            <Button fill round onClick={this.takePicture.bind(this)}>Scan</Button>
-                        </div>
+                        >
+                            <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                                <Button fill round onClick={this.takePicture.bind(this)}>Scan</Button>
+                            </div>
+                        </video>
                     </div>
                 :
                     <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                        <Button fill round onClick={this.ractivateCamera.bind(this)}>Kamera aktivieren</Button>
+                        <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
                     </div>
                 }
             </Block>
         )
     }
 
-    ractivateCamera() {
+    reactivateCamera() {
         this.$f7.data.resetCameraPermissions();
         this.setupCamera();
     }
