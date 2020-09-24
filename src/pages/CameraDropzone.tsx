@@ -11,42 +11,44 @@ export default class CameraDropzone extends UploadDropzone {
     render () {   
         return (
             <Block style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-                <Dropzone onDrop={acceptedFiles => { this.onAcceptMedia(acceptedFiles) }}>
-                {({getRootProps, getInputProps}) => (
-                    <section style={{
-                    backgroundImage: "url(\"images/DragNDropArea.png\")",
-                    WebkitFilter: (this.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                    filter: (this.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
-                    backgroundRepeat: "no-repeat", 
-                    backgroundSize: "100% 100%",
-                    margin: "3em",
-                    position: "relative",
-                    padding: "3em"
-                    }}>
-                    <div {...getRootProps()}>
-                        <input {...getInputProps()}/>
-                        <Block style={{minHeight: "90%", minWidth: "100%", cursor: "copy"}}>{"Ziehe Dokumente zum Hochladen hier hin oder suche diese per Explorer."}</Block>
-                    </div>
-                    </section>
-                )}
-                </Dropzone>
                 {(this.$f7.data.hasCameraPermission()) ? 
-                    <div style={{justifyContent: "center", alignContent: "center", zIndex: 9, margin: "20px", width: "100%", height: "100%", position: "absolute", top: "0", left: "0", background: "transparent"}}>
+                    <div style={{justifyContent: "center", alignContent: "center", margin: "20px", width: "100%", height: "100%"}}>
                         <video
-                            style={{margin: "5%", width: "90%", height: "90%"}}
+                            style={{width: "100%", height: "100%"}}
                             playsInline
                             autoPlay
                             muted
                             id={this.props.id + "-camera-input"}
                         >
                         </video>
-                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                        <div style={{position: "absolute", zIndex: 9, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
                             <Button fill round style={{width: "50%", left: "25%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
                 :
-                    <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
-                        <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
+                    <div style={{justifyContent: "center", alignContent: "center"}}>
+                        <Dropzone onDrop={acceptedFiles => { this.onAcceptMedia(acceptedFiles) }}>
+                        {({getRootProps, getInputProps}) => (
+                            <section style={{
+                            backgroundImage: "url(\"images/DragNDropArea.png\")",
+                            WebkitFilter: (this.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
+                            filter: (this.hasError) ? "hue-rotate(240deg) saturate(3.3) grayscale(50%)" : "",
+                            backgroundRepeat: "no-repeat", 
+                            backgroundSize: "100% 100%",
+                            margin: "3em",
+                            position: "relative",
+                            padding: "3em"
+                            }}>
+                            <div {...getRootProps()}>
+                                <input {...getInputProps()}/>
+                                <Block style={{minHeight: "90%", minWidth: "100%", cursor: "copy"}}>{"Ziehe Dokumente zum Hochladen hier hin oder suche diese per Explorer."}</Block>
+                            </div>
+                            </section>
+                        )}
+                        </Dropzone>
+                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                            <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
+                        </div>
                     </div>
                 }
             </Block>
