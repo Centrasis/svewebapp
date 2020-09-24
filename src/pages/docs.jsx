@@ -106,12 +106,15 @@ export default class extends React.Component {
   }
 
   removeCurrentGroup() {
-    this.state.selectedGroup.remove().then(val => {
-      this.updateGroupsList();
-      if (val) {
-        this.setState({selectedGroup: undefined});
-      }
-    });
+    var self = this;
+    this.$f7.dialog.confirm("Dokumente alle löschen?", "Bestätigen", ()=> {
+      self.state.selectedGroup.remove().then(val => {
+        self.updateGroupsList();
+        if (val) {
+          self.setState({selectedGroup: undefined});
+        }
+      });
+    }, () => {});
   }
 
   newGroupCreated(g) {
