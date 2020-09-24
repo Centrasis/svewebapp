@@ -20,7 +20,7 @@ export default class CameraDropzone extends UploadDropzone {
                         >
                         </video>
                         <div style={{position: "relative", width: "100%", display: "grid", alignContent: "end"}}>
-                            <Button fill round style={{width: "50%", left: "25%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
+                            <Button fill round style={{width: "50%", left: "20%", minWidth: "300px"}} onClick={this.takePicture.bind(this)}>Scan</Button>
                         </div>
                     </div>
                 )
@@ -45,7 +45,7 @@ export default class CameraDropzone extends UploadDropzone {
                             </section>
                         )}
                         </Dropzone>
-                        <div style={{position: "absolute", zIndex: 11, width: "100%", height: "100%", top: "0", left: "0", display: "grid", alignContent: "end"}}>
+                        <div style={{width: "100%", height: "100%", display: "grid", alignContent: "end"}}>
                             <Button fill round onClick={this.reactivateCamera.bind(this)}>Kamera aktivieren</Button>
                         </div>
                     </div>
@@ -65,6 +65,10 @@ export default class CameraDropzone extends UploadDropzone {
           let name = new Date().toISOString();
           name = crypto.createHash('sha1').update(name + Math.random().toString()).digest('hex');
           this.onAcceptMedia([new File([blob], "ScanPhoto_" + name + ".png")]);
+          setTimeout(() => {
+            (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+            this.setupCamera();
+          }, 1000);
         });
     }
     
