@@ -574,7 +574,9 @@ export default class extends React.Component {
       new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
         let lData = this.state.loginData;
         lData.joinToken = token;
-        console.log("Got token object with state: " + JSON.stringify(token.getIsValid()));
+        if(!token.getIsValid()) {
+          lData.errorMsg = "Einladung ist nicht mehr gültig.";
+        }
         this.setState({loginData: lData});
       });
     }
