@@ -358,13 +358,11 @@ export default class extends React.Component {
                     label="Registrierungs-Token"
                     type="text"
                     placeholder="Übermitteltes Token für die Registrierung"
-                    value={this.state.loginData.joinToken}
+                    disabled
+                    value=""
                     onInput={(e) => {
-                      let lData = this.state.loginData;
-                      lData.joinToken = e.target.value;
-                      this.setState({loginData: lData});
+                      
                     }}
-                    required
                   />
                 ) : (
                   <ListItem color="green" style={{color: "green"}}><span color="green" style={{color: "green"}}>Token akzeptiert</span></ListItem>
