@@ -114,6 +114,7 @@ export default class extends React.Component {
   }
 
   newGroupCreated(g) {
+    console.log("Group created! Create new project...");
     this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(false);
 
     if (g === undefined)
@@ -136,7 +137,9 @@ export default class extends React.Component {
     p => {
       p.store().then(val => {
         if(val) {
-          this.setState({selectedProject: p});
+          let gs = this.state.documentGroups;
+          gs.push(p);
+          this.setState({selectedProject: p, documentGroups: gs});
         } else {
           this.setState({selectedProject: undefined});
           this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
