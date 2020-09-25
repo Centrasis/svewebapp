@@ -575,7 +575,7 @@ export default class extends React.Component {
         let lData = this.state.loginData;
         lData.joinToken = token;
         if(!token.getIsValid()) {
-          self.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
+          this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
         }
         this.setState({loginData: lData});
       });
@@ -593,7 +593,7 @@ export default class extends React.Component {
           let lData = this.state.loginData;
           lData.joinToken = token;
           if(!token.getIsValid()) {
-            self.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
+            this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
           }
           this.setState({loginData: lData});
         });
