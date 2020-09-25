@@ -182,7 +182,7 @@ export default class extends React.Component {
 
       if (img !== undefined) {
         this.state.project.getData().then(data => {
-          let result = data.filter(d => d.getName() === img.getName());
+          let result = data.filter(d => d.getName() === img.name);
           if(result.length === 1) {
             this.state.project.setResult(result[0]);
             storeProject();
