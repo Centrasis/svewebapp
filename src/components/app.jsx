@@ -584,8 +584,8 @@ export default class extends React.Component {
     this.setState({openOverlay: "register-screen"});
   }
 
-  onOpenLogin() {
-    if(this.state.openOverlay.length === 0) {
+  onOpenLogin(onlyIfNothingIsOpen = false) {
+    if(!onlyIfNothingIsOpen || this.state.openOverlay.length === 0) {
       this.$f7.loginScreen.close();
       if(this.state.routerParams.has("token")) {
         let lData = this.state.loginData;
@@ -642,7 +642,7 @@ export default class extends React.Component {
 
   componentDidUpdate() {
     if (this.state.user === undefined) {
-      this.onOpenLogin();
+      this.onOpenLogin(true);
     }
   }
 
