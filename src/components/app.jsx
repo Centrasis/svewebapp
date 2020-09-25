@@ -34,6 +34,7 @@ export default class extends React.Component {
     super();
 
     SVESystemInfo.getInstance().sources.sveService = "api";
+    SVESystemInfo.getInstance().sources.authService = "auth";
 
     var app = this;
 
