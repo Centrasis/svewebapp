@@ -390,8 +390,11 @@ export default class extends React.Component {
       if (typeof self.state.project === "number") {
         self.setState({project: new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
           p.getResult().then((data => {
-            console.log("Got result of project: " + data.getName());
-            self.setState({resultURI: data.getURI()});
+            if (isNaN(data.getID())) {
+              console.log("Got result error on Server!");
+            } else {
+              self.setState({resultURI: data.getURI()});
+            }
           }), err => {});
           self.updateContent();
         })});
