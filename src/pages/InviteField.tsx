@@ -118,7 +118,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
     }
 
     registerToken() {
-        SVEToken.register(TokenType.RessourceToken, this.group).then(token => {
+        this.group.createInviteToken().then(token => {
             this.token = token;
             this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
             console.log("Registered token!");
