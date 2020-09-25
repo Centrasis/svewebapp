@@ -4,7 +4,7 @@ import { SVEGroup, SVEAccount, GroupInitializer } from 'svebaselib';
 
 export type NewGroupPopupSettings = {
     owningUser: SVEAccount,
-    onGroupCreated?: (group?: SVEGroup) => void,
+    onGroupCreated?: (group: SVEGroup) => void,
     groupToEdit?: SVEGroup
 };
 
@@ -13,7 +13,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     protected newGroupName: string = undefined;
     protected owningUser: SVEAccount = undefined;
     protected errorMsg: string = undefined;
-    protected onGroupCreated: (group?: SVEGroup) => void = (group?: SVEGroup) => {};
+    protected onGroupCreated: (group: SVEGroup) => void = (group: SVEGroup) => { console.log("Uncaught group creation!") };
 
     render () {   
         return (
@@ -59,10 +59,9 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     createNewGroup() {
         new SVEGroup({name: this.newGroupName, id: (this.oldGroup !== undefined) ? this.oldGroup.getID() : NaN} as GroupInitializer, this.owningUser, (g) => {
-            console.log("Try create new group: " + g.getName());
           g.store().then(val => {
-                console.log("Creation state: " + JSON.stringify(val));
                 if(val) {
+                    console.log("Group Created!");
                     this.onGroupCreated(g);
                     this.newGroupName = undefined;
                     this.errorMsg = undefined;
@@ -85,7 +84,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         this.updateProps(); 
         this.$f7ready((f7) => {});
     }
-    componentWillUpdate() { 
+    UNSAFE_componentWillUpdate() { 
         this.updateProps();
         this.$f7ready((f7) => {});
     }
@@ -95,6 +94,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
         if (this.props.onGroupCreated)
         {
+            console.log("Defined group creation action");
             this.onGroupCreated = this.props.onGroupCreated;
         }
 

@@ -86,7 +86,7 @@ export default class extends React.Component {
 
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
-          onGroupCreated={(group) => this.newGroupCreated(group)}
+          onGroupCreated={(group) => {console.log("Created received in docs!"); this.newGroupCreated(group)}}
         />
       </Page>
     );

@@ -139,7 +139,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
         this.updateProps(); 
         this.$f7ready((f7) => {});
     }
-    componentWillUpdate() { 
+    UNSAFE_componentWillUpdate() { 
         this.updateProps();
         this.$f7ready((f7) => {});
     }

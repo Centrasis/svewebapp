@@ -81,7 +81,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
         this.forceUpdate();
     }
 
-    componentWillUpdate() {
+    UNSAFE_componentWillUpdate() {
         var self = this;
         this.$f7ready((f7) => {
             self.setupCamera();
