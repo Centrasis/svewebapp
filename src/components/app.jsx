@@ -493,6 +493,11 @@ export default class extends React.Component {
     this.setState({loginMessages: {errorMsg: '', loginType: this.state.loginMessages.loginType}});
     var self = this;
     new SVEAccount({ name: this.state.loginData.username, pass: this.state.loginData.password}, (usr) => {
+      if (this.state.saveThisDevice) {
+        SVEToken.register(TokenType.DeviceToken, usr).then(token => {
+          window.localStorage.setItem("sve_token", token);
+        });
+      }
       self.onLoggedIn(usr);
     });
   }
