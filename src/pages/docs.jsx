@@ -87,7 +87,7 @@ export default class extends React.Component {
         <NewGroupPopup
           id='Docs-New-Group'
           owningUser={this.$f7.data.getUser()}
-          onGroupCreated={(group) => {console.log("Created received in docs!"); this.newGroupCreated(group)}}
+          onGroupCreated={(group) => {this.newGroupCreated(group)}}
         />
       </Page>
     );
@@ -115,7 +115,6 @@ export default class extends React.Component {
   }
 
   newGroupCreated(g) {
-    console.log("Group created! Create new project...");
     this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(false);
 
     if (g === undefined)
@@ -138,9 +137,7 @@ export default class extends React.Component {
     p => {
       p.store().then(val => {
         if(val) {
-          let gs = this.state.documentGroups;
-          gs.push(p);
-          this.setState({selectedProject: p, documentGroups: gs});
+          this.setState({selectedProject: p});
         } else {
           this.setState({selectedProject: undefined});
           this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
