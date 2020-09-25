@@ -2,7 +2,7 @@ import React from 'react';
 import { Block, Row, Link, BlockHeader, BlockFooter, Col, Button } from 'framework7-react';
 //import { WhatsappShareButton, EmailShareButton } from "react-share";
 import * as qrcode from 'qrcode-generator';
-import { SVESystemInfo, SVEGroup, SVEProject } from 'svebaselib';
+import { SVESystemInfo, SVEGroup, SVEProject, SVEToken, TokenType } from 'svebaselib';
 import Dom7 from 'dom7';
 
 export type InviteFieldSettings = {
@@ -118,9 +118,11 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
     }
 
     registerToken() {
-        this.token = [...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
-        this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
-        console.log("Registered token!");
+        SVEToken.register(TokenType.RessourceToken, this.group).then(token => {
+            this.token = token;
+            this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
+            console.log("Registered token!");
+        });
     }
 
     getQRCode() {
