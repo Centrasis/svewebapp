@@ -496,6 +496,8 @@ export default class extends React.Component {
       if (this.state.saveThisDevice) {
         SVEToken.register(TokenType.DeviceToken, usr).then(token => {
           window.localStorage.setItem("sve_token", token);
+          window.localStorage.setItem("sve_user", usr.getID());
+          window.localStorage.setItem("sve_username", usr.getName());
         });
       }
       self.onLoggedIn(usr);
@@ -548,20 +550,27 @@ export default class extends React.Component {
     if (token !== null && token !== undefined) {
       console.log("Found saved token");
       let loginData = this.state.loginData;
-      loginData.username = window.localStorage.getItem("sve_user");
-      loginData.loginToken = new SVEToken(token, TokenType.DeviceToken, NaN);
+      loginData.username = window.localStorage.getItem("sve_username");
+      new SVEToken(token, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+        loginData.loginToken = token;
+        this.setState({loginData: loginData});
+        if(!token.getIsValid()) {
+          console.log("Token is not valid!");
+          this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
+        }
+        this.doLogInWithToken(token);
+      });
       this.setState({loginData: loginData});
-  
-      this.doLogInWithToken(loginData.username, token);
     }
   }
 
-  doLogInWithToken(user, token) {
+  doLogInWithToken(token) {
     var self = this;
     this.setState({saveThisDevice: false});
-    console.log("Try login as: " + user);
+    console.log("Try login as: " + this.state.loginData.username);
     console.log("Use token");
   
+    /*
     new SVEAccount({
       name: user,
       token: token
@@ -573,6 +582,7 @@ export default class extends React.Component {
       self.setState({loginMessages: lData});
       this.onOpenLogin();
     });
+    */
   }
 
   onOpenRegister() {
@@ -604,6 +614,7 @@ export default class extends React.Component {
             console.log("Token is not valid!");
             this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
           }
+          this.state.loginData.joinToken = token;
           this.setState({loginData: lData});
         });
         this.setState({loginData: lData});
