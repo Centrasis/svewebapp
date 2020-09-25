@@ -122,6 +122,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             this.token = token;
             this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
             console.log("Registered token!");
+            this.forceUpdate();
         });
     }
 
