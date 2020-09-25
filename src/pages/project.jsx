@@ -29,7 +29,7 @@ export default class extends React.Component {
       images_toPreSelect: [],
       showPreSelect: false,
       ownerName: '',
-      resultURI = undefined,
+      resultURI: undefined,
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
     };
