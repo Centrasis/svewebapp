@@ -187,7 +187,7 @@ export default class extends React.Component {
             this.state.project.setResult(result[0]);
             storeProject();
           } else {
-            console.log("Found multiple canditates: " + JSON.stringify(result));
+            console.log("Found multiple canditates: " + JSON.stringify(result) + ' for name: ' + img.name);
           }
         });
       } else {
@@ -390,6 +390,7 @@ export default class extends React.Component {
       if (typeof self.state.project === "number") {
         self.setState({project: new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
           p.getResult().then((data => {
+            console.log("Got result of project: " + data.getName());
             self.setState({resultURI: data.getURI()});
           }), err => {});
           self.updateContent();

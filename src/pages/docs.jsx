@@ -153,14 +153,12 @@ export default class extends React.Component {
         g.getProjects().then(ps => {
           let vacType = false;
           ps.forEach(p => {
-            console.log("Project: " + ((p.getType() === SVEProjectType.Vacation) ? "Vacation" : "Sales"));
             if (p.getType() === SVEProjectType.Vacation) {
               vacType = true;
             }
           });
 
           if(!vacType && ps.length > 0) {
-            console.log("Found docs group: " + g.getName());
             groupsWithOnlyDocs.push(g);
           }
 
