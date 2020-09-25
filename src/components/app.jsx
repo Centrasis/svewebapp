@@ -591,6 +591,7 @@ export default class extends React.Component {
         console.log("Found token in link for login!");
         let lData = this.state.loginData;
         new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
+          console.log("Got token object!");
           let lData = this.state.loginData;
           lData.joinToken = token;
           this.setState({loginData: lData});
