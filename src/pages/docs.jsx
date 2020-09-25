@@ -29,8 +29,8 @@ export default class extends React.Component {
       <Page name="docs">
         <Navbar title="SVE Docs">
           <NavRight>
-              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(true)}></Link>
-              <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={() => this.$f7.data.getPopupComponent(QRCodeScanner).setComponentVisible(true)}></Link>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(true)}></Link>
+              <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={() => this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(true)}></Link>
               {(this.state.selectedGroup !== undefined) ? <Link style={{color: "red"}} iconF7="folder_badge_minus" tooltip="Gruppe löschen" onClick={this.removeCurrentGroup.bind(this)}></Link> : "" }
           </NavRight>
         </Navbar> 
@@ -85,6 +85,7 @@ export default class extends React.Component {
         </Block>
 
         <NewGroupPopup
+          id='Docs-New-Group'
           owningUser={this.$f7.data.getUser()}
           onGroupCreated={(group) => {console.log("Created received in docs!"); this.newGroupCreated(group)}}
         />
@@ -115,7 +116,7 @@ export default class extends React.Component {
 
   newGroupCreated(g) {
     console.log("Group created! Create new project...");
-    this.$f7.data.getPopupComponent(NewGroupPopup).setComponentVisible(false);
+    this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(false);
 
     if (g === undefined)
       return;

@@ -61,7 +61,6 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         new SVEGroup({name: this.newGroupName, id: (this.oldGroup !== undefined) ? this.oldGroup.getID() : NaN} as GroupInitializer, this.owningUser, (g) => {
           g.store().then(val => {
                 if(val) {
-                    console.log("Group Created!");
                     this.onGroupCreated(g);
                     this.newGroupName = undefined;
                     this.errorMsg = undefined;
@@ -76,7 +75,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.$f7.data.setPopupComponent(NewGroupPopup, this);
+        this.$f7.data.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), this);
         this.updateProps();
         this.forceUpdate();
     }
@@ -94,7 +93,6 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
         if (this.props.onGroupCreated)
         {
-            console.log("Defined group creation action");
             this.onGroupCreated = this.props.onGroupCreated;
         }
 
@@ -105,6 +103,6 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent(NewGroupPopup, undefined);
+        this.$f7.data.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
     }
 }
