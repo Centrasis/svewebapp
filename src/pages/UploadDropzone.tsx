@@ -96,6 +96,8 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         this.uploadInfo.progressbar.setText("Datei (" + this.uploadInfo.filesUploaded + " / " + this.uploadInfo.totalFilesToUpload + ")");
     
         var self = this;
+        var lastRatio = 0.0;
+        var lastTime = new Date().getMilliseconds();
         const media = this.uploadInfo.imagesToUpload.pop();
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
@@ -125,10 +127,21 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         });
     
         uploader.on('progress', (progress) => {
+            let now = new Date().getMilliseconds();
+            let timeDiff = now - lastTime;
+            lastTime = now;
             let ratio = ((self.uploadInfo.filesUploaded + (progress.detail / 100.0)) / self.uploadInfo.totalFilesToUpload) * 100.0;
+            let ratioDiff = ratio - lastRatio;
+            lastRatio = ratio;
             self.$f7.progressbar.show(ratio, "#11a802");
             self.uploadInfo.progressbar.setProgress(ratio);
-            self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ")");
+            let remainingTime = (((100 - ratio) / ratioDiff) * timeDiff) / 1000.0;
+            let unit = "s";
+            if (remainingTime > 90) {
+              unit = "min";
+              remainingTime = remainingTime / 60.0;
+            }
+            self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ") ~" + remainingTime + "[" + unit + "]");
         });
     
         uploader.on('finish', () => {

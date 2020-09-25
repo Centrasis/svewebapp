@@ -158,7 +158,7 @@ export default class extends React.Component {
           this.state.project.setState(SVEProjectState.Closed);
           this.state.project.store().then(val => {
             this.$f7.toast.create({
-              text: val ? "Project erfolgreich abgeschlossen!" : "Project wurde nicht korrekt abgeschlossen!",
+              text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
               closeButton: !val,
               closeButtonText: 'Ok',
               closeButtonColor: 'red',
