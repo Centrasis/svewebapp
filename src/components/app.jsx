@@ -99,7 +99,7 @@ export default class extends React.Component {
                       facingMode: (facingUser === true) ? { exact: "user" } : "environment"
                     } : true)
                   };
-                  console.log("Request camera stream: " + JSON.stringify(constraints));
+                  //console.log("Request camera stream: " + JSON.stringify(constraints));
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
                     resolve(stream);
                   }, (err) => reject(err));
@@ -492,7 +492,6 @@ export default class extends React.Component {
 
   onLogin() {
     this.setState({loginMessages: {errorMsg: '', loginType: this.state.loginMessages.loginType}});
-    console.log("Try login..");
     var self = this;
     new SVEAccount({ name: this.state.loginData.username, pass: this.state.loginData.password}, (usr) => {
       self.onLoggedIn(usr);
@@ -502,7 +501,7 @@ export default class extends React.Component {
   onLoggedIn(usr) {
     let self = this;
     if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
-      console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
+      //console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
       self.state.user = usr;
       self.setState({user: self.state.user, openOverlay: ""});
       self.$f7.loginScreen.close();
