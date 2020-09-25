@@ -13,8 +13,6 @@ export default class extends React.Component {
     super(props);
 
     this.state = {
-      errorMsg: "",
-      hasError: false,
       displayCount: 10,
       selectedGalleryImg: 0,
       zlib: require('zlib'),
@@ -27,26 +25,16 @@ export default class extends React.Component {
       showMap: false,
       selectedImgUser: "",
       showUpload: false,
+      closeProject: false,
       images_toPreSelect: [],
       showPreSelect: false,
       ownerName: '',
+      resultURI = undefined,
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
     };
   }
   render() {
-    if (this.state.hasError) {
-      return (
-        <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
-          <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
-          </Navbar> 
-          <Block style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-            <BlockTitle>Es ist ein Fehler aufgetreten!</BlockTitle>
-            <Block>{this.state.errorMsg}</Block>
-          </Block>
-        </Page>
-      );
-    } else {
       return (
       <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
         <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
@@ -70,11 +58,11 @@ export default class extends React.Component {
               <p style={{color: (this.state.isTakingPlaceNow) ? "#11a802" : "#FFFFFF"}}>Zeitraum: {this.state.project.getDateRange().begin.toLocaleDateString()} bis {this.state.project.getDateRange().end.toLocaleDateString()}</p>
             </Row>
           ) : ""}
-          {(typeof this.state.project !== "number" && this.state.project.getState() === SVEProjectState.Closed) ? (
+          {(this.state.resultURI !== undefined) ? 
             <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <video playsInline controls preload="none" style={{maxHeight: "30vh", width: "auto"}} src={""}></video>
+              <video playsInline controls preload="none" style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI}></video>
             </Row>
-          ): ""}
+          : ""}
           
           <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
             <List id="SortByList" accordionList largeInset style={{width: "90%"}}>
@@ -152,14 +140,40 @@ export default class extends React.Component {
           {(typeof this.state.project !== "number") ? 
             <UploadDropzone
               project={this.state.project}
-              onImageUploaded={(img) => this.updateUploadedImages()}
+              onImageUploaded={(img) => this.OnImgUploaded(img)}
             />
           : ""}
         </Page>
       </Popup>
     </Page>
-  );}
+  )
 }
+
+  OnImgUploaded(img) {
+    if(this.state.closeProject) {
+      this.state.project.getData().then(data => {
+        let result = data.filter(d => d.getName() === img.getName());
+        if(result.length === 1) {
+          this.state.project.setResult(result[0]);
+          this.state.project.setState(SVEProjectState.Closed);
+          this.state.project.store().then(val => {
+            this.$f7.toast.create({
+              text: val ? "Project erfolgreich abgeschlossen!" : "Project wurde nicht korrekt abgeschlossen!",
+              closeButton: !val,
+              closeButtonText: 'Ok',
+              closeButtonColor: 'red',
+              closeTimeout: val ? 2000 : undefined
+            }).open();
+          });
+        } else {
+          console.log("Found multiple canditates: " + JSON.stringify(result));
+        }
+      })
+      this.setState({showUpload : false, closeProject: false});
+    }
+
+    this.updateUploadedImages();
+  }
 
   getImagesFor(user) {
     return (this.state.viewableUsers.has(user)) ? this.state.viewableUsers.get(user) : []
@@ -298,6 +312,14 @@ export default class extends React.Component {
             },
             (rights.admin) ?
             {
+              caption: "Projekt abschließen",
+              color: "green",
+              onClick: function() { 
+                self.setState({showUpload : true, closeProject: true});
+              }
+            } : {},
+            (rights.admin) ?
+            {
               caption: "Projekt löschen",
               color: "red",
               onClick: function() { 
@@ -342,7 +364,12 @@ export default class extends React.Component {
       });
 
       if (typeof self.state.project === "number") {
-        self.setState({project: new SVEProject(self.state.project, this.$f7.data.getUser(), p => self.updateContent())});
+        self.setState({project: new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
+          p.getResult().then((data => {
+            self.setState({resultURI: data.getURI()});
+          }), err => {});
+          self.updateContent();
+        })});
       }
 
       $$(document).on('page:reinit', function (e) {
