@@ -134,7 +134,7 @@ export default class extends React.Component {
           )}
         </Block>
 
-      <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false})}>
+        <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false, closeProject: false})}>
         <Page>
           <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
           {(typeof this.state.project !== "number") ? 
@@ -145,31 +145,55 @@ export default class extends React.Component {
           : ""}
         </Page>
       </Popup>
+
+      <Popup swipeToClose opened={this.state.closeProject} onPopupClosed={() => this.setState({closeProject : false})}>
+        <Page>
+          <BlockTitle large style={{justifySelf: "center"}}>Urlaub mit Diashow abschließen?</BlockTitle>
+          {(typeof this.state.project !== "number") ? 
+            <UploadDropzone
+              project={this.state.project}
+              onImageUploaded={(img) => this.OnImgUploaded(img)}
+            />
+          : ""}
+          <Button raised fillIos onClick={this.OnImgUploaded.bind(this, undefined)}>Überspringen</Button>
+        </Page>
+      </Popup>
     </Page>
   )
 }
 
   OnImgUploaded(img) {
+    console.log("Media uploaded!");
     if(this.state.closeProject) {
-      this.state.project.getData().then(data => {
-        let result = data.filter(d => d.getName() === img.getName());
-        if(result.length === 1) {
-          this.state.project.setResult(result[0]);
-          this.state.project.setState(SVEProjectState.Closed);
-          this.state.project.store().then(val => {
-            this.$f7.toast.create({
-              text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
-              closeButton: !val,
-              closeButtonText: 'Ok',
-              closeButtonColor: 'red',
-              closeTimeout: val ? 2000 : undefined
-            }).open();
-          });
-        } else {
-          console.log("Found multiple canditates: " + JSON.stringify(result));
-        }
-      })
-      this.setState({showUpload : false, closeProject: false});
+      console.log("Close project!");
+
+      let storeProject = () => {
+        this.state.project.setState(SVEProjectState.Closed);
+            this.state.project.store().then(val => {
+              this.$f7.toast.create({
+                text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
+                closeButton: !val,
+                closeButtonText: 'Ok',
+                closeButtonColor: 'red',
+                closeTimeout: val ? 2000 : undefined
+              }).open();
+            });
+      };
+
+      if (img !== undefined) {
+        this.state.project.getData().then(data => {
+          let result = data.filter(d => d.getName() === img.getName());
+          if(result.length === 1) {
+            this.state.project.setResult(result[0]);
+            storeProject();
+          } else {
+            console.log("Found multiple canditates: " + JSON.stringify(result));
+          }
+        });
+      } else {
+        storeProject();
+      }
+      this.setState({closeProject: false});
     }
 
     this.updateUploadedImages();
@@ -315,7 +339,7 @@ export default class extends React.Component {
               caption: "Projekt abschließen",
               color: "green",
               onClick: function() { 
-                self.setState({showUpload : true, closeProject: true});
+                self.setState({closeProject: true});
               }
             } : {},
             (rights.admin) ?
