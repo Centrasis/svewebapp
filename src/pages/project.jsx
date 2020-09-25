@@ -169,15 +169,15 @@ export default class extends React.Component {
 
       let storeProject = () => {
         this.state.project.setState(SVEProjectState.Closed);
-            this.state.project.store().then(val => {
-              this.$f7.toast.create({
-                text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
-                closeButton: !val,
-                closeButtonText: 'Ok',
-                closeButtonColor: 'red',
-                closeTimeout: val ? 2000 : undefined
-              }).open();
-            });
+        this.state.project.store().then(val => {
+          this.$f7.toast.create({
+            text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
+            closeButton: !val,
+            closeButtonText: 'Ok',
+            closeButtonColor: 'red',
+            closeTimeout: val ? 2000 : undefined
+          }).open();
+        });
       };
 
       if (img !== undefined) {
@@ -315,7 +315,7 @@ export default class extends React.Component {
         let panelContent = {
           caption: "Urlaubsaktionen",
           menueItems: [
-            (rights.write) ?
+            (rights.write && this.state.project.getState() === SVEProjectState.Open) ?
             {
               caption: "Medien hochladen",
               onClick: function() { self.setState({showUpload : true}) }
