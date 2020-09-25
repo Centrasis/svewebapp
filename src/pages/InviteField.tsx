@@ -2,7 +2,7 @@ import React from 'react';
 import { Block, Row, Link, BlockHeader, BlockFooter, Col, Button } from 'framework7-react';
 //import { WhatsappShareButton, EmailShareButton } from "react-share";
 import * as qrcode from 'qrcode-generator';
-import { SVESystemInfo, SVEGroup, SVEProject, SVEToken, TokenType } from 'svebaselib';
+import { SVEGroup, SVEProject } from 'svebaselib';
 import Dom7 from 'dom7';
 
 export type InviteFieldSettings = {
