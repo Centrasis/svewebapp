@@ -27,7 +27,7 @@ import {
 
 import Dom7 from 'dom7';
 import routes from '../js/routes';
-import {SVESystemInfo, SVEAccount, LoginState} from 'svebaselib';
+import {SVESystemInfo, SVEAccount, LoginState, SVEToken, TokenType} from 'svebaselib';
 
 export default class extends React.Component {
   constructor() {
@@ -190,7 +190,7 @@ export default class extends React.Component {
         password: '',
         password2: '',
         loginToken: '',
-        joinToken: '',
+        joinToken: undefined,
         email: ''
       },
       openOverlay: "",
@@ -352,7 +352,7 @@ export default class extends React.Component {
                     }}
                 />
 
-                {(this.state.loginData.joinToken.length == 0) ? (
+                {(this.state.loginData.joinToken === undefined || !this.state.loginData.joinToken.getIsValid()) ? (
                   <ListInput
                     id="regToken"
                     label="Registrierungs-Token"
@@ -501,6 +501,14 @@ export default class extends React.Component {
 
   onLoggedIn(usr) {
     let self = this;
+
+    let lData = this.state.loginData;
+    if (lData.joinToken !== undefined) {
+      lData.joinToken.use();
+      lData.joinToken = undefined;
+      this.setState({loginData: lData});
+    }
+
     if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
       //console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
       self.state.user = usr;
@@ -565,9 +573,11 @@ export default class extends React.Component {
   onOpenRegister() {
     this.$f7.loginScreen.close();
     if(this.state.routerParams.has("token")) {
-      let lData = this.state.loginData;
-      lData.joinToken = this.state.routerParams.get("token");
-      this.setState({loginData: lData});
+      new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
+        let lData = this.state.loginData;
+        lData.joinToken = token;
+        this.setState({loginData: lData});
+      });
     }
     this.$f7.loginScreen.open("#register-screen");
     this.setState({openOverlay: "register-screen"});
@@ -578,7 +588,11 @@ export default class extends React.Component {
       this.$f7.loginScreen.close();
       if(this.state.routerParams.has("token")) {
         let lData = this.state.loginData;
-        lData.joinToken = this.state.routerParams.get("token");
+        new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
+          let lData = this.state.loginData;
+          lData.joinToken = token;
+          this.setState({loginData: lData});
+        });
         this.setState({loginData: lData});
       }
       this.$f7.loginScreen.open("#login-screen");
