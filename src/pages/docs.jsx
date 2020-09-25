@@ -86,7 +86,7 @@ export default class extends React.Component {
 
         <NewGroupPopup
           owningUser={this.$f7.data.getUser()}
-          onGroupCreated={this.newGroupCreated.bind(this)}
+          onGroupCreated={(group) => this.newGroupCreated(group)}
         />
       </Page>
     );

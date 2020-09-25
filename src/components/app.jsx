@@ -174,6 +174,7 @@ export default class extends React.Component {
       },
       error: {
         has: false,
+        debug: false,
         msg: ""
       },
       popupComponent: new Map(),
@@ -207,7 +208,7 @@ export default class extends React.Component {
     }
   }
   render() {
-    return (this.state.error.has) ? (
+    return (this.state.error.has && !this.state.error.debug) ? (
       <App params={ this.state.f7params } themeDark>
         <View>
           <Page>
@@ -611,6 +612,12 @@ export default class extends React.Component {
           }
           this.$f7.view.current.router.navigate("/" + params.get("page") + "/");
         }
+      }
+
+      if(params.has("debug")) {
+        let err = this.state.error;
+        err.debug = true;
+        this.setState({error: err});
       }
     }
   }

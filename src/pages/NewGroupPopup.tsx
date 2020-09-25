@@ -61,10 +61,10 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
         new SVEGroup({name: this.newGroupName, id: (this.oldGroup !== undefined) ? this.oldGroup.getID() : NaN} as GroupInitializer, this.owningUser, (g) => {
           g.store().then(val => {
             if(val) {
-              this.newGroupName = undefined;
-              this.errorMsg = undefined;
-              this.forceUpdate();
-              this.onGroupCreated(g);
+                this.onGroupCreated(g);
+                this.newGroupName = undefined;
+                this.errorMsg = undefined;
+                this.forceUpdate();
             } else {
                 this.errorMsg = "Gruppe konnte nicht erstellt werden!";
                 this.forceUpdate();
