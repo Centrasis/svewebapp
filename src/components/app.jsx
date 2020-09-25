@@ -357,7 +357,7 @@ export default class extends React.Component {
                     id="regToken"
                     label="Registrierungs-Token"
                     type="text"
-                    placeholder="Übermitteltes Token für die Registrierung"
+                    placeholder="Übermitteltes Token für die Registrierung war nicht gültig oder vorhanden"
                     disabled
                     value=""
                     onInput={(e) => {
@@ -501,7 +501,9 @@ export default class extends React.Component {
     let self = this;
 
     let lData = this.state.loginData;
+    console.log("check for token...");
     if (lData.joinToken !== undefined) {
+      console.log("Use token after login!");
       lData.joinToken.use();
       lData.joinToken = undefined;
       this.setState({loginData: lData});
@@ -542,7 +544,7 @@ export default class extends React.Component {
       console.log("Found saved token");
       let loginData = this.state.loginData;
       loginData.username = window.localStorage.getItem("sve_user");
-      loginData.loginToken = token;
+      loginData.loginToken = new SVEToken(token, TokenType.DeviceToken, NaN);
       this.setState({loginData: loginData});
   
       this.doLogInWithToken(loginData.username, token);
@@ -575,6 +577,7 @@ export default class extends React.Component {
         let lData = this.state.loginData;
         lData.joinToken = token;
         if(!token.getIsValid()) {
+          console.log("Token is not valid!");
           this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
         }
         this.setState({loginData: lData});
@@ -593,6 +596,7 @@ export default class extends React.Component {
           let lData = this.state.loginData;
           lData.joinToken = token;
           if(!token.getIsValid()) {
+            console.log("Token is not valid!");
             this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
           }
           this.setState({loginData: lData});
