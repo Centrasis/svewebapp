@@ -569,9 +569,12 @@ export default class extends React.Component {
   }
 
   onOpenRegister() {
+    console.log("Show register overlay!");
     this.$f7.loginScreen.close();
     if(this.state.routerParams.has("token")) {
+      console.log("Found token in link!");
       new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
+        console.log("Got token object!");
         let lData = this.state.loginData;
         lData.joinToken = token;
         this.setState({loginData: lData});
@@ -585,6 +588,7 @@ export default class extends React.Component {
     if(this.state.openOverlay !== "login-screen") {
       this.$f7.loginScreen.close();
       if(this.state.routerParams.has("token")) {
+        console.log("Found token in link for login!");
         let lData = this.state.loginData;
         new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
           let lData = this.state.loginData;
