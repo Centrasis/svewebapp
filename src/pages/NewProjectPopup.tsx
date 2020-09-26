@@ -18,8 +18,8 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     protected errorMsg: string = undefined;
     protected caption: string = "Neues Projekt";
     protected projectType: SVEProjectType = SVEProjectType.Vacation;
-    protected beginDate: Date = undefined;
-    protected endDate: Date = undefined;
+    protected beginDate: string = undefined;
+    protected endDate: string = undefined;
     protected onProjectCreated: (prj?: SVEProject) => void = (prj?: SVEProject) => {};
 
     render () {
@@ -62,7 +62,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                             defaultValue={undefined}
                             value={this.beginDate}
                             onInput={(e) => {
-                                this.beginDate = new Date(e.target.value);
+                                this.beginDate = e.target.value;
                                 this.forceUpdate();
                             }}
                         ></ListInput>
@@ -73,7 +73,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                             defaultValue={undefined}
                             value={this.endDate}
                             onInput={(e) => {
-                                this.endDate = new Date(e.target.value);
+                                this.endDate = e.target.value;
                                 this.forceUpdate();
                             }}
                         ></ListInput>
@@ -113,7 +113,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                 state: (this.oldProject !== undefined) ? this.oldProject.getState() : SVEProjectState.Open,
                 resultsURI: "",
                 type: this.projectType,
-                dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: this.beginDate, end: this.endDate} : undefined
+                dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: new Date(this.beginDate), end: new Date(this.endDate)} : undefined
             } as ProjectInitializer,
             this.owningUser,
             p => {
@@ -163,8 +163,8 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
             this.oldProject = this.props.projectToEdit;
             this.parentGroup = this.oldProject!.getGroup();
             if(this.oldProject.getDateRange() !== undefined) {
-                this.beginDate = this.oldProject.getDateRange().begin;
-                this.endDate = this.oldProject.getDateRange().end;
+                this.beginDate = this.oldProject.getDateRange().begin.toLocaleDateString();
+                this.endDate = this.oldProject.getDateRange().end.toLocaleDateString();
                 this.projectType = this.oldProject.getType();
                 this.oldProject.getOwner().then(owner => this.owningUser = owner);
             }
