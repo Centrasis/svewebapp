@@ -89,7 +89,8 @@ export default class extends React.Component {
             promptLogin: function() {
               return app.onOpenLogin();
             },
-            getCameraStream: function(facingUser = false) {
+            getCameraStream: function() {
+              let facingUser = false;
               return new Promise((resolve, reject) => {
                 let createStream = () => {
                   let constraints = {
