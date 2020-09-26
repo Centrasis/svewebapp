@@ -96,14 +96,8 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
         if (this.allowShareOnly) {
             return;
         }
-
-        var self = this;
-        self.registerToken();
-        this.forceUpdate(() => {
-            self.$f7ready((f7) => {
-                Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
-            });
-        });
+        
+        this.registerToken();
     }
 
     onClickLink(link: string) {
@@ -122,7 +116,12 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             this.token = token;
             this.inviteLink = this.shareLink + "&page=register&token=" + encodeURI(this.token);
             console.log("Registered token!");
-            this.forceUpdate();
+            var self = this;
+            this.forceUpdate(() => {
+                self.$f7ready((f7) => {
+                    Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
+                });
+            });
         });
     }
 
