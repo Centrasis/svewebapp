@@ -25,6 +25,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     };
     protected lastRatio = 0.0;
     protected lastTime = new Date().getMilliseconds();
+    protected lastRemaining = 0.0;
 
     componentDidMount() {
         this.project = this.props.project;
@@ -85,15 +86,19 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
       }
 
       calcRemainingTime(currentRatio: number): string {
-        let now = new Date().getMilliseconds();
-        let timeDiff = now - this.lastTime;
-        this.lastTime = now;
-        let ratioDiff = currentRatio - this.lastRatio;
-        this.lastRatio = currentRatio;
+        if (currentRatio > this.lastRatio) {
+          let now = new Date().getMilliseconds();
+          let timeDiff = now - this.lastTime;
+          this.lastTime = now;
+          let ratioDiff = currentRatio - this.lastRatio;
+          this.lastRatio = currentRatio;
 
-        let remainingTime = (((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0;
+          this.lastRemaining = (((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0;
+        }
+
+        let remainingTime = this.lastRemaining;
         let unit = "s";
-        if (remainingTime > 90) {
+        if (this.lastRemaining > 90) {
           unit = "min";
           remainingTime = remainingTime / 60.0;
         }
