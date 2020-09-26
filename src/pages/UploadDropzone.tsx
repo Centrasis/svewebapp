@@ -77,6 +77,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
 
         this.lastRatio = 0.0;
         this.lastTime = new Date().getMilliseconds();
+        this.lastRemaining = 0.0;
     
         for (let i = 0; i < this.uploadInfo.maxParallelUploads; i++) {
           if(this.uploadInfo.pendingUploads.length < this.uploadInfo.maxParallelUploads && this.uploadInfo.imagesToUpload.length > 0) {
@@ -88,12 +89,13 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
       calcRemainingTime(currentRatio: number): string {
         if (currentRatio > this.lastRatio) {
           let now = new Date().getMilliseconds();
-          let timeDiff = now - this.lastTime;
-          this.lastTime = now;
-          let ratioDiff = currentRatio - this.lastRatio;
-          this.lastRatio = currentRatio;
-
-          this.lastRemaining = (((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0;
+          let timeDiff = Math.abs(now - this.lastTime);
+          let ratioDiff = Math.abs(currentRatio - this.lastRatio);
+          if (ratioDiff > 0.0 && timeDiff > 0.0) {
+            this.lastTime = now;
+            this.lastRatio = currentRatio;
+            this.lastRemaining = Math.ceil((((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0);
+          }
         }
 
         let remainingTime = this.lastRemaining;
