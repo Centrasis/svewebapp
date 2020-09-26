@@ -134,14 +134,14 @@ export default class extends React.Component {
               app.setState({hasCameraPermission: undefined});
             },
             joinGroup: function(link) {
-              if (link.includes("token=") && link.includes("context=") && link.includes(window.location.host)) {
-                let params = new Map();
-                let vars = link.substring(1).split('&');
-                for (var i = 0; i < vars.length; i++) {
-                  let pair = vars[i].split('=');
-                  params.set(pair[0], decodeURI(pair[1]));
-                }
+              let params = new Map();
+              let vars = link.substring(1).split('&');
+              for (var i = 0; i < vars.length; i++) {
+                let pair = vars[i].split('=');
+                params.set(pair[0], decodeURI(pair[1]));
+              }
 
+              if (link.includes("token=") && link.includes("context=") && link.includes(window.location.host)) {
                 new SVEToken(params.get("token"), TokenType.RessourceToken, Number(params.get("context")), (token => {
                   app.$f7.toast.create({
                     text: (token.setIsValid()) ? "Beitrittslink gefunden" : "Abgelaufener Link!",
@@ -164,9 +164,9 @@ export default class extends React.Component {
                 });
                 toast.open();
 
-                if(link.includes("redirectProject=") && link.includes(window.location.host)) {
-                  window.location = link;
-                  app.parseLink();
+                if(params.has("redirectProject") && link.includes(window.location.host)) {
+                  let pid = Number(params.get("redirectProject"));
+                  app.$f7.view.current.router.navigate("/project/" + pid + "/");
                 }
               }
             },
