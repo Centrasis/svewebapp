@@ -141,7 +141,7 @@ export default class extends React.Component {
                 params.set(pair[0], decodeURI(pair[1]));
               }
 
-              if (link.includes("token=") && link.includes("context=") && link.includes(window.location.host)) {
+              if (link.includes("token=") && link.includes("context=")) {
                 new SVEToken(params.get("token"), TokenType.RessourceToken, Number(params.get("context")), (token => {
                   app.$f7.toast.create({
                     text: (token.setIsValid()) ? "Beitrittslink gefunden" : "Abgelaufener Link!",
@@ -164,7 +164,7 @@ export default class extends React.Component {
                 });
                 toast.open();
 
-                if(params.has("redirectProject") && link.includes(window.location.host)) {
+                if(params.has("redirectProject")) {
                   let pid = Number(params.get("redirectProject"));
                   app.$f7.view.current.router.navigate("/project/" + pid + "/");
                 }
