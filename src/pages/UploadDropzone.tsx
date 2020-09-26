@@ -100,9 +100,9 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
 
         let remainingTime = this.lastRemaining;
         let unit = "s";
-        if (this.lastRemaining > 90) {
+        if (remainingTime > 90) {
           unit = "min";
-          remainingTime = remainingTime / 60.0;
+          remainingTime = Math.ceil(remainingTime / 60.0);
         }
 
         return String(remainingTime) + "[" + unit + "]";
