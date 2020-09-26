@@ -352,7 +352,7 @@ export default class extends React.Component {
                     }}
                 />
 
-                {(this.state.loginData.joinToken === undefined || !this.state.loginData.joinToken.getIsValid()) ? (
+                {(this.state.loginData.joinToken !== undefined && !this.state.loginData.joinToken.getIsValid()) ?
                   <ListInput
                     id="regToken"
                     label="Registrierungs-Token"
@@ -364,9 +364,11 @@ export default class extends React.Component {
                       
                     }}
                   />
-                ) : (
-                  <ListItem color="green" style={{color: "green"}}><span color="green" style={{color: "green"}}>Token akzeptiert</span></ListItem>
-                )}
+                : 
+                  (this.state.loginData.joinToken !== undefined) ? 
+                    <ListItem color="green" style={{color: "green"}}><span color="green" style={{color: "green"}}>Token akzeptiert</span></ListItem>
+                  : ""
+                }
 
                 <ListButton title="Register" onClick={() => this.onRegister()} />
                 <ListButton title="Zurück zum Login" onClick={() => this.onOpenLogin()} />
@@ -591,11 +593,13 @@ export default class extends React.Component {
       new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
         let lData = this.state.loginData;
         lData.joinToken = token;
+        console.log("Received token!");
         if(!token.getIsValid()) {
           console.log("Token is not valid!");
           this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
         }
         this.setState({loginData: lData});
+        this.forceUpdate();
       });
     }
     this.$f7.loginScreen.open("#register-screen");
@@ -610,12 +614,14 @@ export default class extends React.Component {
         new SVEToken(this.state.routerParams.get("token"), TokenType.RessourceToken, Number(this.state.routerParams.get("context")), (token) => {
           let lData = this.state.loginData;
           lData.joinToken = token;
+          console.log("Received token!");
           if(!token.getIsValid()) {
             console.log("Token is not valid!");
             this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
           }
           this.state.loginData.joinToken = token;
           this.setState({loginData: lData});
+          this.forceUpdate();
         });
         this.setState({loginData: lData});
       }
