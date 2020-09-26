@@ -133,26 +133,40 @@ export default class extends React.Component {
               app.setState({hasCameraPermission: undefined});
             },
             joinGroup: function(link) {
-              if (link.includes("felixlehner.de") && (link.includes("token=") || link.includes("redirectProject="))) {
-                let toast = app.$f7.toast.create({
-                  text: "Beitrittslink gefunden",
-                  closeButton: true,
-                  closeButtonText: 'Beitritt',
-                  closeButtonColor: 'green',
-                  on: {
-                    close: () => {
-                      window.open(link, "_self");
+              if (link.includes("token=") && link.includes("context=")) {
+                let params = new Map();
+                let vars = link.substring(1).split('&');
+                for (var i = 0; i < vars.length; i++) {
+                  let pair = vars[i].split('=');
+                  params.set(pair[0], decodeURI(pair[1]));
+                }
+
+                new SVEToken(params.get("token"), TokenType.RessourceToken, Number(params.get("context")), (token => {
+                  app.$f7.toast.create({
+                    text: (token.setIsValid()) ? "Beitrittslink gefunden" : "Abgelaufener Link!",
+                    closeButton: true,
+                    closeButtonText: (token.setIsValid()) ? 'Beitritt' : "OK",
+                    closeButtonColor: (token.setIsValid()) ? 'green' : "red",
+                    on: {
+                      close: () => {
+                        if(token.setIsValid())
+                          token.use();                      
+                      }
                     }
-                  }
-                });
-                toast.open();
+                  }).open();
+                }));
               } else {
                 let toast = app.$f7.toast.create({
                   text: "Found Link: " + link,
                   closeButton: false,
-                  closeTimeout: 1000,
+                  closeTimeout: 5000,
                 });
                 toast.open();
+
+                if(link.includes("redirectProject=")) {
+                  window.location = link;
+                  app.parseLink();
+                }
               }
             },
             getPopupComponent: function(name) {
