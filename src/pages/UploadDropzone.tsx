@@ -114,11 +114,11 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
             this.onImageUploaded(lastItem);
           this.uploadInfo.filesUploaded = 0;
           this.uploadInfo.totalFilesToUpload = 0;
+          this.$f7.progressbar.hide();
           if(this.uploadInfo.progressbar !== undefined) {
             this.uploadInfo.progressbar.close();
             this.uploadInfo.progressbar = undefined;
           }
-          this.$f7.progressbar.hide();
           return;
         }
         let baseRatio = (this.uploadInfo.filesUploaded / this.uploadInfo.totalFilesToUpload) * 100.0;
