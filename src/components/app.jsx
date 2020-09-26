@@ -133,7 +133,7 @@ export default class extends React.Component {
               app.setState({hasCameraPermission: undefined});
             },
             joinGroup: function(link) {
-              if (link.includes("token=") && link.includes("context=")) {
+              if (link.includes("token=") && link.includes("context=") && link.includes(window.location.host)) {
                 let params = new Map();
                 let vars = link.substring(1).split('&');
                 for (var i = 0; i < vars.length; i++) {
@@ -163,7 +163,7 @@ export default class extends React.Component {
                 });
                 toast.open();
 
-                if(link.includes("redirectProject=")) {
+                if(link.includes("redirectProject=") && link.includes(window.location.host)) {
                   window.location = link;
                   app.parseLink();
                 }
