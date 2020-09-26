@@ -23,6 +23,8 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         maxParallelUploads: 2,
         progressbar: undefined
     };
+    protected lastRatio = 0.0;
+    protected lastTime = new Date().getMilliseconds();
 
     componentDidMount() {
         this.project = this.props.project;
@@ -78,6 +80,23 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
           }
         }
       }
+
+      calcRemainingTime(currentRatio: number): string {
+        let now = new Date().getMilliseconds();
+        let timeDiff = now - this.lastTime;
+        this.lastTime = now;
+        let ratioDiff = currentRatio - this.lastRatio;
+        this.lastRatio = currentRatio;
+
+        let remainingTime = (((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0;
+        let unit = "s";
+        if (remainingTime > 90) {
+          unit = "min";
+          remainingTime = remainingTime / 60.0;
+        }
+
+        return String(remainingTime) + "[" + unit + "]";
+      }
     
       popNextUpload(lastItem: SVEData) {
         if (this.uploadInfo.imagesToUpload.length === 0) {
@@ -96,8 +115,8 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         this.uploadInfo.progressbar.setText("Datei (" + this.uploadInfo.filesUploaded + " / " + this.uploadInfo.totalFilesToUpload + ")");
     
         var self = this;
-        var lastRatio = 0.0;
-        var lastTime = new Date().getMilliseconds();
+        this.lastRatio = 0.0;
+        this.lastTime = new Date().getMilliseconds();
         const media = this.uploadInfo.imagesToUpload.pop();
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
@@ -127,21 +146,11 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         });
     
         uploader.on('progress', (progress) => {
-            let now = new Date().getMilliseconds();
-            let timeDiff = now - lastTime;
-            lastTime = now;
             let ratio = ((self.uploadInfo.filesUploaded + (progress.detail / 100.0)) / self.uploadInfo.totalFilesToUpload) * 100.0;
-            let ratioDiff = ratio - lastRatio;
-            lastRatio = ratio;
             self.$f7.progressbar.show(ratio, "#11a802");
             self.uploadInfo.progressbar.setProgress(ratio);
-            let remainingTime = (((100 - ratio) / ratioDiff) * timeDiff) / 1000.0;
-            let unit = "s";
-            if (remainingTime > 90) {
-              unit = "min";
-              remainingTime = remainingTime / 60.0;
-            }
-            self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ") ~" + remainingTime + "[" + unit + "]");
+            
+            self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ") ~" + this.calcRemainingTime(ratio));
         });
     
         uploader.on('finish', () => {
