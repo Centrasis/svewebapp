@@ -73,6 +73,9 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     
         media.forEach(m => this.uploadInfo.imagesToUpload.push(m));
         this.uploadInfo.totalFilesToUpload += media.length;
+
+        this.lastRatio = 0.0;
+        this.lastTime = new Date().getMilliseconds();
     
         for (let i = 0; i < this.uploadInfo.maxParallelUploads; i++) {
           if(this.uploadInfo.pendingUploads.length < this.uploadInfo.maxParallelUploads && this.uploadInfo.imagesToUpload.length > 0) {
@@ -111,12 +114,10 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
           this.$f7.progressbar.hide();
           return;
         }
-    
-        this.uploadInfo.progressbar.setText("Datei (" + this.uploadInfo.filesUploaded + " / " + this.uploadInfo.totalFilesToUpload + ")");
+        let ratio = (this.uploadInfo.filesUploaded / this.uploadInfo.totalFilesToUpload) * 100.0;
+        this.uploadInfo.progressbar.setText("Datei (" + this.uploadInfo.filesUploaded + " / " + this.uploadInfo.totalFilesToUpload + ") ~" + this.calcRemainingTime(ratio));
     
         var self = this;
-        this.lastRatio = 0.0;
-        this.lastTime = new Date().getMilliseconds();
         const media = this.uploadInfo.imagesToUpload.pop();
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
