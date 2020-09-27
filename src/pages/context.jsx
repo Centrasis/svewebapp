@@ -150,7 +150,7 @@ export default class extends React.Component {
                 onClick: function() { self.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(true); }
               },
               {
-                caption: "Einladen",
+                caption: "Teilen",
                 onClick: function() { router.navigate("/contextdetails/" + group.getID() + "/") }
               },
               {
