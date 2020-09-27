@@ -24,7 +24,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         progressbar: undefined
     };
     protected lastRatio = 0.0;
-    protected lastTime = new Date().getMilliseconds();
+    protected lastTime = performance.now();
     protected lastRemaining = 0.0;
 
     componentDidMount() {
@@ -76,7 +76,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
         this.uploadInfo.totalFilesToUpload += media.length;
 
         this.lastRatio = 0.0;
-        this.lastTime = new Date().getMilliseconds();
+        this.lastTime = performance.now();
         this.lastRemaining = 0.0;
     
         for (let i = 0; i < this.uploadInfo.maxParallelUploads; i++) {
@@ -88,7 +88,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
 
       calcRemainingTime(currentRatio: number): string {
         if (currentRatio > this.lastRatio) {
-          let now = new Date().getMilliseconds();
+          let now = performance.now();
           let timeDiff = Math.abs(now - this.lastTime);
           let ratioDiff = Math.abs(currentRatio - this.lastRatio);
           if (ratioDiff > 0.0 && timeDiff > 0.0) {
