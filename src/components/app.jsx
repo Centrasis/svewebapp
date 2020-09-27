@@ -588,6 +588,8 @@ export default class extends React.Component {
     window.localStorage.removeItem("sve_user");
     this.state.user = undefined;
 
+    document.cookie = 'sve-session=; Max-Age=0; path=/; domain=' + location.host;
+
     //update complete webapp
     location.reload();
   }
