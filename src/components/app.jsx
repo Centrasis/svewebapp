@@ -588,7 +588,9 @@ export default class extends React.Component {
     window.localStorage.removeItem("sve_user");
     this.state.user = undefined;
 
-    document.cookie = 'sve-session=; Max-Age=0; path=/; domain=' + location.host;
+    let allCookies = document.cookie.split(';');
+    for (let i = 0; i < allCookies.length; i++)
+        document.cookie = allCookies[i] + "=;expires=" + new Date(0).toUTCString();
 
     //update complete webapp
     location.reload();
