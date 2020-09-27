@@ -586,6 +586,9 @@ export default class extends React.Component {
     window.localStorage.removeItem("sve_username");
     window.localStorage.removeItem("sve_user");
     this.state.user = undefined;
+
+    //update complete webapp
+    location.reload();
   }
 
   checkForToken() {
