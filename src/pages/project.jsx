@@ -30,6 +30,7 @@ export default class extends React.Component {
       showPreSelect: false,
       ownerName: '',
       resultURI: undefined,
+      resultPosterURI: "",
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
     };
@@ -60,7 +61,7 @@ export default class extends React.Component {
           ) : ""}
           {(this.state.resultURI !== undefined) ? 
             <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <video playsInline controls preload="none" style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI}></video>
+              <video playsInline controls preload="auto" style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI} poster={this.state.resultPosterURI}></video>
             </Row>
           : ""}
           
@@ -393,7 +394,7 @@ export default class extends React.Component {
             if (isNaN(data.getID())) {
               console.log("Got result error on Server!");
             } else {
-              self.setState({resultURI: data.getURI(SVEDataVersion.Full, false)});
+              self.setState({resultURI: data.getURI(SVEDataVersion.Full, false), resultPosterURI: data.getURI(SVEDataVersion.Preview, false)});
             }
           }), err => {});
           self.updateContent();
