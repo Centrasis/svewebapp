@@ -627,7 +627,9 @@ export default class extends React.Component {
         uInit.name = window.localStorage.getItem("sve_username");
         new SVEAccount(uInit, (newUser) => {
           this.state.user = newUser;
-          this.setState({ loginData: { username: newUser.getName(), password: '' }, user: newUser});
+          let lData = this.state.loginData;
+          lData.username = newUser.getName();
+          this.setState({ loginData: lData, user: newUser});
           this.onLoggedIn(newUser);
         });
       }, err => {
@@ -746,7 +748,9 @@ export default class extends React.Component {
         console.log("Initial SVE state: " + JSON.stringify(state));
         SVESystemInfo.getLoggedInUser().then(usr => {
           self.state.user = usr;
-          self.setState({ loginData: { username: usr.getName(), password: '' }, user: usr});
+          let lData = this.state.loginData;
+          lData.username = usr.getName();
+          self.setState({ loginData: lData, user: usr});
           self.onLoggedIn(usr);
         }, err => {
           self.state.user = undefined;
