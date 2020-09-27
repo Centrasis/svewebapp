@@ -42,27 +42,8 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected shouldReturnSelectedMedia: boolean = false; //display media instead
     protected onSelectMedia: (media?: SVEData) => void = (media?: SVEData) => {};
 
-    componentDidUpdate() {
-        Dom7('#'+this.props.id + "-Infinity-Loader").hide();
-    }
-
-    componentDidMount() {
-        //console.log("Init media gallery.." + JSON.stringify(this.props));
+    updateProps() {
         this.data = this.props.data;
-
-        this.toastFavIcon = this.$f7.toast.create({
-            icon: '<i class="f7-icons">star</i>',
-            text: 'Favorisiert',
-            position: 'center',
-            closeTimeout: 1000,
-        });
-
-        this.toastDeleteIcon = this.$f7.toast.create({
-            icon: '<i class="f7-icons">trash</i>',
-            text: 'Gelöscht',
-            position: 'center',
-            closeTimeout: 1000,
-        });
 
         if (this.props.sortBy)
         {
@@ -113,6 +94,34 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         {
             this.enableFavorization = this.props.enableFavorization;
         }
+    }
+
+    componentDidUpdate() {
+        Dom7('#'+this.props.id + "-Infinity-Loader").hide();
+        this.updateProps();
+    }
+
+    UNSAFE_componentWillUpdate() { 
+        this.updateProps();
+        this.$f7ready((f7) => {});
+    }
+
+    componentDidMount() {
+        this.toastFavIcon = this.$f7.toast.create({
+            icon: '<i class="f7-icons">star</i>',
+            text: 'Favorisiert',
+            position: 'center',
+            closeTimeout: 1000,
+        });
+
+        this.toastDeleteIcon = this.$f7.toast.create({
+            icon: '<i class="f7-icons">trash</i>',
+            text: 'Gelöscht',
+            position: 'center',
+            closeTimeout: 1000,
+        });
+
+        this.updateProps();
 
         this.registerScrollListeners();
     }
