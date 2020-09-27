@@ -616,11 +616,11 @@ export default class extends React.Component {
   
     token.use().then(() => {
       SVESystemInfo.getFullSystemState().then(val => {
+        console.log("After token use system status: " + JSON.stringify(val));
         if (val.user !== undefined) {
-          this.state.user = new SVEAccount(val.user, (usr) => {
-            this.setState({ loginData: { username: usr.getName(), password: '' }, user: usr});
-            this.onLoggedIn(usr);
-          });
+          this.state.user = val.user;
+          this.setState({ loginData: { username: val.user.getName(), password: '' }, user: val.user});
+          this.onLoggedIn(val.user);
         } else {
           console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
           this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
@@ -735,14 +735,14 @@ export default class extends React.Component {
       self.onOpenLogin();
 
       SVESystemInfo.getFullSystemState().then(state => {
+        console.log("Initial SVE state: " + JSON.stringify(state));
         if(state.user === undefined) {
           self.state.user = undefined;
           self.checkForToken();
         } else {
-          self.state.user = new SVEAccount(state.user, (usr) => {
-            self.setState({ loginData: { username: state.user.getName(), password: '' }, user: usr});
-            self.onLoggedIn(usr);
-          });
+          self.state.user = state.user;
+          self.setState({ loginData: { username: state.user.getName(), password: '' }, user: state.user});
+          self.onLoggedIn(state.user);
         }
 
         self.parseLink();
