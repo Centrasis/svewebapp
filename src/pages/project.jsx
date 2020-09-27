@@ -359,7 +359,7 @@ export default class extends React.Component {
               onClick: function() { self.setState({showUpload : true}) }
             } : {}, 
             {
-              caption: "Details",
+              caption: "Teilen",
               onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
             },
             {
