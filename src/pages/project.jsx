@@ -202,7 +202,7 @@ export default class extends React.Component {
           this.state.project.setResult(latestData);
           storeProject();
         }, err => this.enqueueLatestDataCall(storeProject, count + 1));
-      }, 1000);
+      }, (count < 50) ? 1000 : 10000);
     } else {
       storeProject();
     }
