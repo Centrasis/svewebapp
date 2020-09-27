@@ -186,6 +186,9 @@ export default class extends React.Component {
               } catch {
                 return false;
               }
+            },
+            cleanUpLogInData: function() {
+              app.cleanUpLogInData();
             }
           }
         },
@@ -572,6 +575,13 @@ export default class extends React.Component {
   }
 
   cleanUpLogInData() {
+    let token_str = window.localStorage.getItem("sve_token");
+    if (token_str !== null && token_str !== undefined) {
+      new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+        token.invalidate();
+      });
+    }
+
     window.localStorage.removeItem("sve_token");
     window.localStorage.removeItem("sve_username");
     window.localStorage.removeItem("sve_user");
@@ -579,12 +589,12 @@ export default class extends React.Component {
   }
 
   checkForToken() {
-    let token = window.localStorage.getItem("sve_token");
-    if (token !== null && token !== undefined) {
+    let token_str = window.localStorage.getItem("sve_token");
+    if (token_str !== null && token_str !== undefined) {
       console.log("Found saved token");
       let loginData = this.state.loginData;
       loginData.username = window.localStorage.getItem("sve_username");
-      new SVEToken(token, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+      new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
         loginData.loginToken = token;
         this.setState({loginData: loginData});
         if(!token.getIsValid()) {

@@ -143,8 +143,7 @@ export default class extends React.Component {
   }
 
   logOut() {
-    window.localStorage.removeItem("sve_token");
-    window.localStorage.removeItem("sve_user");
+    this.$f7.data.cleanUpLogInData();
     this.$f7.data.promptLogin();
   }
 
