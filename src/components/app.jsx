@@ -177,6 +177,15 @@ export default class extends React.Component {
               let m = app.state.popupComponent;
               m.set(name, comp);
               app.setState({popupComponent: m})
+            },
+            getIsMobileDataConnection: function() {
+              try {
+                let connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                let type = connection.NetworkInformation.type;
+                return (type !== "wifi" && type !== "ethernet")
+              } catch {
+                return false;
+              }
             }
           }
         },
@@ -562,6 +571,13 @@ export default class extends React.Component {
 
   }
 
+  cleanUpLogInData() {
+    window.localStorage.removeItem("sve_token");
+    window.localStorage.removeItem("sve_username");
+    window.localStorage.removeItem("sve_user");
+    this.state.user = undefined;
+  }
+
   checkForToken() {
     let token = window.localStorage.getItem("sve_token");
     if (token !== null && token !== undefined) {
@@ -572,34 +588,42 @@ export default class extends React.Component {
         loginData.loginToken = token;
         this.setState({loginData: loginData});
         if(!token.getIsValid()) {
-          console.log("Token is not valid!");
-          this.setState({loginMessages: {errorMsg: "Einladung ist nicht mehr gültig.", loginType: this.state.loginMessages.loginType}});
+          console.log("Device Token is not valid!");
+          this.setState({loginMessages: {errorMsg: "Gepeichertes Geräte-Token ist ungültig!", loginType: this.state.loginMessages.loginType}});
+          this.cleanUpLogInData();
+        } else {
+          this.doLogInWithToken(token);
         }
-        this.doLogInWithToken(token);
       });
       this.setState({loginData: loginData});
     }
   }
 
   doLogInWithToken(token) {
-    var self = this;
     this.setState({saveThisDevice: false});
     console.log("Try login as: " + this.state.loginData.username);
     console.log("Use token");
   
-    /*
-    new SVEAccount({
-      name: user,
-      token: token
-    }, (usr) => {
-      self.onLoggedIn(usr);
+    token.use().then(() => {
+      SVESystemInfo.getFullSystemState().then(val => {
+        if (val.user !== undefined) {
+          this.state.user = new SVEAccount(val.user, (usr) => {
+            this.setState({ loginData: { username: usr.getName(), password: '' }, user: usr});
+            this.onLoggedIn(usr);
+          });
+        } else {
+          console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
+          this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
+          this.onOpenLogin();
+        }
+      });
+      this.$f7.loginScreen.close();
+      this.setState({openOverlay: ""});
     }, err => {
-      let lData = self.state.loginMessages;
-      lData.errorMsg = "Login by token at server failed: " + JSON.stringify(err), "Login Error!";
-      self.setState({loginMessages: lData});
+      console.log("Login via Geräte-Token fehlgeschlagen!");
+      this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
       this.onOpenLogin();
     });
-    */
   }
 
   onOpenRegister() {
@@ -690,7 +714,9 @@ export default class extends React.Component {
       {
         f7.dialog.confirm("Die Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.", "App ist nicht installiert", 
           () => { 
-            self.$f7.view.current.router.navigate("/install/"); 
+            self.$f7.view.current.router.navigate("/install/");
+            self.$f7.loginScreen.close();
+            self.setState({openOverlay: ""});
           },
           () => {}
         );
@@ -701,13 +727,15 @@ export default class extends React.Component {
       SVESystemInfo.getFullSystemState().then(state => {
         if(state.user === undefined) {
           self.state.user = undefined;
-          this.checkForToken();
+          self.checkForToken();
         } else {
-          self.state.user = state.user;
-          self.setState({ loginData: { username: state.user.getName(), password: '', loginToken: '' }, user: state.user});
+          self.state.user = new SVEAccount(state.user, (usr) => {
+            self.setState({ loginData: { username: state.user.getName(), password: '' }, user: usr});
+            self.onLoggedIn(usr);
+          });
         }
 
-        this.parseLink();
+        self.parseLink();
       }, err => {
         console.log("Error on init: " + JSON.stringify(err));
         f7.dialog.alert("Der SVE Server ist nicht erreichbar! Bitte mit dem Admin kontakt aufnehmen.", "Server nicht erreichbar!");

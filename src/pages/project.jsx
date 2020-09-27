@@ -61,7 +61,7 @@ export default class extends React.Component {
           ) : ""}
           {(this.state.resultURI !== undefined) ? 
             <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <video playsInline controls preload="auto" style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI} poster={this.state.resultPosterURI}></video>
+              <video playsInline controls preload={(this.$f7.data.getIsMobileDataConnection()) ? "none" : "auto"} style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI} poster={this.state.resultPosterURI}></video>
             </Row>
           : ""}
           
