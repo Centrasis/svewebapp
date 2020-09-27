@@ -214,15 +214,12 @@ export default class extends React.Component {
       };
 
       if (img !== undefined) {
-        this.state.project.getData().then(data => {
-          let result = data.filter(d => d.getName() === img.name);
-          if(result.length === 1) {
-            this.state.project.setResult(result[0]);
+        setTimeout(() => {
+          SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+            this.state.project.setResult(latestData);
             storeProject();
-          } else {
-            console.log("Found multiple canditates: " + JSON.stringify(result) + ' for name: ' + img.name);
-          }
-        });
+          });
+        }, 1000);   
       } else {
         storeProject();
       }
