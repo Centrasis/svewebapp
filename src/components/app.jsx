@@ -619,17 +619,21 @@ export default class extends React.Component {
     console.log("Use token");
   
     token.use().then(() => {
-      SVESystemInfo.getFullSystemState().then(val => {
-        console.log("After token use system status: " + JSON.stringify(val));
-        if (val.user !== undefined) {
-          this.state.user = val.user;
-          this.setState({ loginData: { username: val.user.getName(), password: '' }, user: val.user});
-          this.onLoggedIn(val.user);
-        } else {
-          console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
-          this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
-          this.onOpenLogin();
-        }
+      SVESystemInfo.getLoggedInUser().then(usr => {
+        console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
+
+        // correct username, since the token login does not know about it
+        let uInit = usr.getInitializer();
+        uInit.name = window.localStorage.getItem("sve_username");
+        new SVEAccount(uInit, (newUser) => {
+          this.state.user = newUser;
+          this.setState({ loginData: { username: newUser.getName(), password: '' }, user: newUser});
+          this.onLoggedIn(newUser);
+        });
+      }, err => {
+        console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
+        this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
+        this.onOpenLogin();
       });
       this.$f7.loginScreen.close();
       this.setState({openOverlay: ""});
@@ -740,14 +744,14 @@ export default class extends React.Component {
 
       SVESystemInfo.getFullSystemState().then(state => {
         console.log("Initial SVE state: " + JSON.stringify(state));
-        if(state.user === undefined) {
+        SVESystemInfo.getLoggedInUser().then(usr => {
+          self.state.user = usr;
+          self.setState({ loginData: { username: usr.getName(), password: '' }, user: usr});
+          self.onLoggedIn(usr);
+        }, err => {
           self.state.user = undefined;
           self.checkForToken();
-        } else {
-          self.state.user = state.user;
-          self.setState({ loginData: { username: state.user.getName(), password: '' }, user: state.user});
-          self.onLoggedIn(state.user);
-        }
+        });
 
         self.parseLink();
       }, err => {
