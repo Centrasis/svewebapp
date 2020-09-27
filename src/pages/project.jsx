@@ -195,13 +195,17 @@ export default class extends React.Component {
     this.setState({selectSplash: false});
   }
 
-  enqueueLatestDataCall(storeProject) {
-    setTimeout(() => {
-      SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
-        this.state.project.setResult(latestData);
-        storeProject();
-      }, err => this.enqueueLatestDataCall(storeProject));
-    }, 1000);
+  enqueueLatestDataCall(storeProject, count = 0) {
+    if(count < 100) {
+      setTimeout(() => {
+        SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+          this.state.project.setResult(latestData);
+          storeProject();
+        }, err => this.enqueueLatestDataCall(storeProject, count + 1));
+      }, 1000);
+    } else {
+      storeProject();
+    }
   }
 
   OnImgUploaded(img) {
