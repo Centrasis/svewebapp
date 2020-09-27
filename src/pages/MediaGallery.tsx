@@ -16,9 +16,13 @@ export type MediaSettings = {
     sortBy?: Sorting,
     enableDeletion?: boolean,
     enableFavorization?: boolean,
+    enableDownload?: boolean,
     displayCount?: number,
     displayCountIncrement?: number,
-    onDeleteMedia?: (id: number) => void
+    onDeleteMedia?: (id: number) => void,
+    /** Display or return media */
+    shouldReturnSelectedMedia?: boolean,
+    onSelectMedia?: (media?: SVEData) => void
 };
 
 export default class MediaGallery extends React.Component<MediaSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
@@ -28,12 +32,15 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected caption: string = "";
     protected enableDeletion: boolean = false;
     protected enableFavorization: boolean = false;
+    protected enableDownload: boolean = true;
     protected sortBy: Sorting = Sorting.AgeASC;
     protected onDeleteMedia: (id: number) => void = (id: number) => {};
     protected favoriteImgs: Set<number> = new Set<number>();
     protected toastFavIcon = null;
     protected toastDeleteIcon = null;
     protected infiniteActive: boolean = false;
+    protected shouldReturnSelectedMedia: boolean = false; //display media instead
+    protected onSelectMedia: (media?: SVEData) => void = (media?: SVEData) => {};
 
     componentDidUpdate() {
         Dom7('#'+this.props.id + "-Infinity-Loader").hide();
@@ -62,6 +69,16 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             this.sortBy = this.props.sortBy;
         }
 
+        if (this.props.shouldReturnSelectedMedia)
+        {
+            this.shouldReturnSelectedMedia = this.props.shouldReturnSelectedMedia;
+        }
+
+        if (this.props.onSelectMedia)
+        {
+            this.onSelectMedia = this.props.onSelectMedia;
+        }
+
         if (this.props.onDeleteMedia)
         {
             this.onDeleteMedia = this.props.onDeleteMedia;
@@ -80,6 +97,11 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         if (this.props.enableDeletion)
         {
             this.enableDeletion = this.props.enableDeletion;
+        }
+
+        if (this.props.enableDownload)
+        {
+            this.enableDownload = this.props.enableDownload;
         }
 
         if (this.props.caption)
@@ -135,9 +157,11 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                             : ""}
                             </Col>
                             <Col>
-                            <Link href="#" onClick={this.saveImageToDevice.bind(this, image)}>
-                                <Icon f7="cloud_download" tooltip="Herunterladen"></Icon>
-                            </Link>
+                            {(this.enableDownload) ? 
+                                <Link href="#" onClick={this.saveImageToDevice.bind(this, image)}>
+                                    <Icon f7="cloud_download" tooltip="Herunterladen"></Icon>
+                                </Link>
+                            : "" }
                             </Col>
                             <Col>
                             {(this.enableDeletion) ? 
@@ -252,6 +276,14 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
       }
 
       onClickImage(img: SVEData) {
+          if(this.shouldReturnSelectedMedia) {
+            this.onSelectMedia(img);
+          } else {
+            this.onDisplayMedia(img);
+          }
+      }
+
+      onDisplayMedia(img: SVEData) {
         img.getOwner().then((user) => {
             let displayed = [];
             if (img.getType() === SVEDataType.Image)

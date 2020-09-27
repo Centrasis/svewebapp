@@ -26,6 +26,7 @@ export default class extends React.Component {
       selectedImgUser: "",
       showUpload: false,
       closeProject: false,
+      selectSplash: false,
       images_toPreSelect: [],
       showPreSelect: false,
       ownerName: '',
@@ -116,9 +117,7 @@ export default class extends React.Component {
                 className="scrollBox"
                 id={v.key}
               >
-                <Row style={{display: "flex", justifyContent: "center", alignContent: "center", paddingBottom: "1em", textAlign: "center"}}>
-                  <BlockTitle medium>{v.key}</BlockTitle>
-                </Row>
+                <BlockTitle medium>{v.key}</BlockTitle>
 
                 <MediaGallery
                   id={`image-gallery-${v.key}`}
@@ -136,16 +135,36 @@ export default class extends React.Component {
         </Block>
 
         <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false, closeProject: false})}>
-        <Page>
-          <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
-          {(typeof this.state.project !== "number") ? 
-            <UploadDropzone
-              project={this.state.project}
-              onImageUploaded={(img) => this.OnImgUploaded(img)}
-            />
-          : ""}
-        </Page>
-      </Popup>
+          <Page>
+            <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
+            {(typeof this.state.project !== "number") ? 
+              <UploadDropzone
+                project={this.state.project}
+                onImageUploaded={(img) => this.OnImgUploaded(img)}
+              />
+            : ""}
+          </Page>
+        </Popup>
+
+        <Popup className="splash-select" swipeToClose opened={this.state.selectSplash} onPopupClosed={() => this.setState({selectSplash : false})}>
+          <Page>
+            <BlockTitle large style={{justifySelf: "center"}}>Titelbild wählen</BlockTitle>
+            {(typeof this.state.project !== "number") ? 
+              <MediaGallery 
+                id={`title-select-gallery`}
+                data={this.getImagesFor(this.$f7.data.getUser().getName())}
+                sortBy={this.state.sortBy}
+                enableDeletion={false}
+                enableFavorization={false}
+                enableDownload={false}
+                style={{width: "100%", height: "100%"}}
+                displayCount={this.state.displayCount}
+                shouldReturnSelectedMedia={true}
+                onSelectMedia={this.onSelectSplash.bind(this)}
+              />
+            : ""}
+          </Page>
+        </Popup>
 
       <Popup swipeToClose opened={this.state.closeProject} onPopupClosed={() => this.setState({closeProject : false})}>
         <Page>
@@ -162,6 +181,19 @@ export default class extends React.Component {
     </Page>
   )
 }
+
+  onSelectSplash(img) {
+    if(img !== undefined) {
+      this.state.project.setSplashImgID(img.getID());
+      this.state.project.store().then(val => {
+        if(!val) {
+          this.$f7.dialog.alert("Titelbild konnte nicht gesetzt werden!");
+        }
+      });
+    }
+
+    this.setState({selectSplash: false});
+  }
 
   OnImgUploaded(img) {
     console.log("Media uploaded!");
@@ -341,6 +373,13 @@ export default class extends React.Component {
               color: "green",
               onClick: function() { 
                 self.setState({closeProject: true});
+              }
+            } : {},
+            (rights.admin) ?
+            {
+              caption: "Titelbild wählen",
+              onClick: function() { 
+                self.setState({selectSplash: true});
               }
             } : {},
             (rights.admin) ?
