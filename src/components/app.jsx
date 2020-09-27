@@ -538,9 +538,7 @@ export default class extends React.Component {
     let self = this;
 
     let lData = this.state.loginData;
-    console.log("check for token...");
     if (lData.joinToken !== undefined) {
-      console.log("Use token after login!");
       lData.joinToken.use();
       lData.joinToken = undefined;
       this.setState({loginData: lData});
