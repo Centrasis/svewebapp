@@ -195,6 +195,15 @@ export default class extends React.Component {
     this.setState({selectSplash: false});
   }
 
+  enqueueLatestDataCall(storeProject) {
+    setTimeout(() => {
+      SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+        this.state.project.setResult(latestData);
+        storeProject();
+      }, err => this.enqueueLatestDataCall(storeProject));
+    }, 1000);
+  }
+
   OnImgUploaded(img) {
     console.log("Media uploaded!");
     if(this.state.closeProject) {
@@ -214,12 +223,7 @@ export default class extends React.Component {
       };
 
       if (img !== undefined) {
-        setTimeout(() => {
-          SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
-            this.state.project.setResult(latestData);
-            storeProject();
-          });
-        }, 1000);   
+        this.enqueueLatestDataCall(storeProject);  
       } else {
         storeProject();
       }
