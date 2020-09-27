@@ -271,7 +271,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             {
             displayed = [
                 {
-                caption: 'Video',
+                caption: img.getName(),
                 html: `<video src="${img.getURI(SVEDataVersion.Full)}" controls autoplay></video>`,
                 }
             ];

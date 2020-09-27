@@ -393,7 +393,7 @@ export default class extends React.Component {
             if (isNaN(data.getID())) {
               console.log("Got result error on Server!");
             } else {
-              self.setState({resultURI: data.getURI()});
+              self.setState({resultURI: data.getURI(SVEDataVersion.Full, false)});
             }
           }), err => {});
           self.updateContent();
