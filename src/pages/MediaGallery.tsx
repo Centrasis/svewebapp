@@ -316,6 +316,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                 html: `<video 
                         controls autoplay preload="auto" poster="${img.getURI(SVEDataVersion.Preview)}">
                         <source src="${img.getURI(SVEDataVersion.Full)}" type="${img.getContentType(SVEDataVersion.Full)}" />
+                        <p>Dieser Browser unterstützt HTML5 Video nicht</p>
                        </video>`,
                 }
             ];

@@ -71,6 +71,7 @@ export default class extends React.Component {
                 poster={this.state.resultPosterURI}
               >
                 <source src={this.state.resultURI} type={this.state.resultType} />
+                <p>Dieser Browser unterstützt HTML5 Video nicht</p>
               </video>
             </Row>
           : ""}
