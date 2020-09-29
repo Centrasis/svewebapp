@@ -33,6 +33,7 @@ export default class extends React.Component {
       resultURI: undefined,
       resultType: "",
       resultPosterURI: "",
+      lastLatestID: 0,
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
     };
@@ -64,8 +65,8 @@ export default class extends React.Component {
           {(this.state.resultURI !== undefined) ? 
             <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
               <video 
-                playsInline 
-                controls 
+                playsInline
+                controls
                 preload={(this.$f7.data.getIsMobileDataConnection()) ? "none" : "auto"} 
                 style={{maxHeight: "30vh", width: "auto"}} 
                 poster={this.state.resultPosterURI}
@@ -209,8 +210,13 @@ export default class extends React.Component {
     if(count < 100) {
       setTimeout(() => {
         SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
-          this.state.project.setResult(latestData);
-          storeProject();
+          if(latestData !== this.state.lastLatestID) {
+            this.setState({lastLatestID: latestData});
+            this.state.project.setResult(latestData);
+            storeProject();
+          } else {
+            this.enqueueLatestDataCall(storeProject, count + 1);
+          }
         }, err => this.enqueueLatestDataCall(storeProject, count + 1));
       }, (count < 50) ? 1000 : 10000);
     } else {
@@ -284,6 +290,10 @@ export default class extends React.Component {
   }
 
   updateUploadedImages() {
+    SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+        this.setState({lastLatestID: latestData});
+    });
+
     var self = this;
     var $$ = Dom7;
 
