@@ -31,6 +31,7 @@ export default class extends React.Component {
       showPreSelect: false,
       ownerName: '',
       resultURI: undefined,
+      resultType: "",
       resultPosterURI: "",
       isTakingPlaceNow: false,
       viewableUsers: new Map() //Map<User, Image[]>,
@@ -62,7 +63,15 @@ export default class extends React.Component {
           ) : ""}
           {(this.state.resultURI !== undefined) ? 
             <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <video playsInline controls preload={(this.$f7.data.getIsMobileDataConnection()) ? "none" : "auto"} style={{maxHeight: "30vh", width: "auto"}} src={this.state.resultURI} poster={this.state.resultPosterURI}></video>
+              <video 
+                playsInline 
+                controls 
+                preload={(this.$f7.data.getIsMobileDataConnection()) ? "none" : "auto"} 
+                style={{maxHeight: "30vh", width: "auto"}} 
+                poster={this.state.resultPosterURI}
+              >
+                <source src={this.state.resultURI} type={this.state.resultType} />
+              </video>
             </Row>
           : ""}
           
@@ -227,6 +236,7 @@ export default class extends React.Component {
       };
 
       if (img !== undefined) {
+        console.log(".. with result");
         this.enqueueLatestDataCall(storeProject);  
       } else {
         storeProject();
@@ -438,7 +448,11 @@ export default class extends React.Component {
             if (isNaN(data.getID())) {
               console.log("Got result error on Server!");
             } else {
-              self.setState({resultURI: data.getURI(SVEDataVersion.Full, false), resultPosterURI: data.getURI(SVEDataVersion.Preview, false)});
+              self.setState({
+                resultURI: data.getURI(SVEDataVersion.Full, false),
+                resultPosterURI: data.getURI(SVEDataVersion.Preview, false),
+                resultType: data.getContentType(SVEDataVersion.Full)
+              });
             }
           }), err => {});
           self.updateContent();

@@ -313,7 +313,10 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             displayed = [
                 {
                 caption: img.getName(),
-                html: `<video src="${img.getURI(SVEDataVersion.Full)}" controls autoplay preload="auto" poster="${img.getURI(SVEDataVersion.Preview)}"></video>`,
+                html: `<video 
+                        controls autoplay preload="auto" poster="${img.getURI(SVEDataVersion.Preview)}">
+                        <source src="${img.getURI(SVEDataVersion.Full)}" type="${img.getContentType(SVEDataVersion.Full)}" />
+                       </video>`,
                 }
             ];
             this.setState({

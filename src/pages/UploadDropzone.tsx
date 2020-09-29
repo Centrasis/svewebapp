@@ -92,7 +92,7 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
           let timeDiff = Math.abs(now - this.lastTime);
           let ratioDiff = Math.abs(currentRatio - this.lastRatio);
           if (ratioDiff > 0.0 && timeDiff > 0.0) {
-            console.log("Time diff in s: " + (timeDiff / 1000) + " ; Ratio diff: " + ratioDiff + " -> Ratio: " + currentRatio);
+            //console.log("Time diff in s: " + (timeDiff / 1000) + " ; Ratio diff: " + ratioDiff + " -> Ratio: " + currentRatio);
             this.lastTime = now;
             this.lastRatio = currentRatio;
             this.lastRemaining = Math.ceil((((100.0 - currentRatio) / ratioDiff) * timeDiff) / 1000.0);
