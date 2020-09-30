@@ -69,7 +69,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         {
             this.displayCount = (this.displayCount <= 0 || isNaN(this.displayCount)) ? this.props.displayCount : this.displayCount;
         } else {
-            this.displayCount = 10;
+            this.displayCount = (this.displayCount <= 0 || isNaN(this.displayCount)) ? 10 : this.displayCount;
         }
 
         if (this.props.displayCountIncrement)
