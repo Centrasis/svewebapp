@@ -7,6 +7,7 @@ import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData} from 'svebaselib';
 import UploadDropzone from './UploadDropzone';
 import MediaGallery, {Media, Sorting} from './MediaGallery';
+import NewProjectPopup from "./NewProjectPopup";
 
 export default class extends React.Component {
   constructor(props) {
