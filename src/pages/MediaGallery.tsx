@@ -27,7 +27,7 @@ export type MediaSettings = {
 
 export default class MediaGallery extends React.Component<MediaSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected data: SVEData[] = [];
-    protected displayCount: number = 10;
+    protected displayCount: number = NaN;
     protected displayCountIncrement: number = 10;
     protected caption: string = "";
     protected enableDeletion: boolean = false;
@@ -67,7 +67,9 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
 
         if (this.props.displayCount)
         {
-            this.displayCount = this.props.displayCount;
+            this.displayCount = (this.displayCount <= 0 || isNaN(this.displayCount)) ? this.props.displayCount : this.displayCount;
+        } else {
+            this.displayCount = 10;
         }
 
         if (this.props.displayCountIncrement)
