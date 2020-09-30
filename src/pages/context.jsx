@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timeline, TimelineItem, SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
+import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
 import NewGroupPopup from './NewGroupPopup';
 import NewProjectPopup from './NewProjectPopup';
 import QRCodeScanner from './QRCodeScanner';
@@ -7,7 +7,6 @@ import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
 import {SVEGroup} from 'svebaselib';
-import TimelineComponent from 'framework7/components/timeline/timeline';
 
 export default class extends React.Component {
   constructor(props) {
@@ -29,11 +28,14 @@ export default class extends React.Component {
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
           </NavRight>
         </Navbar>
-        <Timeline>
+        <div class="timeline">
         {this.getProjectsWithDate().map((project) => (
-          <TimelineItem day={project.getDateRange().begin.getDate()} month={this.getMonthOfDate(project.getDateRange().begin)}>
-            <List noChevron={this.$f7.device.desktop}>
-              <ListItem
+          <div class="timeline-item">
+            <div class="timeline-item-date">{project.getDateRange().begin.getDate()}<small>{this.getMonthOfDate(project.getDateRange().begin)}</small><small>{project.getDateRange().begin.getFullYear()}</small></div>
+            <div class="timeline-item-divider"></div>
+            <div class="timeline-item-content">
+              <List noChevron={this.$f7.device.desktop}>
+                <ListItem
                   swipeout
                   key={project.getID()}
                   title={project.getName()}
@@ -50,9 +52,10 @@ export default class extends React.Component {
                   </Link>
                 </ListItem>
               </List>
-          </TimelineItem>
+            </div>
+          </div>
         ))}
-        </Timeline>
+        </div>
         {(this.getProjectsWithoutDate().length > 0) ? 
           <List noChevron={this.$f7.device.desktop}>
             {this.getProjectsWithoutDate().map((project) => (
