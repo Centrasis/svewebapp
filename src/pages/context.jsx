@@ -34,7 +34,7 @@ export default class extends React.Component {
             <div class="timeline-item-date">
               {project.getDateRange().begin.getDate()}
               <small>{this.getMonthOfDate(project.getDateRange().begin)}</small> <br />
-              <font size="+1" style="font-family:'Courier New'">{project.getDateRange().begin.getFullYear()}</font>
+              <p style={{fontFamily: 'Courier New', fontSize:"+1"}}>{project.getDateRange().begin.getFullYear()}</p>
             </div>
             <div class="timeline-item-divider"></div>
             <div class="timeline-item-content">

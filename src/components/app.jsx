@@ -484,7 +484,7 @@ export default class extends React.Component {
   static getDerivedStateFromError(error) {
     return {error: {
       has: true,
-      msg: "Error: " + JSON.stringify(error)
+      msg: "Error" + JSON.stringify(error)
     }};
   }
 
