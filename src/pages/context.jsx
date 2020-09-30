@@ -31,7 +31,11 @@ export default class extends React.Component {
         <div class="timeline">
         {this.getProjectsWithDate().map((project) => (
           <div class="timeline-item">
-            <div class="timeline-item-date">{project.getDateRange().begin.getDate()}<small>{this.getMonthOfDate(project.getDateRange().begin)}</small><small>{project.getDateRange().begin.getFullYear()}</small></div>
+            <div class="timeline-item-date">
+              {project.getDateRange().begin.getDate()}
+              <small>{this.getMonthOfDate(project.getDateRange().begin)}</small> <br />
+              <font size="+1" style="font-family:'Courier New'">{project.getDateRange().begin.getFullYear()}</font>
+            </div>
             <div class="timeline-item-divider"></div>
             <div class="timeline-item-content">
               <List noChevron={this.$f7.device.desktop}>
