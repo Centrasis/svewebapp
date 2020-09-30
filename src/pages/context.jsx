@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
+import React from 'react';
+import { Timeline, TimelineItem, SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
 import NewGroupPopup from './NewGroupPopup';
 import NewProjectPopup from './NewProjectPopup';
 import QRCodeScanner from './QRCodeScanner';
@@ -7,6 +7,7 @@ import Dom7 from 'dom7';
 
 //import { Camera } from 'expo-camera';
 import {SVEGroup} from 'svebaselib';
+import TimelineComponent from 'framework7/components/timeline/timeline';
 
 export default class extends React.Component {
   constructor(props) {
@@ -28,26 +29,52 @@ export default class extends React.Component {
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
           </NavRight>
         </Navbar>
-        <List noChevron={this.$f7.device.desktop}>
-          {this.state.projects.map((project) => (
-            <ListItem
-              swipeout
-              key={project.getID()}
-              title={project.getName()}
-              link={`/project/${project.getID()}/`}
-              onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
-            >
-              <img slot="media" src={project.getSplashImageURI()} width="80"/>
-              <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
-                <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
-                <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
-              </SwipeoutActions>
-              <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
-                <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
-              </Link>
-            </ListItem>
-          ))}
-        </List>
+        <Timeline>
+        {this.getProjectsWithDate().map((project) => (
+          <TimelineItem day={project.getDateRange().begin.getDate()} month={this.getMonthOfDate(project.getDateRange().begin)}>
+            <List noChevron={this.$f7.device.desktop}>
+              <ListItem
+                  swipeout
+                  key={project.getID()}
+                  title={project.getName()}
+                  link={`/project/${project.getID()}/`}
+                  onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
+                >
+                  <img slot="media" src={project.getSplashImageURI()} width="80"/>
+                  <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                    <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
+                    <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
+                  </SwipeoutActions>
+                  <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                    <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
+                  </Link>
+                </ListItem>
+              </List>
+          </TimelineItem>
+        ))}
+        </Timeline>
+        {(this.getProjectsWithoutDate().length > 0) ? 
+          <List noChevron={this.$f7.device.desktop}>
+            {this.getProjectsWithoutDate().map((project) => (
+              <ListItem
+                swipeout
+                key={project.getID()}
+                title={project.getName()}
+                link={`/project/${project.getID()}/`}
+                onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
+              >
+                <img slot="media" src={project.getSplashImageURI()} width="80"/>
+                <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                  <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
+                  <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
+                </SwipeoutActions>
+                <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                  <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
+                </Link>
+              </ListItem>
+            ))}
+          </List>
+        : ""}
 
         <Popover className="popover-more">
           <List noChevron>
@@ -82,6 +109,20 @@ export default class extends React.Component {
         : ""}
       </Page>
     );
+  }
+
+  getMonthOfDate(date) {
+    let months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+    
+    return months[date.getMonth()]
+  }
+
+  getProjectsWithDate() {
+    return this.state.projects.filter(p => p.getDateRange() !== undefined).sort((a,b) => a.getDateRange().begin.getTime() - b.getDateRange().begin.getTime());
+  }
+
+  getProjectsWithoutDate() {
+    return this.state.projects.filter(p => p.getDateRange() === undefined);
   }
 
   applyProjectEdit() {

@@ -74,7 +74,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
                   };
             }, (err) => {
                 this.cameraActive = false;
-                console.log(JSON.stringify(err));
+                console.log("QR Camera error: " + JSON.stringify(err));
             });
         }
     }
