@@ -200,9 +200,9 @@ export default class extends React.Component {
           path: '/service-worker.js',
         },
       },
+      debugMode: false,
       error: {
         has: false,
-        debug: false,
         msg: ""
       },
       popupComponent: new Map(),
@@ -236,7 +236,7 @@ export default class extends React.Component {
     }
   }
   render() {
-    return (this.state.error.has && !this.state.error.debug) ? (
+    return (this.state.error.has && !this.state.debugMode) ? (
       <App params={ this.state.f7params } themeDark>
         <View>
           <Page>
@@ -484,8 +484,15 @@ export default class extends React.Component {
   static getDerivedStateFromError(error) {
     return {error: {
       has: true,
-      msg: JSON.stringify(error)
+      msg: "Error: " + JSON.stringify(error)
     }};
+  }
+
+  componentDidCatch(error, errorInfo) {
+    let errorObj = this.state.error;
+    errorObj.has = true;
+    errorObj.msg = errorObj.msg + "<br>\n Info: " + JSON.stringify(errorInfo) + "<br>\nError: " + JSON.stringify(error);
+    this.setState({error: errorObj});
   }
 
   onOpenDocs() {
@@ -700,9 +707,7 @@ export default class extends React.Component {
 
       if(params.has("debug")) {
         console.log("Debug mode on!");
-        let err = this.state.error;
-        err.debug = true;
-        this.setState({error: err});
+        this.setState({debugMode: true});
       }
 
       if(params.has("page")) {
