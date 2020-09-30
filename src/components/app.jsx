@@ -698,6 +698,13 @@ export default class extends React.Component {
 
       this.state.routerParams = params;
 
+      if(params.has("debug")) {
+        console.log("Debug mode on!");
+        let err = this.state.error;
+        err.debug = true;
+        this.setState({error: err});
+      }
+
       if(params.has("page")) {
         console.log("Found page request: " + params.get("page"));
         if(params.get("page") === "register" || params.get("page") === "login") {
@@ -713,12 +720,6 @@ export default class extends React.Component {
           }
           this.$f7.view.current.router.navigate("/" + params.get("page") + "/");
         }
-      }
-
-      if(params.has("debug")) {
-        let err = this.state.error;
-        err.debug = true;
-        this.setState({error: err});
       }
     }
   }
