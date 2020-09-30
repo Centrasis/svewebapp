@@ -244,7 +244,7 @@ export default class extends React.Component {
               <NavTitle sliding>Ein kritischer Fehler trat auf!</NavTitle>
               <NavTitleLarge sliding>Ein kritischer Fehler trat auf!</NavTitleLarge>
               <NavRight>
-                <Link external iconF7="text_bubble" tooltip="Fehler melden" href={"mailto:info@felixlehner.de?subject=Webseitenfehler&body=Fehler%20trat%20auf%3A%0D%0A" + this.state.error.msg} />
+                <Link external iconF7="text_bubble" tooltip="Fehler melden" href={"mailto:info@felixlehner.de?subject=Webseitenfehler&body=Fehler%20trat%20auf%3A%0D%0A" + this.state.error.msg.replace("\\n", "\n")} />
                 <Link style={{color: "green"}} iconF7="tornado" tooltip="Fehler auflösen" onClick={() => window.location.reload()} />
               </NavRight>
             </Navbar>
