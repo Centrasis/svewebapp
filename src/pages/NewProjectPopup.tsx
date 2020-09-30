@@ -162,7 +162,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
         {
             this.oldProject = this.props.projectToEdit;
             this.parentGroup = this.oldProject!.getGroup();
-            if(this.oldProject.getDateRange() !== undefined) {
+            if(this.oldProject.getDateRange() !== undefined && this.beginDate === undefined && this.endDate === undefined) {
                 this.beginDate = this.oldProject.getDateRange().begin.toLocaleDateString();
                 this.endDate = this.oldProject.getDateRange().end.toLocaleDateString();
                 this.projectType = this.oldProject.getType();
