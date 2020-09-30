@@ -178,7 +178,7 @@ export default class extends React.Component {
         </Popup>
       
       {(typeof this.state.project !== "number") ? 
-      <NewProjectPopup
+       	<NewProjectPopup
           id = "ProjectDisplay"
           owningUser={this.$f7.data.getUser()}
           parentGroup={this.state.project.getGroup()}
