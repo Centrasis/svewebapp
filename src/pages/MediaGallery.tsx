@@ -65,12 +65,14 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             this.onDeleteMedia = this.props.onDeleteMedia;
         }
 
+        console.log("displayCount before update: " + this.displayCount);
         if (this.props.displayCount)
         {
             this.displayCount = (this.displayCount <= 0 || isNaN(this.displayCount)) ? this.props.displayCount : this.displayCount;
         } else {
             this.displayCount = (this.displayCount <= 0 || isNaN(this.displayCount)) ? 10 : this.displayCount;
         }
+        console.log("displayCount after update: " + this.displayCount);
 
         if (this.props.displayCountIncrement)
         {
