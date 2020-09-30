@@ -177,6 +177,14 @@ export default class extends React.Component {
           </Page>
         </Popup>
 
+      <NewProjectPopup
+          id = "ProjectDisplay"
+          owningUser={this.$f7.data.getUser()}
+          parentGroup={this.state.project.getGroup()}
+          caption={"Bearbeite Projekt: " + this.state.project.getName()}
+          projectToEdit={this.state.project}
+        />
+
       <Popup swipeToClose opened={this.state.closeProject} onPopupClosed={() => this.setState({closeProject : false})}>
         <Page>
           <BlockTitle large style={{justifySelf: "center"}}>Urlaub mit Diashow abschließen?</BlockTitle>
@@ -379,6 +387,11 @@ export default class extends React.Component {
               caption: "Medien hochladen",
               onClick: function() { self.setState({showUpload : true}) }
             } : {}, 
+            (rights.write) ?
+            {
+              caption: "Bearbeiten",
+              onClick: function() { self.$f7.data.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true); }
+            } : {},
             {
               caption: "Teilen",
               onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
