@@ -7,7 +7,7 @@ import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData} from 'svebaselib';
 import UploadDropzone from './UploadDropzone';
 import MediaGallery, {Media, Sorting} from './MediaGallery';
-import NewProjectPopup from "./NewProjectPopup";
+import NewProjectPopup from "./NewProjectPopup"
 
 export default class extends React.Component {
   constructor(props) {
@@ -16,7 +16,6 @@ export default class extends React.Component {
     this.state = {
       displayCount: 10,
       selectedGalleryImg: 0,
-      zlib: require('zlib'),
       project: Number(props.f7route.params.id),
       sortBy: Sorting.AgeASC,
       selectedImg: '',
@@ -177,7 +176,8 @@ export default class extends React.Component {
             : ""}
           </Page>
         </Popup>
-
+      
+      {(typeof this.state.project !== "number") ? 
       <NewProjectPopup
           id = "ProjectDisplay"
           owningUser={this.$f7.data.getUser()}
@@ -185,6 +185,7 @@ export default class extends React.Component {
           caption={"Bearbeite Projekt: " + this.state.project.getName()}
           projectToEdit={this.state.project}
         />
+      : ""}
 
       <Popup swipeToClose opened={this.state.closeProject} onPopupClosed={() => this.setState({closeProject : false})}>
         <Page>
