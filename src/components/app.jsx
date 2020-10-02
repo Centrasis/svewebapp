@@ -328,6 +328,11 @@ export default class extends React.Component {
                 }}
               />
               <LoginScreenTitle>Register&nbsp;{this.state.loginMessages.loginType}</LoginScreenTitle>
+              {(this.state.loginMessages.errorMsg.length > 0) ? (
+                <BlockHeader large color="red" style={{color: "red"}}>
+                  <span color="red" style={{color: "red"}}>{this.state.loginMessages.errorMsg}</span>
+                </BlockHeader>
+              ) : ''}
               <List>
               <ListInput
                   label="Username"
@@ -577,6 +582,7 @@ export default class extends React.Component {
   }
 
   onRegister() {
+    this.setState({loginMessages: {errorMsg: '', loginType: this.state.loginMessages.loginType}});
     if(this.state.loginData.joinToken === undefined) {
       this.setState({loginMessages: {errorMsg: 'Für eine Registeriung muss ein Token vorhanden sein. Scanne dazu einfach einen QR-Code oder öffne einen Einladungslink.', loginType: this.state.loginMessages.loginType}});
       return;
