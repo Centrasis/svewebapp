@@ -478,12 +478,20 @@ export default class extends React.Component {
                   Die App verwendet die API an: <Link external href={"https://" + window.location.hostname + "/" + SVESystemInfo.getAPIRoot() + "/check"}>{window.location.hostname + "/" + SVESystemInfo.getAPIRoot()}</Link>
                 </BlockFooter>
               </List>
-              <Link iconF7="arrow_down_to_line_alt" onClick={() => window.location.reload()} tooltip="Update WebApp" style={{position: "fixed", bottom: "2vh", right: "2vw"}}></Link>
+              <Link iconF7="arrow_down_to_line_alt" onClick={() => this.updateWebapp.bind(this)} tooltip="Update WebApp" style={{position: "fixed", bottom: "2vh", right: "2vw"}}></Link>
             </Page>
           </View>
         </LoginScreen>
       </App>
     )
+  }
+
+  updateWebapp() {
+    window.caches.delete("/js/app.js", r => {
+      window.caches.delete("/", r => {
+        window.location.reload();
+      });
+    });
   }
 
   static getDerivedStateFromError(error) {
