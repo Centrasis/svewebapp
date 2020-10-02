@@ -37,7 +37,7 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
                             }}
                         />
                         <ListItem
-                            title="Erstellen"
+                            title={(this.oldGroup !== undefined) ? "Übernehmen" : "Erstellen"}
                             onClick={this.createNewGroup.bind(this)}
                             style={{cursor: "pointer"}}
                         >
@@ -58,7 +58,14 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     createNewGroup() {
-        new SVEGroup({name: this.newGroupName, id: (this.oldGroup !== undefined) ? this.oldGroup.getID() : NaN} as GroupInitializer, this.owningUser, (g) => {
+        let initializer: GroupInitializer = (this.oldGroup !== undefined) ? this.oldGroup.getAsInitializer() 
+                    : {
+                        id: NaN,
+                        name: this.newGroupName
+                    };
+
+        initializer.name = this.newGroupName;
+        new SVEGroup(initializer, this.owningUser, (g) => {
           g.store().then(val => {
                 if(val) {
                     this.onGroupCreated(g);

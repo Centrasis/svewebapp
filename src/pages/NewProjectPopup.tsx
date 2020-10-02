@@ -87,7 +87,7 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
                         />
                         : ""}
                         <ListItem
-                            title="Erstellen"
+                            title={(this.oldProject !== undefined) ? "Übernehmen" : "Erstellen"}
                             onClick={this.createNewProject.bind(this)}
                             style={{cursor: "pointer"}}
                         >
@@ -104,19 +104,24 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
             this.errorMsg = "Projektname ist zu kurz ('" + JSON.stringify(this.newProjectName) + "')!";
             this.forceUpdate();
         } else {
-            new SVEProject({
-                id: (this.oldProject !== undefined) ? this.oldProject.getID() : NaN,
-                name: this.newProjectName,
-                group: this.parentGroup,
-                splashImg: (this.oldProject !== undefined) ? this.oldProject.getSplashImgID() : 0,
-                owner: this.owningUser,
-                state: (this.oldProject !== undefined) ? this.oldProject.getState() : SVEProjectState.Open,
-                resultsURI: "",
-                type: this.projectType,
-                dateRange: (this.beginDate !== undefined && this.endDate !== undefined) ? {begin: new Date(this.beginDate), end: new Date(this.endDate)} : undefined
-            } as ProjectInitializer,
-            this.owningUser,
-            p => {
+            let initializer: ProjectInitializer = (this.oldProject !== undefined) ? this.oldProject.getAsInitializer() 
+                            : {
+                                group: this.parentGroup,
+                                id: NaN,
+                                name: "",
+                                owner: this.owningUser,
+                                state: SVEProjectState.Open,
+                                type: this.projectType
+                            };
+
+            if (this.beginDate !== undefined && this.endDate !== undefined) {
+                initializer.dateRange = {begin: new Date(this.beginDate), end: new Date(this.endDate)};
+            }
+
+            initializer.type = this.projectType;
+            initializer.name = this.newProjectName;
+
+            new SVEProject(initializer, this.owningUser, p => {
                 p.store().then(val => {
                 if(val) {
                     this.onProjectCreated(p);
