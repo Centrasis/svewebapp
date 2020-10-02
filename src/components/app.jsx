@@ -254,7 +254,7 @@ export default class extends React.Component {
                 {this.state.error.msg}
               </Block>
             </Block>
-          </Page>
+          </Page>        
         </View>
       </App>
     ) 
@@ -577,7 +577,17 @@ export default class extends React.Component {
   }
 
   onRegister() {
-
+    if(lData.joinToken === undefined) {
+      this.setState({loginMessages: {errorMsg: 'Für eine Registeriung muss ein Token vorhanden sein. Scanne dazu einfach einen QR-Code oder öffne einen Einladungslink.', loginType: this.state.loginMessages.loginType}});
+      return;
+    }
+    if(this.state.loginData.password === this.state.loginData.password2) {
+      SVEAccount.registerNewUser({ name: this.state.loginData.username, pass: this.state.loginData.password }, lData.joinToken).then(usr => {
+        this.onLoggedIn(usr);
+      }, err => this.setState({loginMessages: {errorMsg: 'Registrierung fehlgeschlagen! Der Name scheint bereits vergeben zu sein.', loginType: this.state.loginMessages.loginType}}));
+    } else {
+      this.setState({loginMessages: {errorMsg: 'Die beiden Passworteingaben müssen identisch sein.', loginType: this.state.loginMessages.loginType}});
+    }
   }
 
   cleanUpLogInData() {
