@@ -487,11 +487,11 @@ export default class extends React.Component {
   }
 
   updateWebapp() {
-    window.caches.delete("/js/app.js", r => {
-      window.caches.delete("/", r => {
+    window.caches.delete("/js/app.js").then(r => {
+      window.caches.delete("/").then(r => {
         window.location.reload();
-      });
-    });
+      }, err => window.location.reload());
+    }, err => window.location.reload());
   }
 
   static getDerivedStateFromError(error) {
