@@ -15,7 +15,6 @@ export default class extends React.Component {
     this.state = {
       group: Number(props.f7route.params.id),
       projects: [],
-      projectToEdit: undefined,
       selectedGroup: undefined,
       selectedProject: undefined, //desktop version only
     };
@@ -108,7 +107,7 @@ export default class extends React.Component {
         {(typeof this.state.group !== "number") ? 
           <NewProjectPopup
             owningUser={this.$f7.data.getUser()}
-            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({projectToEdit: undefined, projects: prjs}); })}
+            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
             parentGroup={this.state.group}
             caption={(this.state.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.state.selectedProject.getName()}
             projectToEdit={this.state.selectedProject}
@@ -135,7 +134,7 @@ export default class extends React.Component {
   applyProjectEdit() {
     var self = this;
 
-    this.state.projectToEdit.store().then((success) => {
+    this.state.selectedProject.store().then((success) => {
       if(success) {
         self.updateContent();
       } else {
@@ -143,11 +142,11 @@ export default class extends React.Component {
       }
     });
     
-    this.setState({ projectToEdit: undefined});
+    this.setState({ selectedProject: undefined});
   }
 
   onShowEdit(prj) {
-    this.setState({ projectToEdit: prj});
+    this.setState({ selectedProject: prj});
     this.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(true);
   }
 
