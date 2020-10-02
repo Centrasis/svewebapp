@@ -16,7 +16,7 @@ export default class extends React.Component {
       group: Number(props.f7route.params.id),
       projects: [],
       selectedGroup: undefined,
-      selectedProject: undefined, //desktop version only
+      selectedProject: undefined
     };
   }
   render() {
