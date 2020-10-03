@@ -21,7 +21,7 @@ export default class extends React.Component {
   render() {
     return (
       <Page>
-        <Navbar title="Spiele-Hub" backLink="Back" />
+        <Navbar title="Spiele-Hub" />
         <Block strong mediumInset>
           <BlockTitle>Spiel beitreten</BlockTitle>
           <List>

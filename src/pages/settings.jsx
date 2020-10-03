@@ -39,7 +39,7 @@ export default class extends React.Component {
   render() {
     return (
       <Page name="settings">
-        <Navbar title="Einstellungen" />
+        <Navbar title="Einstellungen" backLink="Back"/>
 
         <Block>
           <BlockTitle>Servereinstellungen</BlockTitle>
