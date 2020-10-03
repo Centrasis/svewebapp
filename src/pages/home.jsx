@@ -100,11 +100,16 @@ export default class extends React.Component {
           ))}
     </List>
     <Block strong>
-      <Link href="/settings/" iconF7="gear" tooltip="Einstellungen">Einstellungen</Link>
+      <Link href="/settings/" iconF7="gear" tooltip="Einstellungen">&nbsp;Einstellungen</Link>
     </Block>
     {(!this.$f7.device.standalone && (this.$f7.device.android || this.$f7.device.ios)) ? 
       <Block strong>
-        <Link href="/install/" iconF7="square_arrow_down">App installieren</Link>
+        <Link href="/install/" iconF7="square_arrow_down">&nbsp;App installieren</Link>
+      </Block>
+    : ""}
+    {(this.$f7.data.isDebug()) ? 
+      <Block strong>
+        <Link onClick={() => this.NonSenseAccess.do()}>Simuliere Fehler</Link>
       </Block>
     : ""}
     <Block strong>

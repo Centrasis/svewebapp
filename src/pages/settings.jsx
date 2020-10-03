@@ -32,7 +32,7 @@ export default class extends React.Component {
       },
       server: {
         api: "",
-        host: location.hostname
+        host: window.hostname
       }
     };
   }

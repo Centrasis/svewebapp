@@ -190,6 +190,9 @@ export default class extends React.Component {
             },
             cleanUpLogInData: function() {
               app.cleanUpLogInData();
+            },
+            isDebug: function() {
+              return app.state.debugMode;
             }
           }
         },
@@ -237,7 +240,7 @@ export default class extends React.Component {
     }
   }
   render() {
-    return (this.state.error.has && !this.state.debugMode) ? (
+    return (this.state.error.has) ? (
       <App params={ this.state.f7params } themeDark>
         <View>
           <Page>
