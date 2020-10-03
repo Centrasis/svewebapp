@@ -82,7 +82,7 @@ export default class extends React.Component {
     )}
 
     updateGames() {
-      let str = window.location.hostname;
+      /*let str = window.location.hostname;
       var newSocket = new WebSocket("wss://" + str + ":" + this.$f7.gameAPIPort + "/");
 
       var self = this;
@@ -104,7 +104,7 @@ export default class extends React.Component {
             self.setState({foundGames: games})
           });
         }
-      };
+      };*/
     }
 
     gameTypeToReadable(type) {
