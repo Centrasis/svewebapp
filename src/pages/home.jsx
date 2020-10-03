@@ -100,11 +100,11 @@ export default class extends React.Component {
           ))}
     </List>
     <Block strong>
-      <Link href="/gamehub/">Zum Spiele-Hub</Link>
+      <Link href="/settings/" iconF7="gear" tooltip="Einstellungen">Einstellungen</Link>
     </Block>
     {(!this.$f7.device.standalone && (this.$f7.device.android || this.$f7.device.ios)) ? 
       <Block strong>
-        <Link href="/install/">App installieren</Link>
+        <Link href="/install/" iconF7="square_arrow_down">App installieren</Link>
       </Block>
     : ""}
     <Block strong>

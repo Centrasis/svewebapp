@@ -22,7 +22,8 @@ import {
   NavTitleLarge,
   Block,
   BlockTitle,
-  NavRight
+  NavRight,
+  AccordionContent
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
@@ -249,10 +250,24 @@ export default class extends React.Component {
               </NavRight>
             </Navbar>
             <Block>
-              <BlockTitle>Fehler Details:</BlockTitle>
-              <Block strong inset>
-                {this.state.error.msg}
-              </Block>
+              <p>
+                Es ist ein kritischer Fehler in der Webapp aufgetreten! Dies bedeutet jedoch nicht, 
+                dass die letzte Operation nicht gespeichert wurde. Auf dem Server kann alles in bester Ordnung sein.
+                Dementsprechend wird niemand von diesem Fehler erfahren, wenn er nicht mit Hilfe des Sprechblasen-Icons per Mail gemeldet wird.
+                Nach der Meldung kann über den Tornado hier wieder aufgeräumt werden, damit es weiter gehen kann!
+                Vielen Dank für die Geduld - die App ist eben noch in der Entwicklung.
+              </p>
+              <List accordionList>
+                <ListItem accordionItem title="Fehlermeldung">
+                  <AccordionContent>
+                    <Block strong inset>
+                      <p>
+                        {this.state.error.msg}
+                      </p>
+                    </Block>
+                  </AccordionContent>
+                </ListItem>
+              </List>
             </Block>
           </Page>        
         </View>
@@ -292,9 +307,9 @@ export default class extends React.Component {
         <Views tabs className="safe-areas">
           {/* Tabbar for switching views-tabs */}
           <Toolbar tabbar labels bottom>
-          <Link tabLink="#view-home" tabLinkActive iconIos="f7:photo_fill_on_rectangle_fill" iconAurora="f7:photo_fill_on_rectangle_fill" iconF7="photo_fill_on_rectangle_fill" text="SVE Media" />
+            <Link tabLink="#view-home" tabLinkActive iconIos="f7:photo_fill_on_rectangle_fill" iconAurora="f7:photo_fill_on_rectangle_fill" iconF7="photo_fill_on_rectangle_fill" text="SVE Media" />
             <Link tabLink="#view-catalog" iconIos="f7:arrow_up_doc_fill" iconAurora="f7:arrow_up_doc_fill" iconF7="arrow_up_doc_fill" text="SVE Documents" onClick={this.onOpenDocs.bind(this)} />
-            <Link tabLink="#view-settings" iconIos="f7:gear" iconAurora="f7:gear" iconMd="material:settings" text="Settings" />
+            <Link tabLink="#view-gamehub" iconIos="f7:gamecontroller_alt_fill" iconAurora="f7:gamecontroller_alt_fill" iconF7="gamecontroller_alt_fill" text="Game Hub" />
           </Toolbar>
 
           {/* Your main view/tab, should have "view-main" class. It also has "tabActive" prop */}
@@ -303,8 +318,8 @@ export default class extends React.Component {
           {/* Catalog View */}
           <View id="view-catalog" name="catalog" tab url="/docs/" />
 
-          {/* Settings View */}
-          <View id="view-settings" name="settings" tab url="/settings/" />
+          {/* gamehub View */}
+          <View id="view-gamehub" name="gamehub" tab url="/gamehub/" />
 
         </Views>
 
