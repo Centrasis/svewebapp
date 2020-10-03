@@ -11,7 +11,9 @@ import {
   Button,
   Range,
   Block,
-  Icon
+  Icon,
+  ListButton,
+  Popup
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
@@ -21,11 +23,11 @@ export default class extends React.Component {
     super(props);
 
     this.state = {
+      changePw: false,
+      oldPw: "",
+      newPw: "",
+      newPw2: "",
       installedVersions: ["Unbekannt"],
-      user: {
-        id: -1,
-        name: ""
-      },
       settings: {
         isPublic: false,
         email: ""
@@ -33,7 +35,8 @@ export default class extends React.Component {
       server: {
         api: "",
         host: window.hostname
-      }
+      },
+      serverFunctions: []
     };
   }
   render() {
@@ -54,21 +57,15 @@ export default class extends React.Component {
               }}
             ></ListInput>
 
-            <ListInput
-              label="API-Version"
-              type="select"
-              smartSelect
-              smartSelectParams={{openIn: 'sheet'}}
-              value={(this.state.server.api == "") ? "Egal" : this.state.server.api}
-              onInput={(e) => {
-                this.setState({ server: {api: e.target.value, host: this.state.server.host }});
-              }}
+            <ListItem
+              title="API-Funktionen"
             >
-              <option value="">Egal</option>
-              <option value="1.0">Version 1.0</option>
-              <option value="2.0">Version 2.0</option>
-              <option value="3.0">Version 3.0</option>
-            </ListInput>
+              <List>
+                {this.state.serverFunctions.map(f => {
+                  <ListItem checkbox title={f.name} disabled={!f.ok}></ListItem>
+                })} 
+              </List>
+            </ListItem>
             </List>
           </Block>
 
@@ -105,6 +102,11 @@ export default class extends React.Component {
                   this.setState({ settings: {email: e.target.value, isPublic: this.state.settings.isPublic }});
                 }}
               ></ListInput>
+              <ListButton
+                title="Passwort ändern"
+                onClick={() => this.setState({changePw: true})}
+              >
+              </ListButton>
             </List>
         </Block>
         <Block largeInset strong>
@@ -113,6 +115,57 @@ export default class extends React.Component {
           </Row>
         </Block>
         
+        <Popup swipeToClose opened={this.state.changePw} onPopupClosed={() => { this.setState({changePw: false}); }}>
+          <Page>
+            <BlockTitle>Passwort ändern</BlockTitle>
+            <List>
+            <ListInput
+                  label="Altes Passwort"
+                  type="password"
+                  placeholder={"Altes Passwort"}
+                  value={this.state.oldPw}
+                  onInput={(e) => {
+                      this.setState({oldPw: e.target.value});
+                  }}
+              />
+              <ListInput
+                  label="Neues Passwort"
+                  type="password"
+                  placeholder={"Altes Passwort"}
+                  value={this.state.newPw}
+                  onInput={(e) => {
+                      this.setState({newPw: e.target.value});
+                  }}
+              />
+              <ListInput
+                  label="Neues Passwort wiederholen"
+                  type="password"
+                  placeholder={"Altes Passwort wiederholen"}
+                  value={this.state.newPw2}
+                  onInput={(e) => {
+                      this.setState({newPw2: e.target.value});
+                  }}
+              />
+              <ListItem
+                title="Übernehmen"
+                onClick={() => { 
+                  if (this.state.newPw === this.state.newPw2) {
+                    this.$f7.getUser().changePassword(this.state.oldPw, this.state.newPw).then(val => {
+                      if(!val) {
+                        this.$f7.dialog.alert("Änderung fehlgeschlagen!");
+                      } else {
+                        this.setState({changePw: false, oldPw: "", newPw: "", newPw2: ""});
+                      }
+                    });
+                  } else {
+                    this.$f7.dialog.alert("Die neuen Passwörter müssen identisch sein!");
+                  }
+                }}
+                style={{cursor: "pointer"}}
+              />
+            </List>
+          </Page>
+        </Popup>
       </Page>
     )
   }
@@ -122,30 +175,7 @@ export default class extends React.Component {
     var self = this;
     var $$ = Dom7;
     this.$f7ready((f7) => {
-      self.setState({installedVersions: f7.versions});
-      /*var info = JSON.parse(data);
-      self.setState({
-        user: state.user
-      });
-
-      if (info.settings || "settings" in info) {
-        self.setState({
-          settings: {
-            isPublic: info.settings.isPublic,
-            email: info.settings.email
-          }
-        });
-      }
-      else
-      {
-        console.log("No user settings upto now: " + JSON.stringify(info));
-        self.setState({
-          settings: {
-            isPublic: false,
-            email: ""
-          }
-        });
-      }*/
+      
     },
     function (data, status) {
       setTimeout(self.componentDidMount(), 1000);
