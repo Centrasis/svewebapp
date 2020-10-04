@@ -27,7 +27,7 @@ export default class extends React.Component {
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
           </NavRight>
         </Navbar>
-        {(this.state.projects.length === 0) ? 
+        {(this.state.projects.length > 0) ? 
         <div>
           <div class={"timeline " + ((this.$f7.device.desktop) ? "timeline-sides" : "")}>
           {this.getProjectsWithDate().map((project) => (
