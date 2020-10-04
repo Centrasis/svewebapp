@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as BABYLON from 'babylonjs';
 import { GameRejectReason } from 'webgames';
 import BaseGame from 'webgames/dist/BaseGame';
+import { SVEAccount } from 'svebaselib';
 
 export type SceneEventArgs = {
   engine: BABYLON.Engine,
@@ -25,9 +26,8 @@ export type SceneProps = {
   OnNewPlayer: () => void,
   graphics?: GraphicsSettings,
   game: BaseGame,
-  gameID: String,
   doHost: Boolean,
-  player: String
+  player: SVEAccount
 };
 
 export default class Game extends React.Component<SceneProps & React.HTMLAttributes<HTMLCanvasElement>, {}> {
@@ -121,8 +121,6 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
         console.error('onSceneMount function not available');
       }
     };
-
-    this.game?.SetGameID(this.props.gameID, this.props.doHost);
 
     window.addEventListener('resize', this.onResizeWindow);
   }

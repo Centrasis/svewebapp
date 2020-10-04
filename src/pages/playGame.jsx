@@ -2,26 +2,42 @@ import * as React from 'react';
 import { Page, Navbar, Link, Icon, Button, Col, Block, Row } from 'framework7-react';
 import Game from './GameScene';
 import { GameRejectReason, UNO, Busdriver, Wizard, TheGame } from 'webgames';
+import { GameState } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
     var newGame = null;
-    if(props.f7route.params.game.toLowerCase() == "thegame") {
-      newGame = new TheGame(this.$f7.gameAPIPort);
-    }
-    if(props.f7route.params.game.toLowerCase() == "uno") {
-      newGame = new UNO(this.$f7.gameAPIPort);
-    }
-    if(props.f7route.params.game.toLowerCase() == "busdriver") {
-      newGame = new Busdriver(this.$f7.gameAPIPort);
-    }
-    if(props.f7route.params.game.toLowerCase() == "wizard") {
-      newGame = new Wizard(this.$f7.gameAPIPort);
-    }
-
 
     let hosting = (props.f7route.params.isHost == "host");
+
+    let gameinfo = {};
+    if (hosting) {
+      gameinfo = {
+        gameState: GameState.Undetermined,
+        host: this.$f7.data.getUser().getName(),
+        gameType: props.f7route.params.game,
+        maxPlayers: 6,
+        name: props.f7route.params.id
+      };
+    } else {
+
+    }
+
+    if(props.f7route.params.game.toLowerCase() == "thegame") {
+      newGame = new TheGame(gameinfo);
+    }
+    if(props.f7route.params.game.toLowerCase() == "uno") {
+      newGame = new UNO(gameinfo);
+    }
+    if(props.f7route.params.game.toLowerCase() == "busdriver") {
+      newGame = new Busdriver(gameinfo);
+    }
+    if(props.f7route.params.game.toLowerCase() == "wizard") {
+      newGame = new Wizard(gameinfo);
+    }
+
+
     console.log("Should: " + props.f7route.params.isHost + " game");
 
     this.state = {
@@ -60,10 +76,9 @@ export default class extends React.Component {
         </Navbar>
         <div style={{width: "100%", height: "90%"}}>
           <Game
-            player={this.$f7.username}
+            player={this.$f7.data.getUser()}
             onSceneMount={this.onSceneMount} 
-            onGameConnected={this.onGameConnected} 
-            gameID={this.state.gameID} 
+            onGameConnected={this.onGameConnected}
             game={this.state.game}
             doHost={this.state.IsHosting}
             onGameRejected={this.onGameRejected.bind(this)}

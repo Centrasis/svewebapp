@@ -84,31 +84,6 @@ export default class extends React.Component {
       SVEGame.getGames().then(games => {
         this.setState({foundGames: games});
       });
-
-
-      /*let str = window.location.hostname;
-      var newSocket = new WebSocket("wss://" + str);
-
-      var self = this;
-
-      
-
-      newSocket.onopen = function(e) {
-        newSocket.send(JSON.stringify({
-          "type": "listGames"
-        }));
-      };
-
-      newSocket.onmessage = function(e) {
-        let result = JSON.parse(e.data);
-        if (result.Succeeded && result.type == "listGames") {
-          Array.prototype.forEach.call(result.games, (el) => {
-            let games = self.state.foundGames;
-            games.push(el);
-            self.setState({foundGames: games})
-          });
-        }
-      };*/
     }
 
     gameTypeToReadable(type) {
@@ -132,6 +107,11 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-      this.updateGames();
+      var self = this;
+      this.$f7ready((f7) => {
+        self.$f7.data.addLoginHook(() => {
+          self.updateGames();
+        });
+      });
     }
 };
