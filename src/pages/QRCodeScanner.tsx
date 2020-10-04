@@ -108,6 +108,7 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     componentWillUnmount() {
+        this.stopCamera();
         this.$f7.data.setPopupComponent('QRCodeScanner' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
     }
 }

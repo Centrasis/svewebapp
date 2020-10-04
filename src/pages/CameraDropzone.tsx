@@ -80,7 +80,7 @@ export default class CameraDropzone extends UploadDropzone {
           elem.onloadedmetadata = function(e) {
             // Ready to go. Do some stuff.
           };
-        }, (err) => console.log(JSON.stringify(err)));
+        }, (err) => console.log("Document Camera error: " + JSON.stringify(err)));
     }
 
     stopCamera() {
@@ -94,7 +94,10 @@ export default class CameraDropzone extends UploadDropzone {
 
     componentDidMount() {
         super.componentDidMount();
-        this.setupCamera();
+        this.$f7ready((f7) => {
+            this.setupCamera();
+            this.forceUpdate();
+        });
     }
 
     componentWillUnmount() {
