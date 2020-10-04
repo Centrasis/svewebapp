@@ -513,6 +513,7 @@ export default class extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
+    console.log("STATIC: Catching error!");
     return {error: {
       has: true,
       msg: "Error" + JSON.stringify(error)
@@ -524,6 +525,7 @@ export default class extends React.Component {
     errorObj.has = true;
     errorObj.msg = errorObj.msg + "<br>\n Info: " + JSON.stringify(errorInfo) + "<br>\nError: " + JSON.stringify(error);
     this.setState({error: errorObj});
+    console.log("DYNAMIC: Catching error: " + errorObj.msg);
   }
 
   onOpenDocs() {
