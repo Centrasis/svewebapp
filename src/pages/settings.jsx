@@ -111,7 +111,7 @@ export default class extends React.Component {
         </Block>
         <Block largeInset strong>
           <Row tag="p">
-            <Button className="col" raised fill onClick={this.commitToServer.bind(this)}>Anwenden</Button>
+            <Button className="col" raised fillIos onClick={this.commitToServer.bind(this)}>Anwenden</Button>
           </Row>
         </Block>
         

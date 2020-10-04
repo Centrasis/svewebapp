@@ -109,7 +109,7 @@ export default class extends React.Component {
     : ""}
     {(this.$f7.data.isDebug()) ? 
       <Block strong>
-        <Link onClick={() => this.NonSenseAccess.do()}>Simuliere Fehler</Link>
+        <Link onClick={this.simulateError.bind(this)}>Simuliere Fehler</Link>
       </Block>
     : ""}
     <Block strong>
@@ -134,6 +134,12 @@ export default class extends React.Component {
     : ""}
   </Page>
     );
+  }
+
+  simulateError() {
+    let x = undefined;
+    x.doError();
+    x.$f7.dialog.alert("Error");
   }
 
   joinGroup() {
