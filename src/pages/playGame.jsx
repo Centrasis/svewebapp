@@ -37,6 +37,15 @@ export default class extends React.Component {
       newGame = new Wizard(gameinfo);
     }
 
+    if (hosting) {
+      newGame.create().then(() => {
+        console.log("Created new game!");
+      }, err => {
+        this.$f7ready((f7) => {
+          f7.dialog.alert("Error on host new game!");
+        })
+      });
+    }
 
     console.log("Should: " + props.f7route.params.isHost + " game");
 
