@@ -60,6 +60,8 @@ export default class extends React.Component {
           this.setState({game: undefined});
         })
       });
+    } else {
+      newGame.join();
     }
   }
 
@@ -104,8 +106,10 @@ export default class extends React.Component {
             />
             : 
             <div>
-              <span>Hosting...</span>
-              <Preloader></Preloader>
+              <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+                <span>Hosting...</span><br />
+                <Preloader></Preloader>
+              </div>
             </div> }
         </div>
         <Block largeInset>
