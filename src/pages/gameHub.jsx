@@ -1,15 +1,12 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
+import {SVEGame} from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);  
 
     this.state = {
-      user: {
-        id: -1,
-        name: ""
-      },
       newGame: {
         name: "",
         type: ""
@@ -27,11 +24,11 @@ export default class extends React.Component {
           <List>
           {this.state.foundGames.map((game) => (
             <ListItem mediaItem
-              key={game.id}
-              title={game.id}
-              subtitle={"Host: " + game.host + " Players: (" + game.playerCount + "/" + game.maxPlayers + ")"}
-              footer={"Spiel: " + this.gameTypeToReadable(game.type)}
-              link={`/playgame/${game.type}/${game.id}/join/`}
+              key={game.name}
+              title={game.name}
+              subtitle={"Host: " + game.host + " Players: (" + "?" + "/" + game.maxPlayers + ")"}
+              footer={"Spiel: " + this.gameTypeToReadable(game.gameType)}
+              link={`/playgame/${game.gameType}/${game.name}/join/`}
             >
             </ListItem>
           ))}
@@ -68,7 +65,7 @@ export default class extends React.Component {
               <option value="">Undefiniert</option>
               <option value="TheGame">The Game</option>
               <option value="Uno">Uno</option>
-              <option value="busdriver">Busfahrer</option>
+              <option value="Busdriver">Busfahrer</option>
               <option value="Wizard">Wizard</option>
             </ListInput>
             </List>
@@ -82,12 +79,19 @@ export default class extends React.Component {
     )}
 
     updateGames() {
+      this.setState({foundGames: []});
+
+      SVEGame.getGames().then(games => {
+        this.setState({foundGames: games});
+      });
+
+
       /*let str = window.location.hostname;
-      var newSocket = new WebSocket("wss://" + str + ":" + this.$f7.gameAPIPort + "/");
+      var newSocket = new WebSocket("wss://" + str);
 
       var self = this;
 
-      self.setState({foundGames: []});
+      
 
       newSocket.onopen = function(e) {
         newSocket.send(JSON.stringify({
