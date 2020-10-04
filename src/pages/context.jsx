@@ -1,5 +1,5 @@
 import React from 'react';
-import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon } from 'framework7-react';
+import { SwipeoutActions, SwipeoutButton, Page, Navbar, List, ListInput, ListItem, NavRight, Link, Popover, Button, Block, BlockHeader, Popup, Row, Icon, Preloader } from 'framework7-react';
 import NewGroupPopup from './NewGroupPopup';
 import NewProjectPopup from './NewProjectPopup';
 import QRCodeScanner from './QRCodeScanner';
@@ -27,17 +27,43 @@ export default class extends React.Component {
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
           </NavRight>
         </Navbar>
-        <div class={"timeline " + ((this.$f7.device.desktop) ? "timeline-sides" : "")}>
-        {this.getProjectsWithDate().map((project) => (
-          <div class="timeline-item">
-            <div class="timeline-item-date">
-              {project.getDateRange().begin.getDate()}
-              <small>{this.getMonthOfDate(project.getDateRange().begin)}</small> <br />
-              <p style={{fontFamily: 'Courier New', fontSize:"+1"}}>{project.getDateRange().begin.getFullYear()}</p>
+        {(this.state.projects.length === 0) ? 
+        <div>
+          <div class={"timeline " + ((this.$f7.device.desktop) ? "timeline-sides" : "")}>
+          {this.getProjectsWithDate().map((project) => (
+            <div class="timeline-item">
+              <div class="timeline-item-date">
+                {project.getDateRange().begin.getDate()}
+                <small>{this.getMonthOfDate(project.getDateRange().begin)}</small> <br />
+                <p style={{fontFamily: 'Courier New', fontSize:"+1"}}>{project.getDateRange().begin.getFullYear()}</p>
+              </div>
+              <div class="timeline-item-divider"></div>
+              <div class="timeline-item-content">
+                <List noChevron={this.$f7.device.desktop}>
+                  <ListItem
+                    swipeout
+                    key={project.getID()}
+                    title={project.getName()}
+                    link={`/project/${project.getID()}/`}
+                    onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
+                  >
+                    <img slot="media" src={project.getSplashImageURI()} width="80"/>
+                    <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                      <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
+                      <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
+                    </SwipeoutActions>
+                    <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                      <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
+                    </Link>
+                  </ListItem>
+                </List>
+              </div>
             </div>
-            <div class="timeline-item-divider"></div>
-            <div class="timeline-item-content">
-              <List noChevron={this.$f7.device.desktop}>
+          ))}
+          </div>
+          {(this.getProjectsWithoutDate().length > 0) ? 
+            <List noChevron={this.$f7.device.desktop}>
+              {this.getProjectsWithoutDate().map((project) => (
                 <ListItem
                   swipeout
                   key={project.getID()}
@@ -54,33 +80,16 @@ export default class extends React.Component {
                     <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
                   </Link>
                 </ListItem>
-              </List>
-            </div>
-          </div>
-        ))}
+              ))}
+            </List>
+          : ""}
         </div>
-        {(this.getProjectsWithoutDate().length > 0) ? 
-          <List noChevron={this.$f7.device.desktop}>
-            {this.getProjectsWithoutDate().map((project) => (
-              <ListItem
-                swipeout
-                key={project.getID()}
-                title={project.getName()}
-                link={`/project/${project.getID()}/`}
-                onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
-              >
-                <img slot="media" src={project.getSplashImageURI()} width="80"/>
-                <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
-                  <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
-                  <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
-                </SwipeoutActions>
-                <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
-                  <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
-                </Link>
-              </ListItem>
-            ))}
-          </List>
-        : ""}
+        : 
+          <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+            <span>Lade Gruppen...</span><br />
+            <Preloader></Preloader>
+          </div>
+        }
 
         <Popover className="popover-more">
           <List noChevron>

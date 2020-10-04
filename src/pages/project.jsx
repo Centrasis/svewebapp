@@ -95,7 +95,7 @@ export default class extends React.Component {
 
         <Block strong>
           {(this.state.viewableUsers.size === 0) ? (
-            <Block strong>
+            <Block strong style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
               <Row><Col></Col><Col><span>Lade Medien...</span></Col><Col></Col></Row>
               <Row>
                 <Col></Col><Col><Preloader></Preloader></Col><Col></Col>
