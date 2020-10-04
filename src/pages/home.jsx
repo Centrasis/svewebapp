@@ -137,9 +137,8 @@ export default class extends React.Component {
   }
 
   simulateError() {
-    let x = undefined;
-    x.doError();
-    x.$f7.dialog.alert("Error");
+    this.simulateError = undefined;
+    this.forceUpdate();
   }
 
   joinGroup() {
