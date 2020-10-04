@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Page, Navbar, Link, Icon, Button, Col, Block, Row } from 'framework7-react';
+import { Page, Navbar, Link, Icon, Button, Col, Block, Row, Preloader } from 'framework7-react';
 import Game from './GameScene';
 import { GameRejectReason, UNO, Busdriver, Wizard, TheGame } from 'webgames';
 import { GameState } from 'svebaselib';
@@ -37,26 +37,29 @@ export default class extends React.Component {
       newGame = new Wizard(gameinfo);
     }
 
-    if (hosting) {
-      newGame.create().then(() => {
-        console.log("Created new game!");
-      }, err => {
-        this.$f7ready((f7) => {
-          f7.dialog.alert("Error on host new game!");
-        })
-      });
-    }
-
     console.log("Should: " + props.f7route.params.isHost + " game");
 
     this.state = {
       name: props.f7route.params.game,
-      game: newGame,
+      game: (hosting) ? undefined : newGame,
       gameID: props.f7route.params.id,
       canvas: null,
       hasEnoughPlayers: false,
       IsGameRunning: false,
       IsHosting: hosting
+    }
+
+    if (hosting) {
+      newGame.create().then(() => {
+        console.log("Created new game!");
+        this.setState({game: newGame});
+        this.forceUpdate();
+      }, err => {
+        this.$f7ready((f7) => {
+          f7.dialog.alert("Error on host new game!");
+          this.setState({game: undefined});
+        })
+      });
     }
   }
 
@@ -84,20 +87,26 @@ export default class extends React.Component {
           </Link>
         </Navbar>
         <div style={{width: "100%", height: "90%"}}>
-          <Game
-            player={this.$f7.data.getUser()}
-            onSceneMount={this.onSceneMount} 
-            onGameConnected={this.onGameConnected}
-            game={this.state.game}
-            doHost={this.state.IsHosting}
-            onGameRejected={this.onGameRejected.bind(this)}
-            OnNewPlayer={this.OnNewPlayer.bind(this)}
-            engineOptions={{
-              stencil: true
-            }}
-            graphics={{resolution: { X: 1920, Y: 1080}}} 
-            style={{width: "100%", height: "100%"}} 
-          />
+          {(this.state.game !== undefined) ? 
+            <Game
+              player={this.$f7.data.getUser()}
+              onSceneMount={this.onSceneMount} 
+              onGameConnected={this.onGameConnected}
+              game={this.state.game}
+              doHost={this.state.IsHosting}
+              onGameRejected={this.onGameRejected.bind(this)}
+              OnNewPlayer={this.OnNewPlayer.bind(this)}
+              engineOptions={{
+                stencil: true
+              }}
+              graphics={{resolution: { X: 1920, Y: 1080}}} 
+              style={{width: "100%", height: "100%"}} 
+            />
+            : 
+            <div>
+              <span>Hosting...</span>
+              <Preloader></Preloader>
+            </div> }
         </div>
         <Block largeInset>
         <Row>
