@@ -59,7 +59,7 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      if(!SVESystemInfo.getSystemStatus().tokenSystem) {
+      if(!(SVESystemInfo.getSystemStatus().tokenSystem)) {
         f7.dialog.alert("Token-System ist offline! Aktuell können keine Einladungen registriert werden.");
       }
 

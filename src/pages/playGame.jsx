@@ -7,7 +7,7 @@ import { GameState } from 'svebaselib';
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    var newGame = null;
+    var newGame = undefined;
 
     let hosting = (props.f7route.params.isHost == "host");
 
@@ -35,6 +35,14 @@ export default class extends React.Component {
     }
     if(props.f7route.params.game.toLowerCase() == "wizard") {
       newGame = new Wizard(gameinfo);
+    }
+
+    if(newGame == undefined) {
+      var self = this;
+      this.$f7ready((f7) => {
+        f7.dialog.alert("No valid game specified! (" + self.state.name + ")");
+        self.$f7router.back();
+      });
     }
 
     console.log("Should: " + props.f7route.params.isHost + " game");
@@ -152,10 +160,6 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      if (this.state.game == null) {
-        f7.dialog.alert("No valid game specified! (" + self.state.name + ")");
-        self.$f7router.back();
-      }
     });
   }
 
