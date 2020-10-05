@@ -60,8 +60,6 @@ export default class extends React.Component {
           this.setState({game: undefined});
         })
       });
-    } else {
-      newGame.join();
     }
   }
 
