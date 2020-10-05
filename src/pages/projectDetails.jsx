@@ -59,10 +59,11 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
-      if(!(SVESystemInfo.getSystemStatus().tokenSystem)) {
-        f7.dialog.alert("Token-System ist offline! Aktuell können keine Einladungen registriert werden.");
-      }
-
+      SVESystemInfo.getSystemStatus().then(status => {
+        if(!status.tokenSystem) {
+          f7.dialog.alert("Token-System ist offline! Aktuell können keine Einladungen registriert werden.");
+        }
+      });
       if (typeof self.state.project === "number") {
         new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
           self.setState({
