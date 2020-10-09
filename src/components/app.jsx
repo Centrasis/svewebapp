@@ -328,7 +328,8 @@ export default class extends React.Component {
             </Page>
           </View>
         </Panel>
-
+        
+        {(this.state.selectDevicesInfo !== undefined) ? 
         <Actions ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
           <ActionsGroup>
             <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
@@ -344,6 +345,7 @@ export default class extends React.Component {
             <ActionsButton color="red">Cancel</ActionsButton>
           </ActionsGroup>
         </Actions>
+        : ""}
 
 
         {/* Views/Tabs container */}

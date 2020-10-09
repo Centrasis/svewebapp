@@ -29,7 +29,7 @@ export default class extends React.Component {
       <Page name="docs">
         <Navbar title="SVE Docs">
           <NavRight>
-              <Link iconF7="camera_on_rectangle" tooltip="Kamera auswählen" onClick={() => this.$f7.data.selectCamera() }></Link>
+              <Link iconF7="camera_on_rectangle" tooltip="Kamera auswählen" onClick={() => {this.$f7.data.selectCamera(); this.$f7.data.resetCameraPermissions(); }}></Link>
               <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(true)}></Link>
               <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={() => this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(true)}></Link>
               {(this.state.selectedGroup !== undefined) ? <Link style={{color: "red"}} iconF7="folder_badge_minus" tooltip="Gruppe löschen" onClick={this.removeCurrentGroup.bind(this)}></Link> : "" }
