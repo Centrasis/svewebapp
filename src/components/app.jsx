@@ -330,21 +330,21 @@ export default class extends React.Component {
         </Panel>
         
         {(this.state.selectDevicesInfo !== undefined) ? 
-        <Actions ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
-          <ActionsGroup>
-            <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
-            {this.state.selectDevicesInfo.selections.map(dev => (
-              <ActionsButton 
-                key={dev.deviceId}
-                onClick={() => { window.localStorage.setItem("cameraDevice", dev.deviceId); }}
-              >
-                  {dev.label || dev.deviceId}
-              </ActionsButton>
-            ))}
-            <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>Auto</ActionsButton>
-            <ActionsButton color="red">Cancel</ActionsButton>
-          </ActionsGroup>
-        </Actions>
+          <Actions ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
+            <ActionsGroup>
+              <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
+              {this.state.selectDevicesInfo.selections.map(dev => (
+                <ActionsButton 
+                  key={dev.deviceId}
+                  onClick={() => { window.localStorage.setItem("cameraDevice", dev.deviceId); }}
+                >
+                    {dev.label || dev.deviceId}
+                </ActionsButton>
+              ))}
+              <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>Auto</ActionsButton>
+              <ActionsButton color="red">Cancel</ActionsButton>
+            </ActionsGroup>
+          </Actions>
         : ""}
 
 
