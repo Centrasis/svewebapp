@@ -91,17 +91,35 @@ export default class extends React.Component {
             promptLogin: function() {
               return app.onOpenLogin();
             },
+            selectCamera: function() {
+              navigator.mediaDevices.enumerateDevices().then(devices => {
+                let sel = window.localStorage.getItem("cameraDevice");
+                if (sel !== undefined) {
+                  let selList = devices.filter(d => d.deviceId == sel);
+                  if (selList.length > 0) {
+                    sel = selList[0];
+                  } else {
+                    sel = undefined;
+                  }
+                }
+                app.setState({selectDevicesInfo: {
+                    selections: devices,
+                    selected: sel
+                  }
+                });
+              });
+            },
             getCameraStream: function() {
-              let facingUser = false;
               return new Promise((resolve, reject) => {
                 let createStream = () => {
-                  let constraints = {
+                  let devID = window.localStorage.getItem("cameraDevice");
+                  let constraints = (devID === undefined) ? {
                     audio: false,
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
-//                      width: { min: 1280, ideal: 4096, max: 4096 },
-//                      height: { min: 720, ideal: 2160, max: 2160 },
-                      facingMode: (facingUser === true) ? { exact: "user" } : "environment"
+                      facingMode: "environment"
                     } : true)
+                  } : { 
+                    deviceId: { exact: devID }
                   };
                   //console.log("Request camera stream: " + JSON.stringify(constraints));
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
@@ -210,6 +228,7 @@ export default class extends React.Component {
         has: false,
         msg: ""
       },
+      selectDevicesInfo: undefined,
       popupComponent: new Map(),
       user: undefined,
       hasCameraPermission: false,
@@ -305,6 +324,22 @@ export default class extends React.Component {
             </Page>
           </View>
         </Panel>
+
+        <Actions ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
+          <ActionsGroup>
+            <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
+            {this.state.selectDevicesInfo.selections.map(dev => (
+              <ActionsButton 
+                key={dev.deviceId}
+                onClick={() => { window.localStorage.setItem("cameraDevice", dev.deviceId); }}
+              >
+                  {dev.label || dev.deviceId}
+              </ActionsButton>
+            ))}
+            <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>Auto</ActionsButton>
+            <ActionsButton color="red">Cancel</ActionsButton>
+          </ActionsGroup>
+        </Actions>
 
 
         {/* Views/Tabs container */}
