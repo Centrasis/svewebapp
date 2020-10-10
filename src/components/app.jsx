@@ -27,7 +27,8 @@ import {
   Actions,
   ActionsButton,
   ActionsLabel,
-  ActionsGroup
+  ActionsGroup,
+  Icon
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
@@ -97,6 +98,7 @@ export default class extends React.Component {
             },
             selectCamera: function() {
               navigator.mediaDevices.enumerateDevices().then(devices => {
+                devices = devices.filter(d => d.kind === "videoinput");
                 let sel = window.localStorage.getItem("cameraDevice");
                 if (sel !== undefined) {
                   let selList = devices.filter(d => d.deviceId == sel);
@@ -108,7 +110,7 @@ export default class extends React.Component {
                 }
                 app.setState({selectDevicesInfo: {
                     selections: devices,
-                    selected: sel
+                    selected: sel,
                   }
                 });
               });
@@ -330,7 +332,7 @@ export default class extends React.Component {
         </Panel>
         
         {(this.state.selectDevicesInfo !== undefined) ? 
-          <Actions ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
+          <Actions grid={true} ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
             <ActionsGroup>
               <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
               {this.state.selectDevicesInfo.selections.map(dev => (
@@ -338,11 +340,18 @@ export default class extends React.Component {
                   key={dev.deviceId}
                   onClick={() => { window.localStorage.setItem("cameraDevice", dev.deviceId); }}
                 >
-                    {dev.label || dev.deviceId}
+                  <video slot="media" width="48" id={"camExample-" + dev.deviceId}></video>
+                  <span>{this.getDeviceCaption(dev)}</span>
                 </ActionsButton>
               ))}
-              <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>Auto</ActionsButton>
-              <ActionsButton color="red">Cancel</ActionsButton>
+              <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>
+                <Icon f7="sparkles"></Icon>
+                <span>Auto</span>
+              </ActionsButton>
+              <ActionsButton color="red">
+                <Icon f7="arrow_down"></Icon>
+                <span>Cancel</span>
+              </ActionsButton>
             </ActionsGroup>
           </Actions>
         : ""}
@@ -544,6 +553,14 @@ export default class extends React.Component {
         </LoginScreen>
       </App>
     )
+  }
+
+  getDeviceCaption(dev) {
+    let name = dev.label;
+    if (name === undefined || name.length == 0)
+      name = "id: " + dev.deviceId;
+
+    return name;
   }
 
   updateWebapp() {
