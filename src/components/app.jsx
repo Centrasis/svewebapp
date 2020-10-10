@@ -148,7 +148,10 @@ export default class extends React.Component {
                       facingMode: "environment"
                     } : true)
                   } : { 
-                    deviceId: { exact: devID }
+                    audio: false,
+                    video: {
+                      deviceId: { exact: devID }
+                    }
                   };
                   //console.log("Request camera stream: " + JSON.stringify(constraints));
                   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
