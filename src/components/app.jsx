@@ -114,6 +114,8 @@ export default class extends React.Component {
                       selected: sel,
                     }
                   });
+
+                  app.setupExampleStreams();
                 });
               });
             },
