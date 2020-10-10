@@ -97,28 +97,49 @@ export default class extends React.Component {
               return app.onOpenLogin();
             },
             selectCamera: function() {
-              navigator.mediaDevices.enumerateDevices().then(devices => {
-                devices = devices.filter(d => d.kind === "videoinput");
-                let sel = window.localStorage.getItem("cameraDevice");
-                if (sel !== undefined) {
-                  let selList = devices.filter(d => d.deviceId == sel);
-                  if (selList.length > 0) {
-                    sel = selList[0];
-                  } else {
-                    sel = undefined;
+              this.askForCameraAccess(() => {
+                navigator.mediaDevices.enumerateDevices().then(devices => {
+                  devices = devices.filter(d => d.kind === "videoinput");
+                  let sel = window.localStorage.getItem("cameraDevice");
+                  if (sel !== undefined) {
+                    let selList = devices.filter(d => d.deviceId == sel);
+                    if (selList.length > 0) {
+                      sel = selList[0];
+                    } else {
+                      sel = undefined;
+                    }
                   }
-                }
-                app.setState({selectDevicesInfo: {
-                    selections: devices,
-                    selected: sel,
-                  }
+                  app.setState({selectDevicesInfo: {
+                      selections: devices,
+                      selected: sel,
+                    }
+                  });
                 });
               });
             },
-            getCameraStream: function() {
+            askForCameraAccess: function(callback) {
+              if(app.state.hasCameraPermission === true) {
+                callback();
+              } else {
+                if(app.state.hasCameraPermission === undefined) {
+                  app.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
+                    app.state.hasCameraPermission = true;
+                    app.setState({hasCameraPermission: true});
+                    callback();
+                  }, () => { 
+                    app.state.hasCameraPermission = false;
+                    app.setState({hasCameraPermission: false});
+                    reject({reason: "No permission to access camera stream!"});
+                  });
+                } else {
+                  reject({reason: "No permission to access camera stream!"});
+                }
+              }
+            },
+            getCameraStream: function(id = undefined) {
               return new Promise((resolve, reject) => {
                 let createStream = () => {
-                  let devID = window.localStorage.getItem("cameraDevice");
+                  let devID = (id !== undefined) ? id : window.localStorage.getItem("cameraDevice");
                   let constraints = (devID === undefined) ? {
                     audio: false,
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
@@ -133,23 +154,7 @@ export default class extends React.Component {
                   }, (err) => reject(err));
                 };
 
-                if(app.state.hasCameraPermission === true) {
-                  createStream();
-                } else {
-                  if(app.state.hasCameraPermission === undefined) {
-                    app.$f7.dialog.confirm("Die App benötigt hier Zugriff auf Ihre Kamera.", "Kamerazugriff", () => {
-                      app.state.hasCameraPermission = true;
-                      app.setState({hasCameraPermission: true});
-                      createStream();
-                    }, () => { 
-                      app.state.hasCameraPermission = false;
-                      app.setState({hasCameraPermission: false});
-                      reject({reason: "No permission to access camera stream!"});
-                    });
-                  } else {
-                    reject({reason: "No permission to access camera stream!"});
-                  }
-                }
+                this.askForCameraAccess(createStream);
               });
             },
             hasCameraPermission: function() {
@@ -334,7 +339,7 @@ export default class extends React.Component {
         {(this.state.selectDevicesInfo !== undefined) ? 
           <Actions grid={true} ref="actionDeviceSelection" opened={this.state.selectDevicesInfo !== undefined} onActionsClosed={() => this.setState({selectDevicesInfo: undefined})}>
             <ActionsGroup>
-              <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? (this.state.selectDevicesInfo.selected.label || this.state.selectDevicesInfo.selected.deviceId) : "Auto"})</ActionsLabel>
+              <ActionsLabel>Wähle Kamera (aktuell: {(this.state.selectDevicesInfo.selected !== undefined) ? this.getDeviceCaption(this.state.selectDevicesInfo.selected) : "Auto"})</ActionsLabel>
               {this.state.selectDevicesInfo.selections.map(dev => (
                 <ActionsButton 
                   key={dev.deviceId}
@@ -348,7 +353,7 @@ export default class extends React.Component {
                 <Icon slot="media" width="48" f7="sparkles"></Icon>
                 <span>Auto</span>
               </ActionsButton>
-              <ActionsButton color="red">
+              <ActionsButton color="red" close>
                 <Icon slot="media" width="48" f7="arrow_down"></Icon>
                 <span>Cancel</span>
               </ActionsButton>
@@ -553,6 +558,23 @@ export default class extends React.Component {
         </LoginScreen>
       </App>
     )
+  }
+
+  setupExampleStreams() {
+    if (this.state.selectDevicesInfo !== undefined) {
+      this.forceUpdate(() => {
+        this.state.selectDevicesInfo.selections.forEach(dev => {
+          this.$f7.data.getCameraStream(dev.deviceId).then((stream) => {
+            let elem = document.getElementById("camExample-" + dev.deviceId);
+            elem.srcObject = stream;
+            elem.play();
+            elem.onloadedmetadata = function(e) {
+              // Ready to go. Do some stuff.
+            };
+          }, (err) => console.log("App Camera error: " + JSON.stringify(err)));
+        });
+      });
+    }
   }
 
   getDeviceCaption(dev) {
