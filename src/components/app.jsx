@@ -351,7 +351,7 @@ export default class extends React.Component {
                   <span>{this.getDeviceCaption(dev)}</span>
                 </ActionsButton>
               ))}
-              <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>
+              <ActionsButton color="green" onClick={() => { window.localStorage.removeItem("cameraDevice"); }}>
                 <Icon slot="media" width="48" f7="sparkles"></Icon>
                 <span>Auto</span>
               </ActionsButton>
