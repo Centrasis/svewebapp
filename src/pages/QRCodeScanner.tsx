@@ -44,15 +44,19 @@ export default class QRCodeScanner extends React.Component<QRCodeScannerSettings
     }
 
     stopCamera() {
-        this.cameraActive = false;
-        let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
-        if (elem === undefined || elem === null) {
-            return;
-        }
-        elem.pause();
-        if (elem.srcObject !== undefined) {
-            (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
-            elem.srcObject = undefined;
+        try {
+            this.cameraActive = false;
+            let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
+            if (elem === undefined || elem === null) {
+                return;
+            }
+            elem.pause();
+            if (elem.srcObject !== undefined && elem.srcObject !== null) {
+                (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+                elem.srcObject = undefined;
+            }
+        } catch {
+            // NOP
         }
     }
 
