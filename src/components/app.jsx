@@ -345,11 +345,11 @@ export default class extends React.Component {
                 </ActionsButton>
               ))}
               <ActionsButton color="green" onClick={() => { window.localStorage.setItem("cameraDevice", undefined); }}>
-                <Icon f7="sparkles"></Icon>
+                <Icon slot="media" width="48" f7="sparkles"></Icon>
                 <span>Auto</span>
               </ActionsButton>
               <ActionsButton color="red">
-                <Icon f7="arrow_down"></Icon>
+                <Icon slot="media" width="48" f7="arrow_down"></Icon>
                 <span>Cancel</span>
               </ActionsButton>
             </ActionsGroup>
