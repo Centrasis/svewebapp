@@ -142,7 +142,7 @@ export default class extends React.Component {
               return new Promise((resolve, reject) => {
                 let createStream = () => {
                   let devID = (id !== undefined) ? id : window.localStorage.getItem("cameraDevice");
-                  let constraints = (devID === undefined || devID === "undefined") ? {
+                  let constraints = (devID === undefined || devID === null || devID === "undefined") ? {
                     audio: false,
                     video: ((app.$f7.device.android || app.$f7.device.ios) ? {
                       facingMode: "environment"
