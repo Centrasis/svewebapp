@@ -102,7 +102,6 @@ export default class extends React.Component {
     const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
     const prediction = model.predict(eTensor);
     console.log("Prediction: " + JSON.stringify(prediction));
-    const prediction = model.predict(eTensor);
     const max = tf.argMax(prediction, 1);
     console.log("Choose: " + JSON.stringify(max));
     window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
