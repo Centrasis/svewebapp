@@ -99,8 +99,12 @@ export default class extends React.Component {
   predict(model, videoElem) {
     console.log("Got frame from camera..");
     const tensor = tf.browser.fromPixels(videoElem);
-    const prediction = model.predict(tensor);
+    const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
+    const prediction = model.predict(eTensor);
     console.log("Prediction: " + JSON.stringify(prediction));
+    const prediction = model.predict(eTensor);
+    const max = tf.argMax(prediction, 1);
+    console.log("Choose: " + JSON.stringify(max));
     window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
   }
 
