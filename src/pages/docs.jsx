@@ -108,7 +108,7 @@ export default class extends React.Component {
 
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
-      tf.loadLayersModel('ai/models/documents.json').then(model => {
+      tf.loadLayersModel('ai/models/documents/model.json').then(model => {
         tf.data.webcam(videoElem).then(cam => {
           this.predict(cam, model);
         });
