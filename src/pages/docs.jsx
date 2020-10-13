@@ -96,22 +96,18 @@ export default class extends React.Component {
       </Page>
     );
 }
-  predict(cam, model) {
-    cam.capture(cap => {
-      const prediction = model.predict(cap);
-      console.log("Prediction: " + JSON.stringify(prediction));
-      setTimeout(() => {
-        this.predict(cam, model);
-      }, 500);
-    }, err => console.log("Error on capture frame: " + JSON.stringify(err)));
+  predict(model, videoElem) {
+    console.log("Got frame from camera..");
+    const tensor = tf.fromPixels(videoElem);
+    const prediction = model.predict(cap);
+    console.log("Prediction: " + JSON.stringify(prediction));
+    window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
   }
 
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
       tf.loadLayersModel('ai/models/documents/model.json').then(model => {
-        tf.data.webcam(videoElem).then(cam => {
-          this.predict(cam, model);
-        }, err => console.log("Error on fetch camera: " + JSON.stringify(err)));
+        window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
     }
   }
