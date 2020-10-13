@@ -3,17 +3,20 @@ import { SVEProject, SVESystemInfo, SVEData } from 'svebaselib';
 import { Block } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import HugeUploader from 'huge-uploader';
+import { ImageLike } from 'tesseract.js';
 
 export type UploadDropzoneSettings = {
     project: SVEProject,
     maxParallelUploads?: number,
-    onImageUploaded?: (img: SVEData) =>void
+    onImageUploaded?: (img: SVEData) => void,
+    doCheckImageBeforeUpload: (img: ImageLike) => boolean
 };
 
-export default class UploadDropzone extends React.Component<UploadDropzoneSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
+export default class UploadDropzone<P = {}> extends React.Component<P & UploadDropzoneSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected project: SVEProject;
     protected hasError: boolean = false;
-    protected onImageUploaded: (img: SVEData) =>void = (img: SVEData) => {}
+    protected onImageUploaded: (img: SVEData) => void = (img: SVEData) => {}
+    protected doCheckImageBeforeUpload: (img: ImageLike) => boolean = (img: ImageLike) => { return true; }
     protected toastError = null;
     protected uploadInfo = {
         imagesToUpload: [],
@@ -127,6 +130,10 @@ export default class UploadDropzone extends React.Component<UploadDropzoneSettin
     
         var self = this;
         const media = this.uploadInfo.imagesToUpload.pop();
+        if (!this.doCheckImageBeforeUpload(media)) {
+          this.popNextUpload(lastItem);
+          return;
+        }
         const uploader = new HugeUploader({ 
           endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
           file: media,

@@ -7,7 +7,12 @@ import Dropzone from 'react-dropzone';
 import { ImageCapture } from 'image-capture/src/imagecapture';
 import * as crypto from 'crypto';
 
-export default class CameraDropzone extends UploadDropzone {
+export type CameraUploadDropzoneSettings = {
+    onCameraLoaded: (cam?: HTMLVideoElement) => void
+};
+
+export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneSettings> {
+    protected onCameraLoaded: (cam?: HTMLVideoElement) => void = (cam?: HTMLVideoElement) =>  {};
     render () {   
         return (this.$f7.data.hasCameraPermission()) ? (
                     <div style={{width: "100%", height: "100%"}}>
@@ -73,23 +78,26 @@ export default class CameraDropzone extends UploadDropzone {
     }
     
     setupCamera() {
+        let self = this;
         this.$f7.data.getCameraStream().then((stream: MediaStream) => {
           let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
           elem.srcObject = stream;
           elem.play();
           elem.onloadedmetadata = function(e) {
-            // Ready to go. Do some stuff.
+            self.onCameraLoaded(elem);
           };
         }, (err) => console.log("Document Camera error: " + JSON.stringify(err)));
     }
 
     stopCamera() {
         try {
+            let self = this;
             let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
             elem.pause();
             if (elem.srcObject !== undefined && elem.srcObject !== null) {
                 (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
                 elem.srcObject = undefined;
+                self.onCameraLoaded(undefined);
             }
         } catch { 
             // NOP
@@ -98,6 +106,9 @@ export default class CameraDropzone extends UploadDropzone {
 
     componentDidMount() {
         super.componentDidMount();
+        if(this.props.onCameraLoaded) {
+            this.onCameraLoaded = this.props.onCameraLoaded;
+        }
         this.$f7ready((f7) => {
             this.setupCamera();
             this.forceUpdate();

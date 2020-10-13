@@ -1,7 +1,8 @@
 import React from 'react';
 import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row } from 'framework7-react';
 
-//import Tesseract from 'tesseract.js'
+//import {Tesseract} from "tesseract.ts";
+import * as tf from '@tensorflow/tfjs';
 //import { pdfjs } from 'react-pdf';
 
 import Dom7 from 'dom7';
@@ -9,6 +10,7 @@ import CameraDropzone from './CameraDropzone';
 import NewGroupPopup from './NewGroupPopup';
 import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState } from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
+import { model } from '@tensorflow/tfjs';
 
 export default class extends React.Component {
   constructor() {
@@ -70,10 +72,11 @@ export default class extends React.Component {
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
                 {(this.state.selectedProject !== undefined) ? 
-                  <CameraDropzone 
+                  <CameraDropzone
                     id="CameraDropzone"
                     project={this.state.selectedProject}
                     maxParallelUploads={1}
+                    onCameraLoaded={this.predictOnCamera.bind(this)}
                     onImageUploaded={this.classifyImage.bind(this)}
                   />
                 :
@@ -93,6 +96,22 @@ export default class extends React.Component {
       </Page>
     );
 }
+  predict(cam, model) {
+    cam.capture(cap => {
+      const prediction = model.predict(cap);
+      console.log("Prediction: " + JSON.stringify(prediction));
+    });
+  }
+
+  predictOnCamera(videoElem) {
+    if(videoElem != undefined) {
+      tf.loadLayersModel('ai/models/documents.json').then(model => {
+        tf.data.webcam(videoElem).then(cam => {
+          this.predict(cam, model);
+        });
+      }, err => console.log("Error on load model: " + JSON.stringify(err)));
+    }
+  }
 
   classifyImage(img) {
     this.$f7.toast.create({
@@ -101,6 +120,10 @@ export default class extends React.Component {
       position: 'center',
       closeTimeout: 1000,
     }).open();
+
+    /*Tesseract.recognize(img).progress(console.log).then((res) => {
+        console.log(res);
+    }).catch(console.error);*/
   }
 
   removeCurrentGroup() {
