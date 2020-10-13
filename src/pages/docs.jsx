@@ -103,7 +103,7 @@ export default class extends React.Component {
       setTimeout(() => {
         this.predict(cam, model);
       }, 500);
-    });
+    }, err => console.log("Error on capture frame: " + JSON.stringify(err)));
   }
 
   predictOnCamera(videoElem) {
@@ -111,7 +111,7 @@ export default class extends React.Component {
       tf.loadLayersModel('ai/models/documents/model.json').then(model => {
         tf.data.webcam(videoElem).then(cam => {
           this.predict(cam, model);
-        });
+        }, err => console.log("Error on fetch camera: " + JSON.stringify(err)));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
     }
   }
