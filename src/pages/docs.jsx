@@ -98,7 +98,8 @@ export default class extends React.Component {
 }
   predict(model, videoElem) {
     console.log("Got frame from camera..");
-    const tensor = tf.browser.fromPixels(videoElem);
+    let tensor = tf.browser.fromPixels(videoElem);
+    tensor = tf.image.resize(tensor, [224, 224]);
     const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
     const prediction = model.predict(eTensor);
     console.log("Prediction: " + JSON.stringify(prediction));
