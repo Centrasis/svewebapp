@@ -100,6 +100,9 @@ export default class extends React.Component {
     cam.capture(cap => {
       const prediction = model.predict(cap);
       console.log("Prediction: " + JSON.stringify(prediction));
+      setTimeout(() => {
+        this.predict(cam, model);
+      }, 500);
     });
   }
 
