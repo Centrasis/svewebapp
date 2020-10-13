@@ -107,6 +107,7 @@ export default class extends React.Component {
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
       tf.loadLayersModel('ai/models/documents/model.json').then(model => {
+        console.log("Start recognition...");
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
     }
