@@ -8,7 +8,7 @@ import * as tf from '@tensorflow/tfjs';
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
 import NewGroupPopup from './NewGroupPopup';
-import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState } from 'svebaselib';
+import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState, SVESystemInfo } from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
 import { model } from '@tensorflow/tfjs';
 
@@ -21,6 +21,8 @@ export default class extends React.Component {
       selectedGroupID: NaN,
       tesseractThreads: 2,
       scheduler: null,
+      documentClasses: [],
+      recognizedClass: 0,
       hasCameraPermission: false,
       selectedGroup: undefined,
       selectedProject: undefined
@@ -71,6 +73,20 @@ export default class extends React.Component {
               ))}
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
+                <List>
+                  <ListInput
+                    label="Klasse"
+                    type="select"
+                    smartSelect
+                    smartSelectParams={{openIn: 'sheet'}}
+                    value={this.state.recognizedClass}
+                  >
+                    <option value={NaN}>Suche...</option>
+                    {this.state.documentClasses.map(doc => (
+                      <option value={doc.key}>{doc.class}</option>
+                    ))}
+                  </ListInput>
+                </List>
                 {(this.state.selectedProject !== undefined) ? 
                   <CameraDropzone
                     id="CameraDropzone"
@@ -104,12 +120,13 @@ export default class extends React.Component {
     console.log("Prediction: " + JSON.stringify(prediction));
     const max = tf.argMax(prediction, 1).dataSync()[0];
     console.log("Choose: " + JSON.stringify(max));
+    this.setState({recognizedClass: max});
     window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
   }
 
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
-      tf.loadLayersModel('ai/models/documents/model.json').then(model => {
+      tf.loadLayersModel('ai/models/documents.json').then(model => {
         console.log("Start recognition...");
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
@@ -204,6 +221,22 @@ export default class extends React.Component {
     this.$f7ready((f7) => {
       self.$f7.data.addLoginHook(() => {
         self.updateGroupsList();
+        fetch("ai/models/documents/classes", {
+          method: "GET"
+        }).then(response => {
+          if (response.status < 400) {
+            response.json().then(val => {
+              let ret = [];
+              val.forEach(el => {
+                ret.push({
+                  key: Number(el.key),
+                  class: el.class
+                });
+              });
+              this.setState({documentClasses: ret})
+            });
+          }
+        });
       });
 
       self.updateGroupsList();
