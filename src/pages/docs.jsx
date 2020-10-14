@@ -122,7 +122,7 @@ export default class extends React.Component {
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
       this.setState({classify: true});
-      tf.loadLayersModel(SVESystemInfo.getInstance().sources.aiService + '/models/documents.json').then(model => {
+      tf.loadLayersModel(SVESystemInfo.getInstance().sources.aiService + '/models/documents/model.json').then(model => {
         console.log("Start recognition...");
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
