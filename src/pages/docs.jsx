@@ -8,7 +8,7 @@ import * as tf from '@tensorflow/tfjs';
 import Dom7 from 'dom7';
 import CameraDropzone from './CameraDropzone';
 import NewGroupPopup from './NewGroupPopup';
-import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState, SVESystemInfo } from 'svebaselib';
+import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState, SVESystemInfo, SVEClassificator } from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
 import { model } from '@tensorflow/tfjs';
 
@@ -25,7 +25,8 @@ export default class extends React.Component {
       recognizedClass: 0,
       hasCameraPermission: false,
       selectedGroup: undefined,
-      selectedProject: undefined
+      selectedProject: undefined,
+      classify: false
     };
   }
   render() {
@@ -94,6 +95,7 @@ export default class extends React.Component {
                     maxParallelUploads={1}
                     onCameraLoaded={this.predictOnCamera.bind(this)}
                     onImageUploaded={this.classifyImage.bind(this)}
+                    onCameraStop={() => this.setState({classify: false})}
                   />
                 :
                   <Block largeInset strong style={{height: "20vh"}}>
@@ -113,20 +115,23 @@ export default class extends React.Component {
     );
 }
   predict(model, videoElem) {
-    let tensor = tf.browser.fromPixels(videoElem);
-    tensor = tf.image.resizeBilinear(tensor, [224, 224]);
-    const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
-    const prediction = model.predict(eTensor);
-    console.log("Prediction: " + JSON.stringify(prediction));
-    const max = tf.argMax(prediction, 1).dataSync()[0];
-    console.log("Choose: " + JSON.stringify(max));
-    this.setState({recognizedClass: max});
-    window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
+    if (this.state.classify) {
+      let tensor = tf.browser.fromPixels(videoElem);
+      tensor = tf.image.resizeBilinear(tensor, [224, 224]);
+      const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
+      const prediction = model.predict(eTensor);
+      console.log("Prediction: " + JSON.stringify(prediction));
+      const max = tf.argMax(prediction, 1).dataSync()[0];
+      console.log("Choose: " + JSON.stringify(max));
+      this.setState({recognizedClass: max});
+      window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
+    }
   }
 
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
-      tf.loadLayersModel('ai/models/documents.json').then(model => {
+      this.setState({classify: true});
+      tf.loadLayersModel(SVESystemInfo.getInstance().sources.aiService + '/models/documents.json').then(model => {
         console.log("Start recognition...");
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       }, err => console.log("Error on load model: " + JSON.stringify(err)));
@@ -221,22 +226,7 @@ export default class extends React.Component {
     this.$f7ready((f7) => {
       self.$f7.data.addLoginHook(() => {
         self.updateGroupsList();
-        fetch("ai/models/documents/classes", {
-          method: "GET"
-        }).then(response => {
-          if (response.status < 400) {
-            response.json().then(val => {
-              let ret = [];
-              val.forEach(el => {
-                ret.push({
-                  key: Number(el.key),
-                  class: el.class
-                });
-              });
-              this.setState({documentClasses: ret})
-            });
-          }
-        });
+        SVEClassificator.getClasses("documents").then(ret => this.setState({documentClasses: ret}));
       });
 
       self.updateGroupsList();

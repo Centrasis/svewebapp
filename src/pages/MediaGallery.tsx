@@ -1,6 +1,6 @@
 import React from 'react';
-import { SVEDataType, SVEDataVersion, SVEData} from 'svebaselib';
-import { Block, Row, Link, Icon, Col, Preloader } from 'framework7-react';
+import { SVEDataType, SVEDataVersion, SVEData, SVEClassificator, AIClass } from 'svebaselib';
+import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, ListInput, ListItem, Input } from 'framework7-react';
 import Dom7 from 'dom7';
 
 export enum Sorting {
@@ -17,6 +17,7 @@ export type MediaSettings = {
     enableDeletion?: boolean,
     enableFavorization?: boolean,
     enableDownload?: boolean,
+    enableClassification?: boolean,
     displayCount?: number,
     displayCountIncrement?: number,
     onDeleteMedia?: (id: number) => void,
@@ -32,6 +33,11 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected caption: string = "";
     protected enableDeletion: boolean = false;
     protected enableFavorization: boolean = false;
+    protected enableClassification: boolean = false;
+    private classificationItem: SVEData = undefined;
+    private classes: AIClass[] = [];
+    private newClassName: string = "";
+    private selectedClass: number = 0;
     protected enableDownload: boolean = true;
     protected sortBy: Sorting = Sorting.AgeASC;
     protected onDeleteMedia: (id: number) => void = (id: number) => {};
@@ -84,6 +90,11 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             this.enableDeletion = this.props.enableDeletion;
         }
 
+        if (this.props.enableClassification)
+        {
+            this.enableClassification = this.props.enableClassification;
+        }
+
         if (this.props.enableDownload)
         {
             this.enableDownload = this.props.enableDownload;
@@ -128,6 +139,9 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         this.updateProps();
 
         this.registerScrollListeners();
+
+        if (this.enableClassification)
+            this.getClasses();
     }
 
     render () {   
@@ -176,6 +190,13 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                                 </Link>
                             : "" }
                             </Col>
+                            {(this.enableClassification) ? 
+                                <Col>
+                                    <Link href="#" onClick={(img: SVEData) => { this.classificationItem = img; this.forceUpdate(); }}>
+                                        <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
+                                    </Link>
+                                </Col>
+                            : ""}
                             <Col>
                             {(this.enableDeletion) ? 
                                 <Link href="#" onClick={this.deleteFromServer.bind(this, image)}>
@@ -187,8 +208,75 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                     </Block>
                     ))}
                     <Preloader color="#11a802" className="preloader infinite-scroll-preloader" id={this.props.id + "-Infinity-Loader"}></Preloader>
-                </Block>)
+
+                    <Popup swipeToClose opened={this.classificationItem !== undefined} onPopupClosed={() => {this.newClassName = ""; this.classificationItem = undefined}}>
+                        <Page>
+                            <BlockTitle large style={{justifySelf: "center"}}>Klasse zuweisen</BlockTitle>
+                            <List>
+                            <ListInput
+                                label="Klasse"
+                                type="select"
+                                value={this.selectedClass}
+                                onInput={(e) => {
+                                    this.selectedClass = e.target.value;
+                                    this.forceUpdate();
+                                }}
+                            >
+                                <option value={NaN}>
+                                    <Input
+                                        type="text"
+                                        placeholder={"Neue Klasse"}
+                                        value={this.newClassName}
+                                        validate
+                                        onValidate={() => {
+                                            return this.classes.filter(e => e.class === this.newClassName).length === 0;
+                                        }}
+                                        errorMessage="Klasse ist bereits vorhanden!"
+                                        clearButton
+                                        onInput={(e) => {
+                                            this.newClassName = e.target.value;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                </option>
+                                {this.classes.map(doc => (
+                                    <option value={doc.key}>{doc.class}</option>
+                                ))}
+                            </ListInput>
+                                <ListItem
+                                    title={"Zuweisen"}
+                                    onClick={this.classify.bind(this)}
+                                    style={{cursor: "pointer"}}
+                                >
+                                    <Icon slot="media" f7="folder_badge_plus"></Icon>
+                                </ListItem>
+                            </List>
+                        </Page>
+                    </Popup>   
+                </Block> 
+            )
       }
+
+      getClasses() {
+          SVEClassificator.getClasses("documents").then(ret => {
+            this.classes = ret;
+            this.forceUpdate();
+          });
+      }
+
+      classify() {
+        let className = (isNaN(this.selectedClass)) ? this.newClassName : this.classes.filter((v) => v.key === this.selectedClass)[0].class;
+        if(className.length > 0) {
+            SVEClassificator.classify("documents", this.classificationItem, className);
+        } else {
+            this.$f7.dialog.alert("Klassenname darf nicht leer sein!");
+            return;
+        }
+
+        this.newClassName = "";
+        this.classificationItem = undefined;
+        this.forceUpdate();
+    }
 
       saveImageToDevice(img: SVEData) {
         window.open(img.getURI(SVEDataVersion.Full, true), "_system");

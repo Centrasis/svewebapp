@@ -8,11 +8,13 @@ import { ImageCapture } from 'image-capture/src/imagecapture';
 import * as crypto from 'crypto';
 
 export type CameraUploadDropzoneSettings = {
-    onCameraLoaded: (cam?: HTMLVideoElement) => void
+    onCameraLoaded?: (cam?: HTMLVideoElement) => void
+    onCameraStop?: (cam?: HTMLVideoElement) => void
 };
 
 export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneSettings> {
     protected onCameraLoaded: (cam?: HTMLVideoElement) => void = (cam?: HTMLVideoElement) =>  {};
+    protected onCameraStop: (cam?: HTMLVideoElement) => void = (cam?: HTMLVideoElement) =>  {};
     render () {   
         return (this.$f7.data.hasCameraPermission()) ? (
                     <div style={{width: "100%", height: "100%"}}>
@@ -97,7 +99,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
             if (elem.srcObject !== undefined && elem.srcObject !== null) {
                 (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
                 elem.srcObject = undefined;
-                self.onCameraLoaded(undefined);
+                self.onCameraStop(elem);
             }
         } catch { 
             // NOP
@@ -108,6 +110,9 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
         super.componentDidMount();
         if(this.props.onCameraLoaded) {
             this.onCameraLoaded = this.props.onCameraLoaded;
+        }
+        if(this.props.onCameraStop) {
+            this.onCameraStop = this.props.onCameraStop;
         }
         this.$f7ready((f7) => {
             this.setupCamera();

@@ -4,7 +4,7 @@ import Dom7 from 'dom7';
 //import KeepScreenOn from 'react-native-keep-screen-on'
 
 //import MapView from 'react-native-maps';
-import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData} from 'svebaselib';
+import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData, SVEProjectType} from 'svebaselib';
 import UploadDropzone from './UploadDropzone';
 import MediaGallery, {Media, Sorting} from './MediaGallery';
 import NewProjectPopup from "./NewProjectPopup"
@@ -119,6 +119,7 @@ export default class extends React.Component {
                     enableFavorization={true}
                     style={{width: "100%", height: "100%"}}
                     displayCount={this.state.displayCount}
+                    enableClassification={this.state.project.getType() !== SVEProjectType.Vacation}
                   />
               </SwiperSlide>
             ) : ""}
@@ -128,17 +129,20 @@ export default class extends React.Component {
                 className="scrollBox"
                 id={v.key}
               >
-                <BlockTitle medium>{v.key}</BlockTitle>
-
-                <MediaGallery
-                  id={`image-gallery-${v.key}`}
-                  data={this.getImagesFor(v.key)}
-                  sortBy={this.state.sortBy}
-                  enableDeletion={false}
-                  enableFavorization={false}
-                  style={{width: "100%", height: "100%"}}
-                  displayCount={this.state.displayCount}
-                />
+                <Row>
+                  <BlockTitle medium>{v.key}</BlockTitle>
+                </Row>
+                <Row>
+                  <MediaGallery
+                    id={`image-gallery-${v.key}`}
+                    data={this.getImagesFor(v.key)}
+                    sortBy={this.state.sortBy}
+                    enableDeletion={false}
+                    enableFavorization={false}
+                    style={{width: "100%", height: "100%"}}
+                    displayCount={this.state.displayCount}
+                  />
+                </Row>
               </SwiperSlide>
             ) : "")}
           </Swiper>
