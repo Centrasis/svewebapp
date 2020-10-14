@@ -214,6 +214,21 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                             <BlockTitle large style={{justifySelf: "center"}}>Klasse zuweisen</BlockTitle>
                             <List>
                             <ListInput
+                                type="text"
+                                placeholder={"Neue Klasse"}
+                                value={this.newClassName}
+                                validate
+                                onValidate={() => {
+                                    return this.classes.filter(e => e.class === this.newClassName).length === 0;
+                                }}
+                                errorMessage="Klasse ist bereits vorhanden!"
+                                clearButton
+                                onInput={(e) => {
+                                    this.newClassName = e.target.value;
+                                    this.forceUpdate();
+                                }}
+                            />
+                            <ListInput
                                 label="Klasse"
                                 type="select"
                                 value={this.selectedClass}
@@ -223,21 +238,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                                 }}
                             >
                                 <option value={NaN}>
-                                    <Input
-                                        type="text"
-                                        placeholder={"Neue Klasse"}
-                                        value={this.newClassName}
-                                        validate
-                                        onValidate={() => {
-                                            return this.classes.filter(e => e.class === this.newClassName).length === 0;
-                                        }}
-                                        errorMessage="Klasse ist bereits vorhanden!"
-                                        clearButton
-                                        onInput={(e) => {
-                                            this.newClassName = e.target.value;
-                                            this.forceUpdate();
-                                        }}
-                                    />
+                                    Neue Klasse
                                 </option>
                                 {this.classes.map(doc => (
                                     <option value={doc.key}>{doc.class}</option>
