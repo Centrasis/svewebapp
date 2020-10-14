@@ -75,7 +75,7 @@ export default class extends React.Component {
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
               <Row>
-                <BlockTitle>{(isNaN(this.state.recognizedClass)) ? "Suche..." : this.state.documentClasses.filter(d => d.key === this.state.recognizedClass)[0].class}</BlockTitle>
+                <BlockTitle>{this.getClassName()}</BlockTitle>
               </Row>
               <Row>
                 {(this.state.selectedProject !== undefined) ? 
@@ -105,6 +105,15 @@ export default class extends React.Component {
       </Page>
     );
 }
+  getClassName() {
+    let l = this.state.documentClasses.filter(d => d.key === this.state.recognizedClass);
+    if (isNaN(this.state.recognizedClass) || l.length == 0) {
+      return "Suche...";
+    } else {
+      return l[0].class;
+    }
+  }
+  
   predict(model, videoElem) {
     if (this.state.classify) {
       let tensor = tf.browser.fromPixels(videoElem);
