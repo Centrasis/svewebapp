@@ -22,7 +22,7 @@ export default class extends React.Component {
       tesseractThreads: 2,
       scheduler: null,
       documentClasses: [],
-      recognizedClass: 0,
+      recognizedClass: NaN,
       hasCameraPermission: false,
       selectedGroup: undefined,
       selectedProject: undefined,
@@ -75,18 +75,7 @@ export default class extends React.Component {
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
               <Row>
-                <Input
-                  label="Klasse"
-                  type="select"
-                  smartSelect
-                  smartSelectParams={{openIn: 'sheet'}}
-                  value={this.state.recognizedClass}
-                >
-                  <option value={NaN}>Suche...</option>
-                  {this.state.documentClasses.map(doc => (
-                    <option value={doc.key}>{doc.class}</option>
-                  ))}
-                </Input>
+                <BlockTitle>{(isNaN(this.state.recognizedClass)) ? "Suche..." : this.state.documentClasses.filter(d => d.key === this.state.recognizedClass)[0].class}</BlockTitle>
               </Row>
               <Row>
                 {(this.state.selectedProject !== undefined) ? 
