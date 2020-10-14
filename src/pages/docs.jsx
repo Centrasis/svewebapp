@@ -120,9 +120,9 @@ export default class extends React.Component {
       tensor = tf.image.resizeBilinear(tensor, [224, 224]);
       const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
       const prediction = model.predict(eTensor);
-      console.log("Prediction: " + JSON.stringify(prediction));
+      //console.log("Prediction: " + JSON.stringify(prediction));
       const max = tf.argMax(prediction, 1).dataSync()[0];
-      console.log("Choose: " + JSON.stringify(max));
+      //console.log("Choose: " + JSON.stringify(max));
       this.setState({recognizedClass: max});
       window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
     }
@@ -226,7 +226,10 @@ export default class extends React.Component {
     this.$f7ready((f7) => {
       self.$f7.data.addLoginHook(() => {
         self.updateGroupsList();
-        SVEClassificator.getClasses("documents").then(ret => this.setState({documentClasses: ret}));
+        SVEClassificator.getClasses("documents").then(ret => {
+          console.log("Classes: " + JSON.stringify(ret));
+          this.setState({documentClasses: ret})
+        });
       });
 
       self.updateGroupsList();
