@@ -209,7 +209,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                     ))}
                     <Preloader color="#11a802" className="preloader infinite-scroll-preloader" id={this.props.id + "-Infinity-Loader"}></Preloader>
 
-                    <Popup swipeToClose opened={this.classificationItem !== undefined} onPopupClosed={() => {this.newClassName = ""; this.classificationItem = undefined}}>
+                    <Popup swipeToClose opened={this.classificationItem !== undefined} onPopupClosed={() => {this.newClassName = ""; this.classificationItem = undefined; this.forceUpdate();}}>
                         <Page>
                             <BlockTitle large style={{justifySelf: "center"}}>Klasse zuweisen</BlockTitle>
                             <List>
@@ -233,7 +233,8 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                                 type="select"
                                 value={this.selectedClass}
                                 onInput={(e) => {
-                                    this.selectedClass = e.target.value;
+                                    this.selectedClass = Number(e.target.value);
+                                    this.newClassName = "";
                                     this.forceUpdate();
                                 }}
                             >
@@ -269,6 +270,8 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         let getClassName = () => {
             if (isNaN(this.selectedClass)) 
                 return this.newClassName;
+
+            console.log("Selected classnr: " + this.selectedClass);
             
             let classesSameName = this.classes.filter((v) => v.key === this.selectedClass);
             if (classesSameName.length > 0)
@@ -279,7 +282,11 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
 
         let className = getClassName();
         if(className.length > 0) {
-            SVEClassificator.classify("documents", this.classificationItem, className);
+            SVEClassificator.classify("documents", this.classificationItem, className).then(() => {
+                if (isNaN(this.selectedClass)) {
+                    this.getClasses();
+                }
+            });
         } else {
             this.$f7.dialog.alert("Klassenname darf nicht leer sein!");
             return;
