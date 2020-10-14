@@ -37,7 +37,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     private classificationItem: SVEData = undefined;
     private classes: AIClass[] = [];
     private newClassName: string = "";
-    private selectedClass: number = 0;
+    private selectedClass: number = NaN;
     protected enableDownload: boolean = true;
     protected sortBy: Sorting = Sorting.AgeASC;
     protected onDeleteMedia: (id: number) => void = (id: number) => {};
@@ -266,7 +266,18 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
       }
 
       classify() {
-        let className = (isNaN(this.selectedClass)) ? this.newClassName : this.classes.filter((v) => v.key === this.selectedClass)[0].class;
+        let getClassName = () => {
+            if (isNaN(this.selectedClass)) 
+                return this.newClassName;
+            
+            let classesSameName = this.classes.filter((v) => v.key === this.selectedClass);
+            if (classesSameName.length > 0)
+                return classesSameName[0].class;
+            
+            return "";
+        }
+
+        let className = getClassName();
         if(className.length > 0) {
             SVEClassificator.classify("documents", this.classificationItem, className);
         } else {

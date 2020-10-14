@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row, Input } from 'framework7-react';
 
 //import {Tesseract} from "tesseract.ts";
 import * as tf from '@tensorflow/tfjs';
@@ -74,20 +74,21 @@ export default class extends React.Component {
               ))}
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
-                <List>
-                  <ListInput
-                    label="Klasse"
-                    type="select"
-                    smartSelect
-                    smartSelectParams={{openIn: 'sheet'}}
-                    value={this.state.recognizedClass}
-                  >
-                    <option value={NaN}>Suche...</option>
-                    {this.state.documentClasses.map(doc => (
-                      <option value={doc.key}>{doc.class}</option>
-                    ))}
-                  </ListInput>
-                </List>
+              <Row>
+                <Input
+                  label="Klasse"
+                  type="select"
+                  smartSelect
+                  smartSelectParams={{openIn: 'sheet'}}
+                  value={this.state.recognizedClass}
+                >
+                  <option value={NaN}>Suche...</option>
+                  {this.state.documentClasses.map(doc => (
+                    <option value={doc.key}>{doc.class}</option>
+                  ))}
+                </Input>
+              </Row>
+              <Row>
                 {(this.state.selectedProject !== undefined) ? 
                   <CameraDropzone
                     id="CameraDropzone"
@@ -102,6 +103,7 @@ export default class extends React.Component {
                     <BlockTitle>Wähle eine Gruppe</BlockTitle>
                   </Block>
                 }
+              </Row>
             </ListItem>
           </List>
         </Block>
