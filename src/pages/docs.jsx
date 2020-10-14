@@ -74,10 +74,10 @@ export default class extends React.Component {
               ))}
             </ListInput>
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
-              <Row>
+              <Block>
                 <BlockTitle>{this.getClassName()}</BlockTitle>
-              </Row>
-              <Row>
+              </Block>
+              <Block>
                 {(this.state.selectedProject !== undefined) ? 
                   <CameraDropzone
                     id="CameraDropzone"
@@ -92,7 +92,7 @@ export default class extends React.Component {
                     <BlockTitle>Wähle eine Gruppe</BlockTitle>
                   </Block>
                 }
-              </Row>
+              </Block>
             </ListItem>
           </List>
         </Block>
@@ -113,7 +113,7 @@ export default class extends React.Component {
       return l[0].class;
     }
   }
-  
+
   predict(model, videoElem) {
     if (this.state.classify) {
       let tensor = tf.browser.fromPixels(videoElem);
