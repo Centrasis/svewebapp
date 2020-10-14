@@ -196,6 +196,11 @@ export default class extends React.Component {
   }
 
   updateGroupsList() {
+    SVEClassificator.getClasses("documents").then(ret => {
+      console.log("Classes: " + JSON.stringify(ret));
+      this.setState({documentClasses: ret})
+    });
+
     SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(groups => {
       let groupsWithOnlyDocs = [];
       let i = 0;
@@ -226,10 +231,6 @@ export default class extends React.Component {
     this.$f7ready((f7) => {
       self.$f7.data.addLoginHook(() => {
         self.updateGroupsList();
-        SVEClassificator.getClasses("documents").then(ret => {
-          console.log("Classes: " + JSON.stringify(ret));
-          this.setState({documentClasses: ret})
-        });
       });
 
       self.updateGroupsList();
