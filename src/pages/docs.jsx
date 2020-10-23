@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row, Input } from 'framework7-react';
+import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row, Input, BlockFooter } from 'framework7-react';
 
 //import {Tesseract} from "tesseract.ts";
 import * as tf from '@tensorflow/tfjs';
@@ -76,8 +76,7 @@ export default class extends React.Component {
             <ListItem style={{justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
               <Block>
                 <BlockTitle>{this.getClassName()}</BlockTitle>
-              </Block>
-              <Block>
+                <BlockFooter>
                 {(this.state.selectedProject !== undefined) ? 
                   <CameraDropzone
                     id="CameraDropzone"
@@ -92,6 +91,7 @@ export default class extends React.Component {
                     <BlockTitle>Wähle eine Gruppe</BlockTitle>
                   </Block>
                 }
+                </BlockFooter>
               </Block>
             </ListItem>
           </List>

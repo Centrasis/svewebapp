@@ -99,25 +99,27 @@ export default class extends React.Component {
             },
             selectCamera: function() {
               this.askForCameraAccess(() => {
-                navigator.mediaDevices.enumerateDevices().then(devices => {
-                  devices = devices.filter(d => d.kind === "videoinput");
-                  let sel = window.localStorage.getItem("cameraDevice");
-                  if (sel !== undefined) {
-                    let selList = devices.filter(d => d.deviceId == sel);
-                    if (selList.length > 0) {
-                      sel = selList[0];
-                    } else {
-                      sel = undefined;
+                navigator.mediaDevices.getUserMedia({audio: false, video: true}).then(stream => {
+                  navigator.mediaDevices.enumerateDevices().then(devices => {
+                    devices = devices.filter(d => d.kind === "videoinput");
+                    let sel = window.localStorage.getItem("cameraDevice");
+                    if (sel !== undefined) {
+                      let selList = devices.filter(d => d.deviceId == sel);
+                      if (selList.length > 0) {
+                        sel = selList[0];
+                      } else {
+                        sel = undefined;
+                      }
                     }
-                  }
-                  app.setState({selectDevicesInfo: {
-                      selections: devices,
-                      selected: sel,
-                    }
-                  });
+                    app.setState({selectDevicesInfo: {
+                        selections: devices,
+                        selected: sel,
+                      }
+                    });
 
-                  app.setupExampleStreams();
-                });
+                    app.setupExampleStreams();
+                  });
+                }, (err) => console.log("select camerra error on access stream: " + JSON.stringify(err)));
               });
             },
             askForCameraAccess: function(callback) {
@@ -616,7 +618,7 @@ export default class extends React.Component {
   }
 
   onOpenDocs() {
-    this.$f7.data.resetCameraPermissions();
+    //this.$f7.data.resetCameraPermissions();
   }
 
   getUpperMenuePanelData(stack) {
