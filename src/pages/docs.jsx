@@ -121,7 +121,8 @@ export default class extends React.Component {
         tensor = tf.image.resizeBilinear(tensor, [224, 224]);
         const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
         const prediction = model.predict(eTensor);
-        const max = prediction.argMax().dataSync()[0] + 1;
+        const maxIdx = prediction.as1D().argMax().dataSync()[0];
+        const max = maxIdx + 1;
         if (this.state.recognizedClass !== max) {
           console.log("Predict: " + JSON.stringify(max));
           this.setState({recognizedClass: max});
