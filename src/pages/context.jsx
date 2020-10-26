@@ -184,7 +184,7 @@ export default class extends React.Component {
   }
 
   openCamera() {
-    this.$f7.data.resetCameraPermissions();
+    this.$f7.data.resetCameraPermissions(true);
     this.$f7.data.getPopupComponent('QRCodeScannerQRScannerContext').setComponentVisible(true);
     console.log("Open Camera");
   }

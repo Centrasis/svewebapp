@@ -168,9 +168,11 @@ export default class extends React.Component {
             hasCameraPermission: function() {
               return (app.state.hasCameraPermission === true);
             },
-            resetCameraPermissions: function() {
-              app.state.hasCameraPermission = undefined;
-              app.setState({hasCameraPermission: undefined});
+            resetCameraPermissions: function(keepAllowance = false) {
+              if(!keepAllowance || app.state.hasCameraPermission === false) {
+                app.state.hasCameraPermission = undefined;
+                app.setState({hasCameraPermission: undefined});
+              }
             },
             joinGroup: function(link) {
               let params = new Map();

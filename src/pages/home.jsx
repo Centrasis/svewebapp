@@ -142,7 +142,7 @@ export default class extends React.Component {
   }
 
   joinGroup() {
-    this.$f7.data.resetCameraPermissions();
+    this.$f7.data.resetCameraPermissions(true);
     this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(true);
   }
 

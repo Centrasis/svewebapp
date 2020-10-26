@@ -60,7 +60,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
     }
 
     reactivateCamera() {
-        this.$f7.data.resetCameraPermissions();
+        this.$f7.data.resetCameraPermissions(true);
         this.setupCamera();
     }
 
