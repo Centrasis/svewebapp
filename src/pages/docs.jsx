@@ -121,10 +121,11 @@ export default class extends React.Component {
         tensor = tf.image.resizeBilinear(tensor, [224, 224]);
         const eTensor = tensor.expandDims(0).asType('float32').div(256.0);
         const prediction = model.predict(eTensor);
-        //console.log("Prediction: " + JSON.stringify(prediction));
-        const max = tf.argMax(prediction, 1).dataSync()[0] + 1;
-        //console.log("Choose: " + JSON.stringify(max));
-        this.setState({recognizedClass: max});
+        const max = prediction.argMax().dataSync()[0] + 1;
+        if (this.state.recognizedClass !== max) {
+          console.log("Predict: " + JSON.stringify(max));
+          this.setState({recognizedClass: max});
+        }
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
       });
     }
