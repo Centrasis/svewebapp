@@ -1,6 +1,6 @@
 import React from 'react';
 import { SVEDataType, SVEDataVersion, SVEData, SVEClassificator, AIClass } from 'svebaselib';
-import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, ListInput, ListItem, Input } from 'framework7-react';
+import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, ListInput, ListItem, Input, BlockHeader } from 'framework7-react';
 import Dom7 from 'dom7';
 
 export enum Sorting {
@@ -148,6 +148,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         return (<Block strong style={{overflow: "scroll", overflowX: "hidden", position: "absolute", top: "0", left: "0", right: "0", bottom: "0", display: "block"}} className={this.props.id + "-scrollBox"}>
                     {this.getPartialImagesList().map((image: SVEData) => (
                     <Block strong>
+                        {(image.isClassfied()) ? <BlockHeader>Klasse: {image.getClassName()}</BlockHeader> : ""}
                         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", paddingBottom: "1em", textAlign: "center"}}>
                             <Row style={{width: "100%", display: "block"}}>
                                 <div className="imgHoverContainer">
@@ -192,12 +193,9 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                             </Col>
                             {(this.enableClassification) ? 
                                 <Col>
-                                    <Row>
-                                        <Link href="#" onClick={() => { this.classificationItem = image; this.forceUpdate(); }}>
-                                            <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
-                                        </Link>
-                                    </Row>
-                                    {(image.isClassfied()) ? <Row><span>{image.getClassName()}</span></Row> : ""}
+                                    <Link href="#" onClick={() => { this.classificationItem = image; this.forceUpdate(); }}>
+                                        <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
+                                    </Link>
                                 </Col>
                             : ""}
                             <Col>
