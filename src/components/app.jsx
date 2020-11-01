@@ -145,21 +145,40 @@ export default class extends React.Component {
               return new Promise((resolve, reject) => {
                 let createStream = () => {
                   let devID = (id !== undefined) ? id : window.localStorage.getItem("cameraDevice");
-                  let constraints = (devID === undefined || devID === null || devID === "undefined") ? {
-                    audio: false,
-                    video: ((app.$f7.device.android || app.$f7.device.ios) ? {
-                      facingMode: "environment"
-                    } : true)
-                  } : { 
-                    audio: false,
-                    video: {
-                      deviceId: { exact: devID }
-                    }
-                  };
-                  //console.log("Request camera stream: " + JSON.stringify(constraints));
-                  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                    resolve(stream);
-                  }, (err) => reject(err));
+                  
+                  navigator.mediaDevices.getUserMedia({audio: false, video: true}).then(stream => {
+                    navigator.mediaDevices.enumerateDevices().then(devices => {
+                      if (!(devID === undefined || devID === null || devID === "undefined")) {
+                        if (devID.includes("id: ")) {
+                          devID = devID.replace("id: ", "");
+                        } else {
+                          let sel = devices.filter(d => d.label == devID);
+                          if (sel.length > 0) {
+                            devID = sel[0].deviceId;
+                          } else {
+                            devID = undefined;
+                          }
+                        }
+                      }   
+
+                      let constraints = (devID === undefined || devID === null || devID === "undefined") ? {
+                        audio: false,
+                        video: ((app.$f7.device.android || app.$f7.device.ios) ? {
+                          facingMode: "environment"
+                        } : true)
+                      } : { 
+                        audio: false,
+                        video: {
+                          deviceId: { exact: devID }
+                        }
+                      };
+
+                      //console.log("Request camera stream: " + JSON.stringify(constraints));
+                      navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                        resolve(stream);
+                      }, (err) => reject(err));
+                    });
+                  });
                 };
 
                 this.askForCameraAccess(createStream);
