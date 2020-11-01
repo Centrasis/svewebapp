@@ -337,6 +337,7 @@ export default class extends React.Component {
       }
 
       if(self.state.project.getType() !== SVEProjectType.Vacation) {
+        console.log("Pulling class names for documents..")
         unclassified_imgs.forEach(i => {
           i.pullClassification().then(() => {
             imgs.push(i);
