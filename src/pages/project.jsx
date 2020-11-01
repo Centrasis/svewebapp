@@ -313,21 +313,34 @@ export default class extends React.Component {
 
     self.state.viewableUsers = new Map();
 
-    self.state.project.getData().then((imgs) => {
-      imgs.forEach(i => {
-        i.getOwner().then(usr => {
-          if (usr.getName().length <= 1) {
-            console.log("Invalid user: " + JSON.stringify(usr));
-            return;
-          }
+    self.state.project.getData().then((unclassified_imgs) => {
+      let imgs = [];
 
-          let vu = self.state.viewableUsers;
-          let list = (vu.has(usr.getName())) ? vu.get(usr.getName()) : [];
+      let finalize = () => {
+        if(imgs.length == unclassified_imgs.length) {
+          imgs.forEach(i => {
+            i.getOwner().then(usr => {
+              if (usr.getName().length <= 1) {
+                console.log("Invalid user: " + JSON.stringify(usr));
+                return;
+              }
+    
+              let vu = self.state.viewableUsers;
+              let list = (vu.has(usr.getName())) ? vu.get(usr.getName()) : [];
+    
+              list.push(i);
+              vu.set(usr.getName(), list);
+              self.setState({viewableUsers: vu});
+            });
+          });
+        }
+      }
 
-          list.push(i);
-          vu.set(usr.getName(), list);
-          self.setState({viewableUsers: vu});
-        });
+      unclassified_imgs.forEach(i => {
+        i.pullClassification().then(() => {
+          imgs.push(i);
+          finalize();
+        }, err => { imgs.push(i); console.error(err); finalize(); });
       });
     }, 
     err => console.log("Fetching data error: " + JSON.stringify(err)));
