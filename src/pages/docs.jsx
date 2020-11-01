@@ -124,7 +124,6 @@ export default class extends React.Component {
         const maxIdx = prediction.as1D().argMax().dataSync()[0];
         const max = maxIdx + 1;
         if (this.state.recognizedClass !== max) {
-          console.log("Predict: " + JSON.stringify(max));
           this.setState({recognizedClass: max});
         }
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
