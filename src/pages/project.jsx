@@ -317,7 +317,7 @@ export default class extends React.Component {
       let imgs = [];
 
       let finalize = () => {
-        if(imgs.length == unclassified_imgs.length) {
+        if(imgs.length === unclassified_imgs.length) {
           imgs.forEach(i => {
             i.getOwner().then(usr => {
               if (usr.getName().length <= 1) {
@@ -337,7 +337,7 @@ export default class extends React.Component {
       }
 
       if(self.state.project.getType() !== SVEProjectType.Vacation) {
-        console.log("Pulling class names for documents..")
+        console.log("Pulling class names for documents..");
         unclassified_imgs.forEach(i => {
           i.pullClassification().then(() => {
             imgs.push(i);
@@ -345,6 +345,7 @@ export default class extends React.Component {
           }, err => { imgs.push(i); console.error(err); finalize(); });
         });
       } else {
+        console.log("Skip class names for vaction pictures!");
         imgs = unclassified_imgs;
       }
       // just in case it's empty or this is a vacations project
