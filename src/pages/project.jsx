@@ -342,6 +342,8 @@ export default class extends React.Component {
           finalize();
         }, err => { imgs.push(i); console.error(err); finalize(); });
       });
+      // just in case it's empty
+      finalize();
     }, 
     err => console.log("Fetching data error: " + JSON.stringify(err)));
 
