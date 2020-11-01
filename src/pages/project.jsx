@@ -336,13 +336,17 @@ export default class extends React.Component {
         }
       }
 
-      unclassified_imgs.forEach(i => {
-        i.pullClassification().then(() => {
-          imgs.push(i);
-          finalize();
-        }, err => { imgs.push(i); console.error(err); finalize(); });
-      });
-      // just in case it's empty
+      if(self.state.project.getType() !== SVEProjectType.Vacation) {
+        unclassified_imgs.forEach(i => {
+          i.pullClassification().then(() => {
+            imgs.push(i);
+            finalize();
+          }, err => { imgs.push(i); console.error(err); finalize(); });
+        });
+      } else {
+        imgs = unclassified_imgs;
+      }
+      // just in case it's empty or this is a vacations project
       finalize();
     }, 
     err => console.log("Fetching data error: " + JSON.stringify(err)));
