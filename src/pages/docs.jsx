@@ -118,8 +118,9 @@ export default class extends React.Component {
     if (this.state.classify) {
       tf.tidy(() => {
         let tensor = tf.browser.fromPixels(videoElem, 3);
-        tensor = tf.image.resizeBilinear(tensor, [model.input.shape[0], model.input.shape[1]]);
-        const eTensor = tf.reshape(tensor, [1, model.input.shape[0], model.input.shape[1], 3]);
+        const dim = [model.input.shape[1], model.input.shape[2]];
+        tensor = tf.image.resizeBilinear(tensor, dim);
+        const eTensor = tf.reshape(tensor, [1, dim[0], dim[1], 3]);
         const prediction = model.predict(eTensor);
         const maxIdx = prediction.as1D().argMax().dataSync()[0];
         const max = maxIdx + 1;
