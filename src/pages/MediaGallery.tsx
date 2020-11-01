@@ -192,10 +192,12 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                             </Col>
                             {(this.enableClassification) ? 
                                 <Col>
-                                    <Link href="#" onClick={() => { this.classificationItem = image; this.forceUpdate(); }}>
-                                        <Row><Icon f7="cube" tooltip="Datei klassifizieren"></Icon></Row>
-                                        {(image.isClassfied()) ? <Row><span>{image.getClassName()}</span></Row> : ""}
-                                    </Link>
+                                    <Row>
+                                        <Link href="#" onClick={() => { this.classificationItem = image; this.forceUpdate(); }}>
+                                            <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
+                                        </Link>
+                                    </Row>
+                                    {(image.isClassfied()) ? <Row><span>{image.getClassName()}</span></Row> : ""}
                                 </Col>
                             : ""}
                             <Col>
