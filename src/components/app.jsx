@@ -104,7 +104,7 @@ export default class extends React.Component {
                     devices = devices.filter(d => d.kind === "videoinput");
                     let sel = window.localStorage.getItem("cameraDevice");
                     if (sel !== undefined) {
-                      let selList = devices.filter(d => d.deviceId == sel);
+                      let selList = devices.filter(d => app.getDeviceCaption(d) == sel);
                       if (selList.length > 0) {
                         sel = selList[0];
                       } else {
@@ -353,7 +353,7 @@ export default class extends React.Component {
               {this.state.selectDevicesInfo.selections.map(dev => (
                 <ActionsButton 
                   key={dev.deviceId}
-                  onClick={() => { window.localStorage.setItem("cameraDevice", dev.deviceId); }}
+                  onClick={() => { window.localStorage.setItem("cameraDevice", this.getDeviceCaption(dev)); }}
                 >
                   <video slot="media" width="48" id={"camExample-" + dev.deviceId}></video>
                   <span>{this.getDeviceCaption(dev)}</span>
