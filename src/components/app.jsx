@@ -97,6 +97,10 @@ export default class extends React.Component {
             promptLogin: function() {
               return app.onOpenLogin();
             },
+            sendRequest: function(msg) { // request to service worker
+              if (app.state.activeService !== undefined)
+                app.state.activeService.postMessage(msg);
+            },
             selectCamera: function() {
               this.askForCameraAccess(() => {
                 navigator.mediaDevices.getUserMedia({audio: false, video: true}).then(stream => {
@@ -286,6 +290,7 @@ export default class extends React.Component {
       },
       openOverlay: "",
       onLoginHooks: [],
+      activeService: undefined,
       routerParams: new Map(),
       panelMenueContentLeft: undefined,
       panelMenueContent: [{
@@ -883,6 +888,10 @@ export default class extends React.Component {
     }
   }
 
+  onWorkerMessage(msg) {
+    console.log("Worker message: " + JSON.stringify(msg));
+  }
+
   componentDidUpdate() {
     if (this.state.user === undefined) {
       this.onOpenLogin(true);
@@ -903,6 +912,18 @@ export default class extends React.Component {
           () => {}
         );
       }
+
+      // listen to service worker events
+      navigator.serviceWorker.addEventListener("message", (evt) => {
+        self.onWorkerMessage(evt.data);
+      });
+
+      navigator.serviceWorker.ready.then((registration) => {
+        if (registration.active) {
+          self.state.activeService = registration.active;
+          self.$f7.data.sendRequest("Startup!");
+        }
+      });
 
       self.onOpenLogin();
 
