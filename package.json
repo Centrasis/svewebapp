@@ -40,6 +40,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.0.3",
+    "request": "^2.88.2",
     "template7": "^1.4.2",
     "uninstall": "0.0.0",
     "ws": "^7.3.1"
