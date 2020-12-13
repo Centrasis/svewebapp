@@ -28,6 +28,7 @@
     "src/**/*",
     "node_modules/huge-uploader/src/index.js",
     "node_modules/image-capture/src/imagecapture.js",
-    "node_modules/qrcode-decoder/dist/index.esm.js"
+    "node_modules/qrcode-decoder/dist/index.esm.js",
+    "node_modules/peerjs/dist/peerjs.min.js"
  ]
 }

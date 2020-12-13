@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Page, Navbar, Link, Icon, Button, Col, Block, Row, Preloader } from 'framework7-react';
 import Game from './GameScene';
-import { GameRejectReason, UNO, Busdriver, Wizard, TheGame } from 'webgames';
-import { GameState } from 'svebaselib';
+import { UNO, Busdriver, Wizard, TheGame } from 'webgames';
+import { GameState, GameRejectReason } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
@@ -21,7 +21,13 @@ export default class extends React.Component {
         name: props.f7route.params.id
       };
     } else {
-
+      gameinfo = {
+        gameState: GameState.Undetermined,
+        host: this.$f7.data.getUser().getName(),
+        gameType: props.f7route.params.game,
+        maxPlayers: 6,
+        name: props.f7route.params.id
+      };
     }
 
     if(props.f7route.params.game.toLowerCase() == "thegame") {

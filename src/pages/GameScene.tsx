@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as BABYLON from 'babylonjs';
-import { GameRejectReason } from 'webgames';
 import BaseGame from 'webgames/dist/BaseGame';
-import { SVEAccount } from 'svebaselib';
+import { SVEAccount, GameRejectReason } from 'svebaselib';
 
 export type SceneEventArgs = {
   engine: BABYLON.Engine,
@@ -108,7 +107,7 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
       }
       
       if(success) {
-        self.game.AddPlayer(self.props.player, true);
+        //AddPlayer
       }
   
       if (typeof self.props.onSceneMount === 'function') {
@@ -124,7 +123,7 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
 
     window.addEventListener('resize', this.onResizeWindow);
 
-    this.game.join();
+    this.game.join(this.$f7.data.getUser());
   }
   
   componentWillUnmount () {
