@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
-import {SVEGame} from 'svebaselib';
+import {SVEGame} from 'webgames';
 
 export default class extends React.Component {
   constructor(props) {
