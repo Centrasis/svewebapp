@@ -156,17 +156,15 @@ export default class extends React.Component {
     var self = this;
     this.$f7ready((f7) => {
       if (self.state.IsHosting) {
-        self.state.game.create(this.$f7.data.getUser()).then(() => {
+        self.state.game.create(self.$f7.data.getUser()).then(() => {
           console.log("Created new game!");
-          this.forceUpdate();
+          self.forceUpdate();
         }, err => {
-          this.$f7ready((f7) => {
-            f7.dialog.alert("Error on host new game!");
-            this.setState({game: undefined});
-          })
+          f7.dialog.alert("Error on host new game!");
+          self.setState({game: undefined});
         });
       } else {
-        self.state.game.join(this.$f7.data.getUser()).then(() => this.forceUpdate(), err => console.log("JOINING FAILED!"));
+        self.state.game.join(self.$f7.data.getUser()).then(() => self.forceUpdate(), err => console.log("JOINING FAILED!"));
       }
     });
   }
