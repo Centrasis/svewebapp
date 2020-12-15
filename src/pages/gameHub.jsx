@@ -26,7 +26,7 @@ export default class extends React.Component {
             <ListItem mediaItem
               key={game.name}
               title={game.name}
-              subtitle={"Host: " + game.host + " Players: (" + "?" + "/" + game.maxPlayers + ")"}
+              subtitle={"Host: " + game.host + " Players: (" + game.playersCount + "/" + game.maxPlayers + ")"}
               footer={"Spiel: " + this.gameTypeToReadable(game.gameType)}
               link={`/playgame/${game.gameType}/${game.name}/join/`}
             >
