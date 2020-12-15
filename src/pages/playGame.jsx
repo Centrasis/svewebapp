@@ -65,7 +65,7 @@ export default class extends React.Component {
     }
 
     if (hosting) {
-      newGame.create().then(() => {
+      newGame.create(this.$f7.data.getUser()).then(() => {
         console.log("Created new game!");
         this.setState({game: newGame});
         this.forceUpdate();
