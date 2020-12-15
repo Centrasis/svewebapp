@@ -221,5 +221,12 @@ module.exports = {
       swSrc: resolvePath('src/service-worker.js'),
       maximumFileSizeToCacheInBytes: 25000000,
     }),
+    new webpack.ContextReplacementPlugin(
+      /\/package-name\//,
+      (data) => {
+        delete data.dependencies[0].critical;
+        return data;
+      },
+    ),
   ],
 };

@@ -49,13 +49,14 @@ export default class extends React.Component {
         f7.dialog.alert("No valid game specified! (" + self.state.name + ")");
         self.$f7router.back();
       });
+      return;
     }
 
     console.log("Should: " + props.f7route.params.isHost + " game");
 
     this.state = {
       name: props.f7route.params.game,
-      game: (hosting) ? undefined : newGame,
+      game: newGame,
       gameID: props.f7route.params.id,
       canvas: null,
       hasEnoughPlayers: false,
@@ -74,6 +75,10 @@ export default class extends React.Component {
           this.setState({game: undefined});
         })
       });
+    } else {
+      newGame.join(this.$f7.data.getUser());
+      this.setState({game: newGame});
+      this.forceUpdate();
     }
   }
 
