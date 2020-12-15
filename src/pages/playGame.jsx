@@ -62,24 +62,8 @@ export default class extends React.Component {
       hasEnoughPlayers: false,
       IsGameRunning: false,
       IsHosting: hosting
-    }
-
-    if (hosting) {
-      newGame.create(this.$f7.data.getUser()).then(() => {
-        console.log("Created new game!");
-        this.setState({game: newGame});
-        this.forceUpdate();
-      }, err => {
-        this.$f7ready((f7) => {
-          f7.dialog.alert("Error on host new game!");
-          this.setState({game: undefined});
-        })
-      });
-    } else {
-      newGame.join(this.$f7.data.getUser());
-      this.setState({game: newGame});
-      this.forceUpdate();
-    }
+    };
+    this.setState({game: newGame});
   }
 
   onSceneMount = (e) => {
@@ -171,6 +155,19 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     this.$f7ready((f7) => {
+      if (self.state.IsHosting) {
+        self.state.game.create(this.$f7.data.getUser()).then(() => {
+          console.log("Created new game!");
+          this.forceUpdate();
+        }, err => {
+          this.$f7ready((f7) => {
+            f7.dialog.alert("Error on host new game!");
+            this.setState({game: undefined});
+          })
+        });
+      } else {
+        self.state.game.join(this.$f7.data.getUser()).then(() => this.forceUpdate(), err => console.log("JOINING FAILED!"));
+      }
     });
   }
 

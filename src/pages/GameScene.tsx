@@ -122,8 +122,6 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
     };
 
     window.addEventListener('resize', this.onResizeWindow);
-
-    this.game.join(this.$f7.data.getUser());
   }
   
   componentWillUnmount () {
