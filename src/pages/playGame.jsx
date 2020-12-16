@@ -63,6 +63,7 @@ export default class extends React.Component {
       IsGameRunning: false,
       IsHosting: hosting
     };
+    newGame.OnGameStart = () => this.onRequestFullscreen();
     this.setState({game: newGame});
   }
 
