@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 
 const path = require('path');
 
@@ -209,12 +210,53 @@ module.exports = {
           from: resolvePath('src/static'),
           to: resolvePath('www/static'),
         },
-        {
+        /*{
           noErrorOnMissing: true,
           from: resolvePath('src/manifest.json'),
           to: resolvePath('www/manifest.json'),
-        },
+        },*/
       ],
+    }),
+
+    new WebpackPwaManifest({
+      name: 'sve-online',
+      short_name: 'sveo',
+      description: 'Webapp für das SVE MediaSystem',
+      theme_color: '#008c0e',
+      background_color: '#008c0e',
+      lang: "de-DE",
+      crossorigin: 'use-credentials',
+      filename: "manifest.json",
+      orientation: "landscape",
+      display: "standalone",
+      start_url: "/",
+      fingerprints: true,
+      inject: true,
+      ios: {
+        "apple-mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "black-translucent",
+        "apple-mobile-web-app-title": "sve-online",
+      },
+      includeDirectory: true,
+      icons: [
+        {
+          src: path.resolve('assets-src/apple-touch-icon.png'),
+          sizes: [120, 152, 167, 180, 1024],
+          destination: path.join('icons', 'ios'),
+          ios: true
+        },
+        {
+          src: path.resolve('assets-src/apple-touch-icon.png'),
+          size: 1024,
+          destination: path.join('icons', 'ios'),
+          ios: 'startup'
+        },
+        {
+          src: path.resolve('assets-src/apple-touch-icon.png'),
+          sizes: [36, 48, 72, 96, 144, 192, 512],
+          destination: path.join('icons', 'android')
+        }
+      ]
     }),
 
     new WorkboxPlugin.InjectManifest({
