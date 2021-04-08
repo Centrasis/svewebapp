@@ -680,7 +680,7 @@ export default class extends React.Component {
     var self = this;
     new SVEAccount({ name: this.state.loginData.username, pass: this.state.loginData.password}, (usr) => {
       if (this.state.saveThisDevice) {
-        SVEToken.register(TokenType.DeviceToken, usr).then(token => {
+        SVEToken.register(usr, TokenType.DeviceToken, usr).then(token => {
           window.localStorage.setItem("sve_token", token);
           window.localStorage.setItem("sve_user", usr.getID());
           window.localStorage.setItem("sve_username", usr.getName());
