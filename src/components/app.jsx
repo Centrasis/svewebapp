@@ -789,33 +789,20 @@ export default class extends React.Component {
     console.log("Try login as: " + this.state.loginData.username);
     console.log("Use token");
   
-    // TODO: FIX TOKENS!
-    /*token.use().then(() => {
-      SVESystemInfo.getLoggedInUser().then(usr => {
+    token.use().then((usr) => {
         console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
-
-        // correct username, since the token login does not know about it
-        let uInit = usr.getInitializer();
-        uInit.name = window.localStorage.getItem("sve_username");
-        new SVEAccount(uInit, (newUser) => {
-          this.state.user = newUser;
-          let lData = this.state.loginData;
-          lData.username = newUser.getName();
-          this.setState({ loginData: lData, user: newUser});
-          this.onLoggedIn(newUser);
-        });
-      }, err => {
+        this.state.user = usr;
+        let lData = this.state.loginData;
+        lData.username = usr.getName();
+        this.setState({ loginData: lData, user: usr});
+        this.onLoggedIn(usr);
+    }, err => {
         console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
         this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
         this.onOpenLogin();
-      });
-      this.$f7.loginScreen.close();
-      this.setState({openOverlay: ""});
-    }, err => {
-      console.log("Login via Geräte-Token fehlgeschlagen!");
-      this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
-      this.onOpenLogin();
-    });*/
+    });
+    this.$f7.loginScreen.close();
+    this.setState({openOverlay: ""});
   }
 
   onOpenRegister() {
