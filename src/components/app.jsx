@@ -39,11 +39,13 @@ export default class extends React.Component {
   constructor() {
     super();
 
-    SVESystemInfo.getInstance().sources.sveService = "api";
+    SVESystemInfo.getInstance().sources.sveService = window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
     SVESystemInfo.getInstance().sources.authService = "auth";
     SVESystemInfo.getInstance().sources.accountService = window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.");
     SVESystemInfo.getInstance().sources.gameService = "games";
     SVESystemInfo.getInstance().sources.aiService = "ai";
+
+    console.log("Using APIs at: ", SVESystemInfo.getInstance().sources);
 
     var app = this;
 
