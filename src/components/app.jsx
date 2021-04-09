@@ -42,8 +42,8 @@ export default class extends React.Component {
     SVESystemInfo.getInstance().sources.sveService = window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
     SVESystemInfo.getInstance().sources.authService =  window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.") + "/auth";
     SVESystemInfo.getInstance().sources.accountService = window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.");
-    SVESystemInfo.getInstance().sources.gameService = window.location.hostname.replace("www.", "games.").replace("sve.", "games.");;
-    SVESystemInfo.getInstance().sources.aiService = window.location.hostname.replace("www.", "ai.").replace("sve.", "ai.");;
+    SVESystemInfo.getInstance().sources.gameService = window.location.hostname.replace("www.", "games.").replace("sve.", "games.");
+    SVESystemInfo.getInstance().sources.aiService = window.location.hostname.replace("www.", "ai.").replace("sve.", "ai.");
 
     console.log("Using APIs at: ", SVESystemInfo.getInstance().sources);
 
