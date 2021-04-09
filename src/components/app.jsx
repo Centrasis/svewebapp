@@ -40,7 +40,7 @@ export default class extends React.Component {
     super();
 
     SVESystemInfo.getInstance().sources.sveService = window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
-    SVESystemInfo.getInstance().sources.authService = "auth";
+    SVESystemInfo.getInstance().sources.authService =  window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.") + "/auth";
     SVESystemInfo.getInstance().sources.accountService = window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.");
     SVESystemInfo.getInstance().sources.gameService = "games";
     SVESystemInfo.getInstance().sources.aiService = "ai";
