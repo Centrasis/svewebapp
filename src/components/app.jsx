@@ -789,7 +789,8 @@ export default class extends React.Component {
     console.log("Try login as: " + this.state.loginData.username);
     console.log("Use token");
   
-    token.use().then(() => {
+    // TODO: FIX TOKENS!
+    /*token.use().then(() => {
       SVESystemInfo.getLoggedInUser().then(usr => {
         console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
 
@@ -814,7 +815,7 @@ export default class extends React.Component {
       console.log("Login via Geräte-Token fehlgeschlagen!");
       this.setState({loginMessages: {errorMsg: "Login via Geräte-Token fehlgeschlagen!", loginType: this.state.loginMessages.loginType}});
       this.onOpenLogin();
-    });
+    });*/
   }
 
   onOpenRegister() {
@@ -932,7 +933,7 @@ export default class extends React.Component {
 
       SVESystemInfo.getFullSystemState().then(state => {
         console.log("Initial SVE state: " + JSON.stringify(state));
-        SVESystemInfo.getLoggedInUser().then(usr => {
+        /*SVESystemInfo.getLoggedInUser().then(usr => {
           self.state.user = usr;
           let lData = this.state.loginData;
           lData.username = usr.getName();
@@ -941,7 +942,7 @@ export default class extends React.Component {
         }, err => {
           self.state.user = undefined;
           self.checkForToken();
-        });
+        });*/
 
         self.parseLink();
       }, err => {
