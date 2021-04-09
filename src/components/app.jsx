@@ -516,7 +516,7 @@ export default class extends React.Component {
                 <ListButton title="Register" onClick={() => this.onRegister()} />
                 <ListButton title="Zurück zum Login" onClick={() => this.onOpenLogin()} />
                 <BlockFooter>
-                  Die App verwendet die API an: <Link external href={"https://" + window.location.hostname + "/" + SVESystemInfo.getAPIRoot() + "/check"}>{window.location.hostname + "/" + SVESystemInfo.getAPIRoot()}</Link>
+                  Die App verwendet die API an: <Link external href={"https://" + SVESystemInfo.getAPIRoot() + "/check"}>{SVESystemInfo.getAPIRoot()}</Link>
                 </BlockFooter>
               </List>
             </Page>
