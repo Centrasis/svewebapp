@@ -17,7 +17,8 @@ function resolvePath(dir) {
 const env = process.env.NODE_ENV || 'development';
 const target = process.env.TARGET || 'web';
 
-
+const isLocal = process.env.TERM_PROGRAM == 'vscode' && process.env.OS.includes("Windows");
+console.log("Build for local webpack-dev-server: ", isLocal);
 
 module.exports = {
   mode: env,
@@ -48,6 +49,7 @@ module.exports = {
     contentBase: '/www/',
     disableHostCheck: true,
     historyApiFallback: true,
+    https: true,
     watchOptions: {
       poll: 1000,
     },
@@ -217,7 +219,13 @@ module.exports = {
         },*/
       ],
     }),
-
+    new webpack.DefinePlugin({
+      'process.env.sveAPI': (isLocal) ? "'media.felixlehner.de'" : "undefined",
+      'process.env.authAPI': (isLocal) ? "'accounts.felixlehner.de/auth'" : "undefined",
+      'process.env.accountsAPI': (isLocal) ? "'accounts.felixlehner.de'" : "undefined",
+      'process.env.gameAPI': (isLocal) ? "'games.felixlehner.de'" : "undefined",
+      'process.env.aiAPI': (isLocal) ? "'ai.felixlehner.de'" : "undefined",
+    }),
     new WebpackPwaManifest({
       name: 'sve-online',
       short_name: 'sveo',

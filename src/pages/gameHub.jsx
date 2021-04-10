@@ -1,5 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
+import { SVEGameServer } from 'svegamesapi';
 //import {SVEGame} from 'webgames';
 
 export default class extends React.Component {
@@ -81,9 +82,19 @@ export default class extends React.Component {
     updateGames() {
       this.setState({foundGames: []});
 
-      /*SVEGame.getGames().then(games => {
-        this.setState({foundGames: games});
-      });*/
+      SVEGameServer.listGames(this.$f7.data.getUser()).then((infos) => {
+        let list = [];
+        infos.forEach(i => {
+          list.push({
+            host: i.host.getName(),
+            gameType: "Survival",
+            name: i.name,
+            playersCount: i.playersCount,
+            maxPlayers: i.maxPlayers
+          });
+        });
+        this.setState({foundGames: list});
+      });
     }
 
     gameTypeToReadable(type) {

@@ -39,11 +39,11 @@ export default class extends React.Component {
   constructor() {
     super();
 
-    SVESystemInfo.getInstance().sources.sveService = window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
-    SVESystemInfo.getInstance().sources.authService =  window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.") + "/auth";
-    SVESystemInfo.getInstance().sources.accountService = window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.");
-    SVESystemInfo.getInstance().sources.gameService = window.location.hostname.replace("www.", "games.").replace("sve.", "games.");
-    SVESystemInfo.getInstance().sources.aiService = window.location.hostname.replace("www.", "ai.").replace("sve.", "ai.");
+    SVESystemInfo.getInstance().sources.sveService = process.env.sveAPI || window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
+    SVESystemInfo.getInstance().sources.authService = process.env.authAPI || window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.") + "/auth";
+    SVESystemInfo.getInstance().sources.accountService = process.env.accountsAPI || window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.");
+    SVESystemInfo.getInstance().sources.gameService = process.env.gameAPI || window.location.hostname.replace("www.", "games.").replace("sve.", "games.");
+    SVESystemInfo.getInstance().sources.aiService = process.env.aiAPI || window.location.hostname.replace("www.", "ai.").replace("sve.", "ai.");
 
     console.log("Using APIs at: ", SVESystemInfo.getInstance().sources);
 
