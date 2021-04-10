@@ -14,9 +14,9 @@
     ],
     "composite": true,
     "types": [
-      "babylonjs",
+      /*"babylonjs",
       "babylonjs-materials",
-      "babylonjs-gui",
+      "babylonjs-gui",*/
       "node"
     ],
     "esModuleInterop": true,

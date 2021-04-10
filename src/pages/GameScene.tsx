@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import * as BABYLON from 'babylonjs';
-import BaseGame from 'webgames/dist/BaseGame';
-import { SVEAccount, GameRejectReason } from 'svebaselib';
+//import * as BABYLON from 'babylonjs';
+//import BaseGame from 'webgames/dist/BaseGame';
+import { SVEAccount } from 'svebaselib';
+import { GameRejectReason } from 'svegamesapi';
 
 export type SceneEventArgs = {
-  engine: BABYLON.Engine,
-  scene: BABYLON.Scene,
+  //engine: BABYLON.Engine,
+  //scene: BABYLON.Scene,
   canvas: HTMLCanvasElement
 };
 
@@ -17,28 +18,28 @@ export type GraphicsSettings = {
 }
 
 export type SceneProps = {
-  engineOptions?: BABYLON.EngineOptions,
+  //engineOptions?: BABYLON.EngineOptions,
   adaptToDeviceRatio?: boolean,
   onSceneMount?: (args: SceneEventArgs) => void,
   onGameConnected?: (success: Boolean) => void,
   onGameRejected?: (reason: GameRejectReason) => void,
   OnNewPlayer: () => void,
   graphics?: GraphicsSettings,
-  game: BaseGame,
+  game: any,// BaseGame,
   doHost: Boolean,
   player: SVEAccount
 };
 
 export default class Game extends React.Component<SceneProps & React.HTMLAttributes<HTMLCanvasElement>, {}> {
-  private scene: BABYLON.Scene;
-  private engine: BABYLON.Engine;
+  //private scene: BABYLON.Scene;
+  //private engine: BABYLON.Engine;
   private canvas: HTMLCanvasElement;
-  protected game: BaseGame;
+  protected game: any;
 
   onResizeWindow = () => {
-    if (this.engine) {
-      this.engine.resize();
-    }
+    //if (this.engine) {
+    //  this.engine.resize();
+    //}
   }
 
   componentDidMount () {
@@ -59,7 +60,7 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
       canvasDOM[i].style.height = resolution.Y + "px";
     }
 
-    this.engine = new BABYLON.Engine(
+    /*this.engine = new BABYLON.Engine(
         this.canvas,
         true,
         this.props.engineOptions,
@@ -121,7 +122,7 @@ export default class Game extends React.Component<SceneProps & React.HTMLAttribu
       }
     };
 
-    window.addEventListener('resize', this.onResizeWindow);
+    window.addEventListener('resize', this.onResizeWindow);*/
   }
   
   componentWillUnmount () {

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Page, Navbar, Link, Icon, Button, Col, Block, Row, Preloader } from 'framework7-react';
 import Game from './GameScene';
-import { UNO, Busdriver, Wizard, TheGame } from 'webgames';
+//import { UNO, Busdriver, Wizard, TheGame } from 'webgames';
 import { GameState, GameRejectReason } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    var newGame = undefined;
+    /*var newGame = undefined;
 
     let hosting = (props.f7route.params.isHost == "host");
 
@@ -64,7 +64,7 @@ export default class extends React.Component {
       IsHosting: hosting
     };
     newGame.OnGameStart = () => this.onRequestFullscreen();
-    this.setState({game: newGame});
+    this.setState({game: newGame});*/
   }
 
   onSceneMount = (e) => {
@@ -92,7 +92,7 @@ export default class extends React.Component {
         </Navbar>
         <div style={{width: "100%", height: "90%"}}>
           {(this.state.game !== undefined) ? 
-            <Game
+            /*<Game
               player={this.$f7.data.getUser()}
               onSceneMount={this.onSceneMount} 
               onGameConnected={this.onGameConnected}
@@ -105,7 +105,13 @@ export default class extends React.Component {
               }}
               graphics={{resolution: { X: 1920, Y: 1080}}} 
               style={{width: "100%", height: "100%"}} 
-            />
+            />*/
+            <div>
+              <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+                <span>Hosting...</span><br />
+                <Preloader></Preloader>
+              </div>
+            </div>
             : 
             <div>
               <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>

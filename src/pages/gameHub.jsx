@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
-import {SVEGame} from 'webgames';
+//import {SVEGame} from 'webgames';
 
 export default class extends React.Component {
   constructor(props) {
@@ -81,9 +81,9 @@ export default class extends React.Component {
     updateGames() {
       this.setState({foundGames: []});
 
-      SVEGame.getGames().then(games => {
+      /*SVEGame.getGames().then(games => {
         this.setState({foundGames: games});
-      });
+      });*/
     }
 
     gameTypeToReadable(type) {

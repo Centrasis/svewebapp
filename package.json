@@ -39,6 +39,7 @@
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.0.3",
     "request": "^2.88.2",
+    "svegamesapi": "git+https://github.com/ftl999/sveGamesAPI.git",
     "template7": "^1.4.2",
     "uninstall": "0.0.0",
     "ws": "^7.3.1"
@@ -75,7 +76,6 @@
     "terser-webpack-plugin": "^4.1.0",
     "ts-loader": "^8.0.3",
     "url-loader": "^4.1.0",
-    "webgames": "git+https://github.com/ftl999/webgames.git",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
