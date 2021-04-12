@@ -5,8 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const path = require('path');
 
@@ -53,6 +53,12 @@ module.exports = {
     watchOptions: {
       poll: 1000,
     },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+    }
   },
   optimization: {
     minimizer: [new TerserPlugin({
@@ -235,9 +241,10 @@ module.exports = {
       lang: "de-DE",
       crossorigin: 'use-credentials',
       filename: "manifest.json",
-      orientation: "landscape",
+      orientation: "portrait",
       display: "standalone",
       start_url: "/",
+      swSrc: resolvePath('src/service-worker.js'), 
       fingerprints: true,
       inject: true,
       ios: {
@@ -266,9 +273,14 @@ module.exports = {
         }
       ]
     }),
-
     new WorkboxPlugin.InjectManifest({
       swSrc: resolvePath('src/service-worker.js'),
+      maximumFileSizeToCacheInBytes: 25000000,
+    }),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+      swDest: "src/service-worker.js",
       maximumFileSizeToCacheInBytes: 25000000,
     }),
     new webpack.ContextReplacementPlugin(
