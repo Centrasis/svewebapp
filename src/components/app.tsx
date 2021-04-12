@@ -96,6 +96,7 @@ export default class extends React.Component {
       navigator.serviceWorker.register('/service-worker.js', { scope: '/' }).then(function(reg) {
         // Registrierung erfolgreich
         console.log('Registrierung erfolgreich. Scope ist ' + reg.scope);
+        reg.showNotification("Update erfolgreich!");
       }).catch(function(error) {
         // Registrierung fehlgeschlagen
         console.log('Registrierung fehlgeschlagen mit ' + error);

@@ -236,8 +236,11 @@ module.exports = {
       clientsClaim: true,
       cleanupOutdatedCaches: true,
       skipWaiting: true,
-      swDest: "src/service-worker.js",
+      swDest: "service-worker.js",
+      inlineWorkboxRuntime: true,
+      navigationPreload: true,
       maximumFileSizeToCacheInBytes: 250000000,
+      mode: 'production',
       runtimeCaching: [{
         urlPattern: /.(?:png|jpg|jpeg|svg|gif)$/,
         
@@ -279,7 +282,7 @@ module.exports = {
       orientation: "portrait",
       display: "standalone",
       start_url: "/",
-      swSrc: resolvePath('src/service-worker.js'), 
+      swSrc: resolvePath('service-worker.js'), 
       fingerprints: true,
       inject: true,
       ios: {
@@ -308,10 +311,10 @@ module.exports = {
         }
       ]
     }),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: resolvePath('src/service-worker.js'),
+    /*new WorkboxPlugin.InjectManifest({
+      swSrc: resolvePath('service-worker.js'),
       maximumFileSizeToCacheInBytes: 25000000,
-    }),
+    }),*/
     new webpack.ContextReplacementPlugin(
       /\/package-name\//,
       (data) => {
