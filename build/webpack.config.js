@@ -279,6 +279,7 @@ module.exports = {
     }),
     new WorkboxPlugin.GenerateSW({
       clientsClaim: true,
+      cleanupOutdatedCaches: true,
       skipWaiting: true,
       swDest: "src/service-worker.js",
       maximumFileSizeToCacheInBytes: 25000000,
