@@ -232,6 +232,41 @@ module.exports = {
       'process.env.gameAPI': (isLocal) ? "'games.felixlehner.de'" : "undefined",
       'process.env.aiAPI': (isLocal) ? "'ai.felixlehner.de'" : "undefined",
     }),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      cleanupOutdatedCaches: true,
+      skipWaiting: true,
+      swDest: "src/service-worker.js",
+      maximumFileSizeToCacheInBytes: 250000000,
+      runtimeCaching: [{
+        urlPattern: /.(?:png|jpg|jpeg|svg|gif)$/,
+        
+        // Apply a cache-first strategy.
+        handler: 'CacheFirst',
+        
+        options: {
+          // Use a custom cache name.
+          cacheName: 'images',
+      
+          // Only cache 100 images.
+          expiration: {
+            maxEntries: 100,
+          },
+        },
+      },
+      {
+        urlPattern: /.(?:html|js|css|ts|tsx|jsx|json|map|ttf|eot|woff|woff2)$/,
+        
+        // Apply a cache-first strategy.
+        handler: 'NetworkFirst',
+      
+        options: {
+          networkTimeoutSeconds: 3,
+          // Use a custom cache name.
+          cacheName: 'pwa',
+        },
+      }],
+    }),
     new WebpackPwaManifest({
       name: 'sve-online',
       short_name: 'sveo',
@@ -275,13 +310,6 @@ module.exports = {
     }),
     new WorkboxPlugin.InjectManifest({
       swSrc: resolvePath('src/service-worker.js'),
-      maximumFileSizeToCacheInBytes: 25000000,
-    }),
-    new WorkboxPlugin.GenerateSW({
-      clientsClaim: true,
-      cleanupOutdatedCaches: true,
-      skipWaiting: true,
-      swDest: "src/service-worker.js",
       maximumFileSizeToCacheInBytes: 25000000,
     }),
     new webpack.ContextReplacementPlugin(
