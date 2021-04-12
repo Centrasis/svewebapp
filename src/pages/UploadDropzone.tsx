@@ -3,7 +3,7 @@ import { SVEProject, SVESystemInfo, SVEData } from 'svebaselib';
 import { Block } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import HugeUploader from 'huge-uploader';
-//import { ImageLike } from 'tesseract.js';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export type UploadDropzoneSettings = {
     project: SVEProject,
@@ -71,8 +71,8 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
     }
 
     onAcceptMedia(media: File[]) {
-        this.$f7.progressbar.show(0, "#11a802");
-        this.uploadInfo.progressbar = this.$f7.dialog.progress("Hochladen..", 0, "#11a802");
+        f7.progressbar.show(0, "#11a802");
+        this.uploadInfo.progressbar = f7.dialog.progress("Hochladen..", 0, "#11a802");
         this.hasError = false;
     
         media.forEach(m => this.uploadInfo.imagesToUpload.push(m));
@@ -118,7 +118,7 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
             this.onImageUploaded(lastItem);
           this.uploadInfo.filesUploaded = 0;
           this.uploadInfo.totalFilesToUpload = 0;
-          this.$f7.progressbar.hide();
+          f7.progressbar.hide();
           if(this.uploadInfo.progressbar !== undefined) {
             this.uploadInfo.progressbar.close();
             this.uploadInfo.progressbar = undefined;
@@ -147,7 +147,7 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
     
         uploader.on('error', (err) => {
           console.error('Something bad happened', err.detail);
-          self.toastError = self.$f7.toast.create({
+          self.toastError = f7.toast.create({
             text: JSON.stringify(err.detail),
             closeButton: true,
             closeButtonText: 'Ok',
@@ -163,7 +163,7 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
     
         uploader.on('progress', (progress) => {
             let ratio = ((self.uploadInfo.filesUploaded + (progress.detail / 100.0)) / self.uploadInfo.totalFilesToUpload) * 100.0;
-            self.$f7.progressbar.show(ratio, "#11a802");
+            f7.progressbar.show(ratio, "#11a802");
             self.uploadInfo.progressbar.setProgress(ratio);
             
             self.uploadInfo.progressbar.setText("Datei (" + self.uploadInfo.filesUploaded + " / " + self.uploadInfo.totalFilesToUpload + ") ~" + this.calcRemainingTime(ratio));

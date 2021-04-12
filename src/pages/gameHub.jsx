@@ -1,7 +1,9 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
 import { SVEGameServer } from 'svegamesapi';
-//import {SVEGame} from 'webgames';
+import { f7, f7ready, theme } from 'framework7-react';
+import store from '../components/store';
+import { LoginHook } from '../components/LoginHook';
 
 export default class extends React.Component {
   constructor(props) {
@@ -82,7 +84,7 @@ export default class extends React.Component {
     updateGames() {
       this.setState({foundGames: []});
 
-      SVEGameServer.listGames(this.$f7.data.getUser()).then((infos) => {
+      SVEGameServer.listGames(store.state.user).then((infos) => {
         let list = [];
         infos.forEach(i => {
           list.push({
@@ -119,8 +121,8 @@ export default class extends React.Component {
 
     componentDidMount() {
       var self = this;
-      this.$f7ready((f7) => {
-        self.$f7.data.addLoginHook(() => {
+      f7ready((f7) => {
+        LoginHook.add(() => {
           self.updateGames();
         });
       });

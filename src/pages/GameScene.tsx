@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 //import BaseGame from 'webgames/dist/BaseGame';
 import { SVEAccount } from 'svebaselib';
 import { GameRejectReason } from 'svegamesapi';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export type SceneEventArgs = {
   //engine: BABYLON.Engine,

@@ -4,6 +4,7 @@ import { Block, Row, Link, BlockHeader, BlockFooter, Col, Button } from 'framewo
 import * as qrcode from 'qrcode-generator';
 import { SVEGroup, SVEProject } from 'svebaselib';
 import Dom7 from 'dom7';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export type InviteFieldSettings = {
     group: SVEGroup,
@@ -33,7 +34,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             this.allowShareOnly = this.props.allowShareOnly;
         }
 
-        this.toastCopyIcon = this.$f7.toast.create({
+        this.toastCopyIcon = f7.toast.create({
             icon: '<i class="f7-icons">square_on_square</i>',
             text: 'Einladung kopiert!',
             position: 'center',
@@ -45,7 +46,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
 
         var self = this;
         this.forceUpdate(() => {
-            self.$f7ready((f7) => {
+            f7ready((f7) => {
                 Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
             });
         });
@@ -118,7 +119,7 @@ export default class InviteField extends React.Component<InviteFieldSettings & R
             console.log("Registered token!");
             var self = this;
             this.forceUpdate(() => {
-                self.$f7ready((f7) => {
+                f7ready((f7) => {
                     Dom7("#" + self.group.getName() + "-QRCode").html(self.getQRCode()); 
                 });
             });

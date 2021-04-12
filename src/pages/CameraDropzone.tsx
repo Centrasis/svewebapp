@@ -1,11 +1,12 @@
 import UploadDropzone from './UploadDropzone';
 import React from 'react';
-//import { ImageCapture } from 'image-capture';
-import { SVEProject, SVESystemInfo, SVEData } from 'svebaselib';
 import { Block, Button } from 'framework7-react';
+import { f7, f7ready, theme } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import { ImageCapture } from 'image-capture/src/imagecapture';
 import * as crypto from 'crypto';
+import store from '../components/store';
+import {MultiMediaDeviceHandler as MMDH} from '../components/multimediadevicehandler';
 
 export type CameraUploadDropzoneSettings = {
     onCameraLoaded?: (cam?: HTMLVideoElement) => void
@@ -16,7 +17,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
     protected onCameraLoaded: (cam?: HTMLVideoElement) => void = (cam?: HTMLVideoElement) =>  {};
     protected onCameraStop: (cam?: HTMLVideoElement) => void = (cam?: HTMLVideoElement) =>  {};
     render () {   
-        return (this.$f7.data.hasCameraPermission()) ? (
+        return (MMDH.hasCameraPermission()) ? (
                     <div style={{width: "100%", height: "100%"}}>
                         <video
                             style={{width: "100%", height: "100%"}}
@@ -60,7 +61,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
     }
 
     reactivateCamera() {
-        this.$f7.data.resetCameraPermissions(true);
+        MMDH.resetCameraPermissions(true);
         this.setupCamera();
     }
 
@@ -81,7 +82,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
     
     setupCamera() {
         let self = this;
-        this.$f7.data.getCameraStream().then((stream: MediaStream) => {
+        MMDH.getCameraStream().then((stream: MediaStream) => {
           let elem = document.getElementById(this.props.id + "-camera-input") as HTMLVideoElement;
           elem.srcObject = stream;
           elem.play();
@@ -114,7 +115,7 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
         if(this.props.onCameraStop) {
             this.onCameraStop = this.props.onCameraStop;
         }
-        this.$f7ready((f7) => {
+        f7ready((f7) => {
             this.setupCamera();
             this.forceUpdate();
         });

@@ -16,6 +16,7 @@ import RequestAndLoad from '../pages/request-and-load.jsx';
 import NotFoundPage from '../pages/404.jsx';
 import PlayGame from '../pages/playGame.jsx';
 import GameHub from '../pages/gameHub.jsx';
+import { SideMenue } from '../components/SideMenue';
 
 var routes = [
   {
@@ -94,6 +95,10 @@ var routes = [
     options: {
       transition: 'f7-push',
     },
+    beforeLeave: ({resolve, reject}) => {
+      SideMenue.popRightPanel();
+      resolve();
+    }
   },
   {
     path: '/projectdetails/:id/',
@@ -115,6 +120,10 @@ var routes = [
     options: {
       transition: 'f7-push',
     },
+    beforeLeave: ({resolve, reject}) => {
+      SideMenue.popRightPanel();
+      resolve();
+    }
   },
   {
     path: '/users/:id/',

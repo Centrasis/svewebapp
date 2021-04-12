@@ -4,9 +4,15 @@ import NewGroupPopup from './NewGroupPopup';
 import NewProjectPopup from './NewProjectPopup';
 import QRCodeScanner from './QRCodeScanner';
 import Dom7 from 'dom7';
+import { f7, f7ready } from 'framework7-react';
+import store from '../components/store';
 
 //import { Camera } from 'expo-camera';
 import {SVEGroup} from 'svebaselib';
+import { LinkProcessor } from '../components/LinkProcessor';
+import { PopupHandler } from '../components/PopupHandler';
+import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
+import { SideMenue } from '../components/SideMenue';
 
 export default class extends React.Component {
   constructor(props) {
@@ -29,7 +35,7 @@ export default class extends React.Component {
         </Navbar>
         {(this.state.projects.length > 0) ? 
         <div>
-          <div class={"timeline " + ((this.$f7.device.desktop) ? "timeline-sides" : "")}>
+          <div class={"timeline " + ((f7.device.desktop) ? "timeline-sides" : "")}>
           {this.getProjectsWithDate().map((project) => (
             <div class="timeline-item">
               <div class="timeline-item-date">
@@ -39,7 +45,7 @@ export default class extends React.Component {
               </div>
               <div class="timeline-item-divider"></div>
               <div class="timeline-item-content">
-                <List noChevron={this.$f7.device.desktop}>
+                <List noChevron={f7.device.desktop}>
                   <ListItem
                     swipeout
                     key={project.getID()}
@@ -48,11 +54,11 @@ export default class extends React.Component {
                     onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
                   >
                     <img slot="media" src={project.getSplashImageURI()} width="80"/>
-                    <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                    <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
                       <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
                       <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
                     </SwipeoutActions>
-                    <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                    <Link slot="after" href="#" style={(f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
                       <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
                     </Link>
                   </ListItem>
@@ -62,7 +68,7 @@ export default class extends React.Component {
           ))}
           </div>
           {(this.getProjectsWithoutDate().length > 0) ? 
-            <List noChevron={this.$f7.device.desktop}>
+            <List noChevron={f7.device.desktop}>
               {this.getProjectsWithoutDate().map((project) => (
                 <ListItem
                   swipeout
@@ -72,11 +78,11 @@ export default class extends React.Component {
                   onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
                 >
                   <img slot="media" src={project.getSplashImageURI()} width="80"/>
-                  <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+                  <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
                     <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
                     <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
                   </SwipeoutActions>
-                  <Link slot="after" href="#" style={(this.$f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                  <Link slot="after" href="#" style={(f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
                     <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
                   </Link>
                 </ListItem>
@@ -100,7 +106,7 @@ export default class extends React.Component {
 
         <NewGroupPopup
           id="NG-Context"
-          owningUser={this.$f7.data.getUser()}
+          owningUser={store.state.user}
           onGroupCreated={this.onGroupCreated.bind(this)}
           groupToEdit={this.state.selectedGroup}
         />
@@ -108,15 +114,15 @@ export default class extends React.Component {
         <QRCodeScanner
           id="QRScannerContext"
           onDecoded={(link) => {
-            this.$f7.data.joinGroup(link);
-            this.$f7.data.getPopupComponent('QRCodeScannerQRScannerContext').setComponentVisible(false);
+            LinkProcessor.joinGroup(link);
+            PopupHandler.getPopupComponent('QRCodeScannerQRScannerContext').setComponentVisible(false);
           }}
         />
 
         {(typeof this.state.group !== "number") ? 
           <NewProjectPopup
-            owningUser={this.$f7.data.getUser()}
-            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { this.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
+            owningUser={store.state.user}
+            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
             parentGroup={this.state.group}
             caption={(this.state.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.state.selectedProject.getName()}
             projectToEdit={this.state.selectedProject}
@@ -147,7 +153,7 @@ export default class extends React.Component {
       if(success) {
         self.updateContent();
       } else {
-        self.$f7.dialog.alert("Fehlende Berechtigung zum bearbeiten!", "Fehlende Berechtigung");
+        f7.dialog.alert("Fehlende Berechtigung zum bearbeiten!", "Fehlende Berechtigung");
       }
     });
     
@@ -156,7 +162,7 @@ export default class extends React.Component {
 
   onShowEdit(prj) {
     this.setState({ selectedProject: prj});
-    this.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(true);
+    PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true);
   }
 
   desktopOpenDetails(prj) {
@@ -166,10 +172,10 @@ export default class extends React.Component {
   onRemoveProject(project, shouldPromt = false) {
     if (shouldPromt) {
       var self = this;
-      this.$f7.dialog.confirm(`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`, "Löschen?", () => { self.onRemoveProject(project); });
+      f7.dialog.confirm(`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`, "Löschen?", () => { self.onRemoveProject(project); });
     }
     else {
-      var dialog = this.$f7.dialog;
+      var dialog = f7.dialog;
       project.remove().then((sucess) => {
         if(!sucess) {
           dialog.alert("Urlaub konnte nicht gelöscht werden!");
@@ -180,12 +186,12 @@ export default class extends React.Component {
 
   onGroupCreated(group) {
     this.setState({selectedGroup: undefined});
-    this.$f7.data.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(false);
+    PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(false);
   }
 
   openCamera() {
-    this.$f7.data.resetCameraPermissions(true);
-    this.$f7.data.getPopupComponent('QRCodeScannerQRScannerContext').setComponentVisible(true);
+    MultiMediaDeviceHandler.resetCameraPermissions(true);
+    PopupHandler.getPopupComponent('QRCodeScannerQRScannerContext').setComponentVisible(true);
     console.log("Open Camera");
   }
 
@@ -194,16 +200,15 @@ export default class extends React.Component {
       return;
 
     var router = this.$f7router;
-    var f7 = this.$f7;
     var self = this;
     if (typeof this.state.group !== "number") {
-      this.state.group.getRightsForUser(this.$f7.data.getUser()).then(rights => {
+      this.state.group.getRightsForUser(store.state.user).then(rights => {
         let panelContent = {
             caption: "Gruppenoptionen",
-            menueItems: [
+            subMenuItems: [
               {
                 caption: "Neuer Urlaub",
-                onClick: function() { self.$f7.data.getPopupComponent('NewProjectPopup').setComponentVisible(true); }
+                onClick: function() { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true); }
               },
               {
                 caption: "Teilen",
@@ -211,11 +216,11 @@ export default class extends React.Component {
               },
               {
                 caption: "Neue Gruppe",
-                onClick: function() { self.$f7.data.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
+                onClick: function() { PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Gruppe bearbeiten",
-                onClick: function() { self.setState({selectedGroup: self.state.group}); self.$f7.data.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
+                onClick: function() { self.setState({selectedGroup: self.state.group}); PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Mitglieder",
@@ -229,23 +234,23 @@ export default class extends React.Component {
         };
         if (rights.admin)
         {
-          panelContent.menueItems.push({
+          panelContent.subMenuItems.push({
             caption: "Gruppe löschen",
             color: "red",
             onClick: function() { 
-              self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
+              f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
                 self.state.group.remove().then(v => {
                   if(v) {
                     router.back();
                   } else {
-                    self.$f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
+                    f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
                   }
                 });
               }, () =>  {});
             }
           });
         }
-        self.$f7.data.pushRightPanel(panelContent);
+        SideMenue.pushRightPanel(panelContent);
       });
     }
 
@@ -257,9 +262,9 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
+    f7ready((f7) => {
       if (typeof self.state.group === "number") {
-        self.setState({group: new SVEGroup({id: self.state.group}, this.$f7.data.getUser(), g => self.onGroupReady(g))});
+        self.setState({group: new SVEGroup({id: self.state.group}, store.state.user, g => self.onGroupReady(g))});
       }
       Dom7(document).on('page:reinit', function (e) {
         if (typeof self.state.group !== "number")
@@ -270,7 +275,6 @@ export default class extends React.Component {
 
   onPageBeforeRemove() {
     console.log("before page remove!");
-    this.$f7.data.popRightPanel();
     // Destroy popup when page removed
     if (this.popup) this.popup.destroy();
   }

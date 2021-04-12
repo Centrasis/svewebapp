@@ -12,6 +12,7 @@ import {
   Range,
   Block
 } from 'framework7-react';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export default () => (
   <Page name="form">

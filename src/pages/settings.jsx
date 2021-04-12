@@ -15,8 +15,10 @@ import {
   ListButton,
   Popup
 } from 'framework7-react';
+import { f7, f7ready, theme } from 'framework7-react';
 
 import Dom7 from 'dom7';
+import { SVESystemInfo } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
@@ -61,9 +63,9 @@ export default class extends React.Component {
               title="API-Funktionen"
             >
               <List>
-                {this.state.serverFunctions.map(f => {
-                  <ListItem checkbox title={f.name} disabled={!f.ok}></ListItem>
-                })} 
+                {this.state.serverFunctions.map(f => (
+                  <ListItem checkbox title={f.name} disabled={true} checked={f.ok}></ListItem>
+                ))} 
               </List>
             </ListItem>
             </List>
@@ -150,15 +152,15 @@ export default class extends React.Component {
                 title="Übernehmen"
                 onClick={() => { 
                   if (this.state.newPw === this.state.newPw2) {
-                    this.$f7.getUser().changePassword(this.state.oldPw, this.state.newPw).then(val => {
+                    f7.getUser().changePassword(this.state.oldPw, this.state.newPw).then(val => {
                       if(!val) {
-                        this.$f7.dialog.alert("Änderung fehlgeschlagen!");
+                        f7.dialog.alert("Änderung fehlgeschlagen!");
                       } else {
                         this.setState({changePw: false, oldPw: "", newPw: "", newPw2: ""});
                       }
                     });
                   } else {
-                    this.$f7.dialog.alert("Die neuen Passwörter müssen identisch sein!");
+                    f7.dialog.alert("Die neuen Passwörter müssen identisch sein!");
                   }
                 }}
                 style={{cursor: "pointer"}}
@@ -174,8 +176,18 @@ export default class extends React.Component {
     var router = this.$f7router;
     var self = this;
     var $$ = Dom7;
-    this.$f7ready((f7) => {
-      
+    f7ready((f7) => {
+      let funcs = [];
+      let sources = SVESystemInfo.getInstance().sources;
+      for (let prop in sources) {
+        if (prop !== "protocol") {
+          funcs.push({
+            name: prop,
+            ok: (sources[prop] !== undefined)
+          });
+        }
+      }
+      this.setState({serverFunctions: funcs});
     },
     function (data, status) {
       setTimeout(self.componentDidMount(), 1000);
@@ -183,8 +195,8 @@ export default class extends React.Component {
   }
 
   commitToServer() {
-    var dlg = this.$f7.dialog;
-    this.$f7.request.get(this.$f7.apiPath + "/setUserSettings.php?id="+this.state.user.id+"&isPublic="+((this.state.settings.isPublic) ? "1" : "0") + "&email="+this.state.settings.email, function(data) {
+    var dlg = f7.dialog;
+    f7.request.get(f7.apiPath + "/setUserSettings.php?id="+this.state.user.id+"&isPublic="+((this.state.settings.isPublic) ? "1" : "0") + "&email="+this.state.settings.email, function(data) {
       if(!JSON.parse(data).Succeeded)
         dlg.alert("Ein Fehler auf dem Server trat auf! Die Einstellungen wurden nicht übernommen!");
     });

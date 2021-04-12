@@ -3,6 +3,8 @@ import { Page, Navbar, Block, Row, Preloader, Col } from 'framework7-react';
 import Dom7 from 'dom7';
 import InviteField from './InviteField';
 import { SVEGroup } from 'svebaselib';
+import { f7, f7ready, theme } from 'framework7-react';
+import store from '../components/store';
 
 export default class extends React.Component {
   constructor(props) {
@@ -47,9 +49,9 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
+    f7ready((f7) => {
       if (typeof self.state.group === "number") {
-        new SVEGroup({id: self.state.group}, this.$f7.data.getUser(), g => {
+        new SVEGroup({id: self.state.group}, store.state.user, g => {
           self.setState({group: g});
           g.getProjects().then(ps => {
             self.setState({projectsCount: ps.length});

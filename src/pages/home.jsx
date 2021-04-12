@@ -21,6 +21,12 @@ import Dom7 from 'dom7';
 import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
 import NewGroupPopup from './NewGroupPopup';
+import { f7, f7ready, theme } from 'framework7-react';
+import store from '../components/store';
+import { LoginHook } from '../components/LoginHook';
+import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
+import { LinkProcessor } from '../components/LinkProcessor';
+import { PopupHandler } from '../components/PopupHandler';
 
 export default class extends React.Component {
   constructor(props) {
@@ -36,10 +42,10 @@ export default class extends React.Component {
   <Page name="home">
     {/* Top Navbar */}
     <Navbar large sliding={false}>
-      <NavTitle sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitle>
-      <NavTitleLarge sliding>Willkommen {(this.$f7.data.getUser() !== undefined) ? this.$f7.data.getUser().getName() : ""}</NavTitleLarge>
+      <NavTitle sliding>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitle>
+      <NavTitleLarge sliding>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitleLarge>
       <NavRight>
-        <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent('NewGroupPopup').setComponentVisible(true)}></Link>
+        <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => PopupHandler.getPopupComponent('NewGroupPopup').setComponentVisible(true)}></Link>
         <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
         <Link searchbarEnable=".searchbar-demo" iconIos="f7:search" iconAurora="f7:search" iconMd="material:search"></Link>
       </NavRight>
@@ -53,7 +59,7 @@ export default class extends React.Component {
         onClickDisable={(sb) => { this.onDisableSearch(sb) }}
         onSearchbarEnable={(sb) => { this.onEnableSearch(sb) }}
         onSearchbarDisable={(sb) => { this.onDisableSearch(sb) }}
-        disableButton={!this.$theme.aurora}
+        disableButton={!theme.aurora}
         customSearch={true}
     ></Searchbar>
     </Navbar>
@@ -76,7 +82,7 @@ export default class extends React.Component {
               link={`/context/${context.group.getID()}/`}
               onSwipeoutDeleted={this.onRemoveGroup.bind(this, context.group)}
             >
-              <SwipeoutActions right={!this.$f7.device.desktop} style={(!this.$f7.device.desktop) ? {} : {display: "none"}}>
+              <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
                 <SwipeoutButton delete confirmText={`Möchten Sie die Gruppe ${context.group.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
               </SwipeoutActions>
               {(this.state.showProjects && context.projects.length > 0) ? (
@@ -102,12 +108,12 @@ export default class extends React.Component {
     <Block strong>
       <Link href="/settings/" iconF7="gear" tooltip="Einstellungen">&nbsp;Einstellungen</Link>
     </Block>
-    {(!this.$f7.device.standalone && (this.$f7.device.android || this.$f7.device.ios)) ? 
+    {(!f7.device.standalone && (f7.device.android || f7.device.ios)) ? 
       <Block strong>
         <Link href="/install/" iconF7="square_arrow_down">&nbsp;App installieren</Link>
       </Block>
     : ""}
-    {(this.$f7.data.isDebug()) ? 
+    {(store.dispatch("isDebug")) ? 
       <Block strong>
         <Link onClick={this.simulateError.bind(this)}>Simuliere Fehler</Link>
       </Block>
@@ -121,15 +127,15 @@ export default class extends React.Component {
 
     <QRCodeScanner
       onDecoded={(link) => {
-        this.$f7.data.joinGroup(link);
-        this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(false);
+        LinkProcessor.joinGroup(link);
+        PopupHandler.getPopupComponent('QRCodeScanner').setComponentVisible(false);
       }}
     />
 
-    {(this.$f7.data.getUser() !== undefined) ?
+    {(store.state.user !== undefined) ?
       <NewGroupPopup
-        owningUser={this.$f7.data.getUser()}
-        onGroupCreated={(group) => { this.$f7.data.getPopupComponent('NewGroupPopup').setComponentVisible(false); this.updateContent(); }}
+        owningUser={store.state.user}
+        onGroupCreated={(group) => { PopupHandler.getPopupComponent('NewGroupPopup').setComponentVisible(false); this.updateContent(); }}
       />
     : ""}
   </Page>
@@ -142,8 +148,8 @@ export default class extends React.Component {
   }
 
   joinGroup() {
-    this.$f7.data.resetCameraPermissions(true);
-    this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(true);
+    MultiMediaDeviceHandler.resetCameraPermissions(true);
+    PopupHandler.getPopupComponent('QRCodeScanner').setComponentVisible(true);
   }
 
   onRemoveGroup(group) {
@@ -153,8 +159,8 @@ export default class extends React.Component {
   }
 
   logOut() {
-    this.$f7.data.cleanUpLogInData();
-    this.$f7.data.promptLogin();
+    store.dispatch("cleanUpLogInData");
+    store.dispatch("promptLogin");
   }
 
   onSearch(sb, query, prevQuery) {
@@ -162,7 +168,7 @@ export default class extends React.Component {
     {
       return;
     }
-    SVEProjectQuery.query(query, this.$f7.data.getUser()).then(results => {
+    SVEProjectQuery.query(query, store.state.user).then(results => {
       let groups = results.filter(e => e.constructor.name === SVEGroup.name);
       let projects = results.filter(e => e.constructor.name === SVEProject.name);
       console.log("Query result: " + JSON.stringify(groups) + " prjs: -> " + JSON.stringify(projects));
@@ -206,8 +212,8 @@ export default class extends React.Component {
   updateContent() {
     var self = this;
 
-    if(this.$f7.data.getUser() !== undefined) {
-      SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(gs => {
+    if(store.state.user !== undefined) {
+      SVEGroup.getGroupsOf(store.state.user).then(gs => {
         self.setState({
           groups: gs
         });
@@ -220,18 +226,18 @@ export default class extends React.Component {
         });
         self.setState({home_display_list: list});
       }, err => {
-        this.$f7.dialog.alert("Can't fetch groups from server!", "Server down!");
-        this.$f7.data.clearUser();
+        f7.dialog.alert("Can't fetch groups from server!", "Server down!");
+        store.dispatch("clearUser");
       });
     } else {
-      //this.$f7.data.promptLogin();
+      //store.dispatch("promptLogin");
     }
   }
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
-      self.$f7.data.addLoginHook(() => {
+    f7ready((f7) => {
+      LoginHook.add(() => {
         self.updateContent();
       });
 

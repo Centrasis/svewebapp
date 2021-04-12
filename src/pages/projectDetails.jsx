@@ -2,6 +2,8 @@ import React from 'react';
 import { Page, Navbar, Block, Preloader, Col, Row } from 'framework7-react';
 import { SVEProject, SVEProjectState, SVESystemInfo } from 'svebaselib';
 import InviteField from './InviteField';
+import { f7, f7ready, theme } from 'framework7-react';
+import store from '../components/store';
 
 export default class extends React.Component {
   constructor(props) {
@@ -58,14 +60,14 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
+    f7ready((f7) => {
       SVESystemInfo.getSystemStatus().then(status => {
         if(!status.tokenSystem) {
           f7.dialog.alert("Token-System ist offline! Aktuell können keine Einladungen registriert werden.");
         }
       });
       if (typeof self.state.project === "number") {
-        new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
+        new SVEProject(self.state.project, store.state.user, p => {
           self.setState({
             project: p,
             group: p.getGroup()

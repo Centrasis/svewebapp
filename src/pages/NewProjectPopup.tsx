@@ -1,6 +1,8 @@
 import React from 'react';
 import { Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
 import { SVEGroup, SVEProject, SVEAccount, ProjectInitializer, SVEProjectState, SVEProjectType } from 'svebaselib';
+import { f7, f7ready, theme } from 'framework7-react';
+import { PopupHandler } from '../components/PopupHandler';
 
 export type NewProjectPopupSettings = {
     owningUser: SVEAccount,
@@ -136,17 +138,17 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.$f7.data.setPopupComponent('NewProjectPopup' + ((this.props.id === undefined) ? "" : this.props.id), this);
+        PopupHandler.setPopupComponent('NewProjectPopup' + ((this.props.id === undefined) ? "" : this.props.id), this);
         this.updateProps();
         this.forceUpdate();
     }
     componentDidUpdate() { 
         this.updateProps(); 
-        this.$f7ready((f7) => {});
+        f7ready((f7) => {});
     }
     UNSAFE_componentWillUpdate() { 
         this.updateProps();
-        this.$f7ready((f7) => {});
+        f7ready((f7) => {});
     }
 
     updateProps() {
@@ -185,6 +187,6 @@ export default class NewProjectPopup extends React.Component<NewProjectPopupSett
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent('NewProjectPopup' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
+        PopupHandler.setPopupComponent('NewProjectPopup' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
     }
 }

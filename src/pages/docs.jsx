@@ -11,6 +11,10 @@ import NewGroupPopup from './NewGroupPopup';
 import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState, SVESystemInfo, SVEClassificator } from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
 import { model } from '@tensorflow/tfjs';
+import { f7, f7ready, theme } from 'framework7-react';
+import store from '../components/store';
+import {MultiMediaDeviceHandler as MMDH} from '../components/multimediadevicehandler';
+import { LoginHook } from '../components/LoginHook';
 
 export default class extends React.Component {
   constructor() {
@@ -34,9 +38,9 @@ export default class extends React.Component {
       <Page name="docs">
         <Navbar title="SVE Docs">
           <NavRight>
-              <Link iconF7="camera_on_rectangle" tooltip="Kamera auswählen" onClick={() => { this.$f7.data.resetCameraPermissions(true); this.$f7.data.selectCamera(); }}></Link>
-              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(true)}></Link>
-              <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={() => this.$f7.data.getPopupComponent('QRCodeScanner').setComponentVisible(true)}></Link>
+              <Link iconF7="camera_on_rectangle" tooltip="Kamera auswählen" onClick={() => { MMDH.resetCameraPermissions(true); MMDH.selectCamera(); }}></Link>
+              <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => PopupHandler.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(true)}></Link>
+              <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={() => PopupHandler.getPopupComponent('QRCodeScanner').setComponentVisible(true)}></Link>
               {(this.state.selectedGroup !== undefined) ? <Link style={{color: "red"}} iconF7="folder_badge_minus" tooltip="Gruppe löschen" onClick={this.removeCurrentGroup.bind(this)}></Link> : "" }
           </NavRight>
         </Navbar> 
@@ -54,7 +58,7 @@ export default class extends React.Component {
                 if (isNaN(e.target.value)) {
                   this.setState({selectedProject: undefined});
                 } else {
-                  new SVEGroup({id: Number(e.target.value)}, this.$f7.data.getUser(), (g) => {
+                  new SVEGroup({id: Number(e.target.value)}, store.state.user, (g) => {
                     this.setState({ selectedGroup: g });
                     g.getProjects().then(ps => {
                       if(ps.length > 0) {
@@ -99,7 +103,7 @@ export default class extends React.Component {
 
         <NewGroupPopup
           id='Docs-New-Group'
-          owningUser={this.$f7.data.getUser()}
+          owningUser={store.state.user}
           onGroupCreated={(group) => {this.newGroupCreated(group)}}
         />
       </Page>
@@ -143,7 +147,7 @@ export default class extends React.Component {
   }
 
   classifyImage(img) {
-    this.$f7.toast.create({
+    f7.toast.create({
       icon: '<i class="f7-icons">tray_arrow_up_fill</i>',
       text: 'Archiviert!',
       position: 'center',
@@ -157,7 +161,7 @@ export default class extends React.Component {
 
   removeCurrentGroup() {
     var self = this;
-    this.$f7.dialog.confirm("Dokumente alle löschen?", "Bestätigen", ()=> {
+    f7.dialog.confirm("Dokumente alle löschen?", "Bestätigen", ()=> {
       self.state.selectedGroup.remove().then(val => {
         self.updateGroupsList();
         if (val) {
@@ -168,7 +172,7 @@ export default class extends React.Component {
   }
 
   newGroupCreated(g) {
-    this.$f7.data.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(false);
+    PopupHandler.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(false);
 
     if (g === undefined)
       return;
@@ -181,19 +185,19 @@ export default class extends React.Component {
       name: "Documents",
       group: g,
       splashImg: "",
-      owner: this.$f7.data.getUser(),
+      owner: store.state.user,
       state: SVEProjectState.Open,
       resultsURI: "",
       type: SVEProjectType.Sales
     },
-    this.$f7.data.getUser(),
+    store.state.user,
     p => {
       p.store().then(val => {
         if(val) {
           this.setState({selectedProject: p});
         } else {
           this.setState({selectedProject: undefined});
-          this.$f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
+          f7.dialog.alert("Fehler beim Anlegen des initial Projektes!")
         }
       });
     });
@@ -205,7 +209,7 @@ export default class extends React.Component {
       this.setState({documentClasses: ret})
     });
 
-    SVEGroup.getGroupsOf(this.$f7.data.getUser()).then(groups => {
+    SVEGroup.getGroupsOf(store.state.user).then(groups => {
       let groupsWithOnlyDocs = [];
       let i = 0;
       groups.forEach(g => {
@@ -232,8 +236,8 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
-      self.$f7.data.addLoginHook(() => {
+    f7ready((f7) => {
+      LoginHook.add(() => {
         self.updateGroupsList();
       });
 

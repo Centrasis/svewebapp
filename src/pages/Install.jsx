@@ -1,5 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, Row } from 'framework7-react';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export default () => (
   <Page>

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Page, Navbar, Link, Icon, Button, Col, Block, Row, Preloader } from 'framework7-react';
-import Game from './GameScene';
+import { f7, f7ready, theme } from 'framework7-react';
 //import { UNO, Busdriver, Wizard, TheGame } from 'webgames';
 import { GameState, GameRejectReason } from 'svebaselib';
+import store from '../components/store';
 
 export default class extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class extends React.Component {
     if (hosting) {
       gameinfo = {
         gameState: GameState.Undetermined,
-        host: this.$f7.data.getUser().getName(),
+        host: store.state.user.getName(),
         gameType: props.f7route.params.game,
         maxPlayers: 6,
         name: props.f7route.params.id
@@ -23,7 +24,7 @@ export default class extends React.Component {
     } else {
       gameinfo = {
         gameState: GameState.Undetermined,
-        host: this.$f7.data.getUser().getName(),
+        host: store.state.user.getName(),
         gameType: props.f7route.params.game,
         maxPlayers: 6,
         name: props.f7route.params.id
@@ -45,7 +46,7 @@ export default class extends React.Component {
 
     if(newGame == undefined) {
       var self = this;
-      this.$f7ready((f7) => {
+      f7ready((f7) => {
         f7.dialog.alert("No valid game specified! (" + self.state.name + ")");
         self.$f7router.back();
       });
@@ -78,7 +79,7 @@ export default class extends React.Component {
       console.log("Connected to game as: " + ((this.state.IsHosting) ? "Host" : "Client"));
     }
     else {
-      this.$f7.dialog.alert("Could not host or join the game!");
+      f7.dialog.alert("Could not host or join the game!");
     }
   }
 
@@ -93,7 +94,7 @@ export default class extends React.Component {
         <div style={{width: "100%", height: "90%"}}>
           {(this.state.game !== undefined) ? 
             /*<Game
-              player={this.$f7.data.getUser()}
+              player={store.state.user}
               onSceneMount={this.onSceneMount} 
               onGameConnected={this.onGameConnected}
               game={this.state.game}
@@ -147,11 +148,11 @@ export default class extends React.Component {
 
   onGameRejected(reason) {
     if (reason == GameRejectReason.PlayerLimitExceeded) {
-      this.$f7.dialog.alert("Spiel ist bereits voll!");
+      f7.dialog.alert("Spiel ist bereits voll!");
     }
 
     if (reason == GameRejectReason.GameNotPresent) {
-      this.$f7.dialog.alert("Spiel ist nicht mehr vorhanden!");
+      f7.dialog.alert("Spiel ist nicht mehr vorhanden!");
     }
   }
 
@@ -161,9 +162,9 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
+    f7ready((f7) => {
       if (self.state.IsHosting) {
-        self.state.game.create(self.$f7.data.getUser()).then(() => {
+        self.state.game.create(store.state.user).then(() => {
           console.log("Created new game!");
           self.forceUpdate();
         }, err => {
@@ -171,7 +172,7 @@ export default class extends React.Component {
           self.setState({game: undefined});
         });
       } else {
-        self.state.game.join(self.$f7.data.getUser()).then(() => self.forceUpdate(), err => console.log("JOINING FAILED!"));
+        self.state.game.join(store.state.user).then(() => self.forceUpdate(), err => console.log("JOINING FAILED!"));
       }
     });
   }

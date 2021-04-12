@@ -17,6 +17,8 @@ import {
 
 import Dom7 from 'dom7';
 import {SVEGroup} from 'svebaselib';
+import { f7ready, theme } from 'framework7-react';
+import store from '../components/store';
 
 export default class extends React.Component {
   constructor(props) {
@@ -47,7 +49,7 @@ export default class extends React.Component {
         expandable
         searchContainer=".search-list"
         searchIn=".item-title"
-        disableButton={!this.$theme.aurora}
+        disableButton={!theme.aurora}
     ></Searchbar>
     </Navbar>
 
@@ -159,9 +161,9 @@ export default class extends React.Component {
 
   componentDidMount() {
     var self = this;
-    this.$f7ready((f7) => {
+    f7ready((f7) => {
       if (typeof self.state.group === "number") {
-        new SVEGroup({id: self.state.group}, self.$f7.data.getUser(), g => {
+        new SVEGroup({id: self.state.group}, store.state.user, g => {
           self.setState({group: g});
           g.getUsers().then(usrs => {
             usrs.forEach(u => {
@@ -172,9 +174,9 @@ export default class extends React.Component {
               });
             });
           });
-          g.getRightsForUser(self.$f7.data.getUser()).then(r => {self.setState({selfRights: r})});
+          g.getRightsForUser(store.state.user).then(r => {self.setState({selfRights: r})});
         });
-        self.setState({selfUser: self.$f7.data.getUser()});
+        self.setState({selfUser: store.state.user});
       }
     });
   }

@@ -2,6 +2,7 @@ import React from 'react';
 import { SVEDataType, SVEDataVersion, SVEData, SVEClassificator, AIClass } from 'svebaselib';
 import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, ListInput, ListItem, Input, BlockHeader } from 'framework7-react';
 import Dom7 from 'dom7';
+import { f7, f7ready, theme } from 'framework7-react';
 
 export enum Sorting {
     AgeASC,
@@ -116,18 +117,18 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
 
     UNSAFE_componentWillUpdate() { 
         this.updateProps();
-        this.$f7ready((f7) => {});
+        f7ready((f7) => {});
     }
 
     componentDidMount() {
-        this.toastFavIcon = this.$f7.toast.create({
+        this.toastFavIcon = f7.toast.create({
             icon: '<i class="f7-icons">star</i>',
             text: 'Favorisiert',
             position: 'center',
             closeTimeout: 1000,
         });
 
-        this.toastDeleteIcon = this.$f7.toast.create({
+        this.toastDeleteIcon = f7.toast.create({
             icon: '<i class="f7-icons">trash</i>',
             text: 'Gelöscht',
             position: 'center',
@@ -287,7 +288,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                 }
             });
         } else {
-            this.$f7.dialog.alert("Klassenname darf nicht leer sein!");
+            f7.dialog.alert("Klassenname darf nicht leer sein!");
             return;
         }
 
@@ -368,7 +369,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
 
       deleteFromServer(img: SVEData) {
         var self = this;
-        this.$f7.dialog.confirm("Möchten Sie die Datei: wirklich löschen?", "Löschbestätigung", function () {
+        f7.dialog.confirm("Möchten Sie die Datei: wirklich löschen?", "Löschbestätigung", function () {
           img.remove().then((val) => {
             if(val) {
                 self.toastDeleteIcon.open();
@@ -376,7 +377,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                 self.forceUpdate();
                 self.onDeleteMedia(img.getID());
             } else {
-              self.$f7.dialog.alert("Datei konnte nicht gelöscht werden!");
+              f7.dialog.alert("Datei konnte nicht gelöscht werden!");
             }
           });
         }, 
@@ -436,7 +437,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             });
             }
         
-            var photobrowser = this.$f7.photoBrowser.create({
+            var photobrowser = f7.photoBrowser.create({
             photos: displayed,
             theme: "dark",
             navbarShowCount: false,

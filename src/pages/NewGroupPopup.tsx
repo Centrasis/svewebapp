@@ -1,6 +1,8 @@
 import React from 'react';
 import { Page, List, Icon, BlockTitle, Popup, ListInput, ListButton, BlockHeader, ListItem } from 'framework7-react';
 import { SVEGroup, SVEAccount, GroupInitializer } from 'svebaselib';
+import { f7, f7ready, theme } from 'framework7-react';
+import { PopupHandler } from '../components/PopupHandler';
 
 export type NewGroupPopupSettings = {
     owningUser: SVEAccount,
@@ -82,17 +84,17 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
 
     componentDidMount() { 
         this.errorMsg = undefined;
-        this.$f7.data.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), this);
+        PopupHandler.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), this);
         this.updateProps();
         this.forceUpdate();
     }
     componentDidUpdate() { 
         this.updateProps(); 
-        this.$f7ready((f7) => {});
+        f7ready((f7) => {});
     }
     UNSAFE_componentWillUpdate() { 
         this.updateProps();
-        this.$f7ready((f7) => {});
+        f7ready((f7) => {});
     }
 
     updateProps() {
@@ -110,6 +112,6 @@ export default class NewGroupPopup extends React.Component<NewGroupPopupSettings
     }
 
     componentWillUnmount() {
-        this.$f7.data.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
+        PopupHandler.setPopupComponent('NewGroupPopup' + ((this.props.id === undefined) ? "" : this.props.id), undefined);
     }
 }

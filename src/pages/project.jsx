@@ -8,6 +8,11 @@ import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVES
 import UploadDropzone from './UploadDropzone';
 import MediaGallery, {Media, Sorting} from './MediaGallery';
 import NewProjectPopup from "./NewProjectPopup"
+import { f7ready, theme } from 'framework7-react';
+import store from '../components/store';
+import { LoginHook } from '../components/LoginHook';
+import { SideMenue } from '../components/SideMenue';
+import { getDevice } from 'framework7';
 
 export default class extends React.Component {
   constructor(props) {
@@ -48,7 +53,7 @@ export default class extends React.Component {
         </Navbar>
 
         <Block strong>
-          {(!this.$f7.device.desktop) ? (
+          {(!f7.device.desktop) ? (
             <Row id="indexImage" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
               <img src={(typeof this.state.project !== "number") ? this.state.project.getSplashImageURI() : ""} style={{maxHeight: "30vh", width: "auto", display: "inherit"}}/>
             </Row>
@@ -67,7 +72,7 @@ export default class extends React.Component {
               <video 
                 playsInline
                 controls
-                preload={(this.$f7.data.getIsMobileDataConnection()) ? "none" : "auto"} 
+                preload={"auto"} 
                 style={{maxHeight: "30vh", width: "auto"}} 
                 poster={this.state.resultPosterURI}
               >
@@ -109,11 +114,11 @@ export default class extends React.Component {
             init={true}
             style={{display: "flex", flexFlow: "column", height: "100%"}}
           >
-            {(this.state.viewableUsers.has(this.$f7.data.getUser().getName())) ? (
+            {(this.state.viewableUsers.has(store.state.user.getName())) ? (
               <SwiperSlide className="scrollBox" style={{height: this.getSwiperHeight() + "px"}}>
                   <MediaGallery 
-                    id={`image-gallery-${this.$f7.data.getUser().getName()}`}
-                    data={this.getImagesFor(this.$f7.data.getUser().getName())}
+                    id={`image-gallery-${store.state.user.getName()}`}
+                    data={this.getImagesFor(store.state.user.getName())}
                     sortBy={this.state.sortBy}
                     enableDeletion={true}
                     enableFavorization={true}
@@ -123,7 +128,7 @@ export default class extends React.Component {
                   />
               </SwiperSlide>
             ) : ""}
-            {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== this.$f7.data.getUser().getName()) ? (
+            {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== store.state.user.getName()) ? (
               <SwiperSlide 
                 style={{height: this.getSwiperHeight() + "px"}}
                 className="scrollBox"
@@ -167,7 +172,7 @@ export default class extends React.Component {
             {(typeof this.state.project !== "number") ? 
               <MediaGallery 
                 id={`title-select-gallery`}
-                data={this.getImagesFor(this.$f7.data.getUser().getName())}
+                data={this.getImagesFor(store.state.user.getName())}
                 sortBy={this.state.sortBy}
                 enableDeletion={false}
                 enableFavorization={false}
@@ -184,7 +189,7 @@ export default class extends React.Component {
       {(typeof this.state.project !== "number") ? 
        	<NewProjectPopup
           id = "ProjectDisplay"
-          owningUser={this.$f7.data.getUser()}
+          owningUser={store.state.user}
           parentGroup={this.state.project.getGroup()}
           caption={"Bearbeite Projekt: " + this.state.project.getName()}
           projectToEdit={this.state.project}
@@ -212,7 +217,7 @@ export default class extends React.Component {
       this.state.project.setSplashImgID(img.getID());
       this.state.project.store().then(val => {
         if(!val) {
-          this.$f7.dialog.alert("Titelbild konnte nicht gesetzt werden!");
+          f7.dialog.alert("Titelbild konnte nicht gesetzt werden!");
         }
       });
     }
@@ -223,7 +228,7 @@ export default class extends React.Component {
   enqueueLatestDataCall(storeProject, count = 0) {
     if(count < 100) {
       setTimeout(() => {
-        SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+        SVEData.getLatestUpload(store.state.user).then(latestData => {
           if(latestData !== this.state.lastLatestID) {
             this.setState({lastLatestID: latestData});
             this.state.project.setResult(latestData);
@@ -246,7 +251,7 @@ export default class extends React.Component {
       let storeProject = () => {
         this.state.project.setState(SVEProjectState.Closed);
         this.state.project.store().then(val => {
-          this.$f7.toast.create({
+          f7.toast.create({
             text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
             closeButton: !val,
             closeButtonText: 'Ok',
@@ -304,7 +309,7 @@ export default class extends React.Component {
   }
 
   updateUploadedImages() {
-    SVEData.getLatestUpload(this.$f7.data.getUser()).then(latestData => {
+    SVEData.getLatestUpload(store.state.user).then(latestData => {
         this.setState({lastLatestID: latestData});
     });
 
@@ -357,7 +362,7 @@ export default class extends React.Component {
     // Init
     self.setState({favoriteImgs: favImgs});
 
-    if (self.$device.ios || self.$device.android)
+    if (getDevice().ios || getDevice().android)
     {
       let lastScrollPos = 0.0;
       window.onscroll = (evt) => {
@@ -379,7 +384,7 @@ export default class extends React.Component {
     var $$ = Dom7;
     if($$("#ImgSwiper") !== null && $$("#ImgSwiper").offset() !== null) {
       let h = ($$("#page").height() - $$("#ImgSwiper").offset().top - 2 * $$(".navbar").height());
-      if (this.$device.ios || this.$device.android)
+      if (getDevice().ios || getDevice().android)
       {
         h = window.innerHeight * 0.9;
       }
@@ -388,7 +393,7 @@ export default class extends React.Component {
       document.querySelectorAll(".scrollBox").forEach((e, ke, p) => {
         e.style.height = h + "px";
       });
-      $$(".scrollBox").each((i, e) => e.css("height", h + "px"));*/
+      $$(".scrollBox").each((e, i) => e.css("height", h + "px"));*/
     } else {
       return 500;
     }
@@ -405,10 +410,10 @@ export default class extends React.Component {
     Dom7("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
 
     if (typeof this.state.project !== "number") {
-      this.state.project.getGroup().getRightsForUser(this.$f7.data.getUser()).then(rights => {
+      this.state.project.getGroup().getRightsForUser(store.state.user).then(rights => {
         let panelContent = {
           caption: "Urlaubsaktionen",
-          menueItems: [
+          subMenuItems: [
             (rights.write && this.state.project.getState() === SVEProjectState.Open) ?
             {
               caption: "Medien hochladen",
@@ -417,7 +422,7 @@ export default class extends React.Component {
             (rights.write) ?
             {
               caption: "Bearbeiten",
-              onClick: function() { self.$f7.data.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true); }
+              onClick: function() { PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true); }
             } : {},
             {
               caption: "Teilen",
@@ -453,12 +458,12 @@ export default class extends React.Component {
               caption: "Projekt löschen",
               color: "red",
               onClick: function() { 
-                self.$f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
+                f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
                   self.state.project.remove().then(v => {
                     if(v) {
                       router.back();
                     } else {
-                      self.$f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
+                      f7.dialog.alert("Löschen war nicht möglich! Überprüfen Sie Ihre Rechte.");
                     }
                   });
                 }, () =>  {});
@@ -472,7 +477,7 @@ export default class extends React.Component {
           ]
         };
 
-        self.$f7.data.pushRightPanel(panelContent);
+        SideMenue.pushRightPanel(panelContent);
       });
     }
 
@@ -488,13 +493,13 @@ export default class extends React.Component {
     var router = this.$f7router;
     var self = this;
     var $$ = Dom7;
-    this.$f7ready((f7) => {
-      self.$f7.data.addLoginHook(() => {
+    f7ready((f7) => {
+      LoginHook.add(() => {
         self.updateContent();
       });
 
       if (typeof self.state.project === "number") {
-        self.setState({project: new SVEProject(self.state.project, this.$f7.data.getUser(), p => {
+        self.setState({project: new SVEProject(self.state.project, store.state.user, p => {
           p.getResult().then((data => {
             if (isNaN(data.getID())) {
               console.log("Got result error on Server!");
@@ -520,7 +525,6 @@ export default class extends React.Component {
 
   onPageBeforeRemove() {
     console.log("before page remove!");
-    this.$f7.data.popRightPanel();
     // Destroy popup when page removed
     if (this.popup) this.popup.destroy();
   }
