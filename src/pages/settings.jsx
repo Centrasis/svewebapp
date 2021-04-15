@@ -216,10 +216,11 @@ export default class extends React.Component {
       let sources = SVESystemInfo.getInstance().sources;
       for (let prop in sources) {
         if (prop !== "protocol") {
-          if (prop !== undefined) {
-            let api = SVESystemInfo.getInstance().sources[prop];
+          let api = SVESystemInfo.getInstance().sources[prop];
+          if (api !== undefined) {
             console.log("Api: ", api);
             SVESystemInfo.checkAPI(api).then(info => {
+              console.log("Api info: ", info);
               funcs.push({
                 name: prop + " v" + info.version,
                 ok: info.status,
@@ -227,6 +228,7 @@ export default class extends React.Component {
               });
               this.setState({serverFunctions: funcs});
             }, err => {
+              console.log("Error checking api: ", api, err);
               funcs.push({
                 name: prop,
                 ok: false,
