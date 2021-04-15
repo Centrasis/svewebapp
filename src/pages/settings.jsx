@@ -16,9 +16,9 @@ import {
   Popup
 } from 'framework7-react';
 import { f7, f7ready, theme } from 'framework7-react';
-
+import store from '../components/store';
 import Dom7 from 'dom7';
-import { SVESystemInfo } from 'svebaselib';
+import { SVESystemInfo, SVEToken, TokenType } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
@@ -38,7 +38,8 @@ export default class extends React.Component {
         api: "",
         host: window.hostname
       },
-      serverFunctions: []
+      serverFunctions: [],
+      devices: []
     };
   }
   render() {
@@ -46,71 +47,96 @@ export default class extends React.Component {
       <Page name="settings">
         <Navbar title="Einstellungen" backLink="Back"/>
 
-        <Block>
-          <BlockTitle>Servereinstellungen</BlockTitle>
-          <List>
-            <ListInput
-              label="SVE-API Server"
-              type="url"
-              placeholder={location.hostname}
-              value={this.state.server.host}
-              onInput={(e) => {
-                this.setState({ server: {host: e.target.value, api: this.state.server.api }});
-              }}
-            ></ListInput>
-
-            <ListItem
-              title="API-Funktionen"
-            >
+        <List accordionList accordionOpposite>
+          <ListItem accordionItem title="Servereinstellungen">
+            <Icon slot="media" f7="cloud_upload" />
+            <AccordionContent>
               <List>
-                {this.state.serverFunctions.map(f => (
-                  <ListItem checkbox title={f.name} disabled={true} checked={f.ok}></ListItem>
-                ))} 
-              </List>
-            </ListItem>
-            </List>
-          </Block>
+                <ListInput
+                  label="SVE-API Server"
+                  type="url"
+                  placeholder={location.hostname}
+                  value={this.state.server.host}
+                  onInput={(e) => {
+                    this.setState({ server: {host: e.target.value, api: this.state.server.api }});
+                  }}
+                ></ListInput>
 
-          <Block>
-            <BlockTitle><Icon f7="photo_fill_on_rectangle_fill" />&nbsp;&nbsp;SVE Media Einstellungen</BlockTitle>
-            <BlockTitle>Sichtbarkeit</BlockTitle>
-            <List mediaList>
-              <ListItem radio name="isPublic-radio" 
-                defaultChecked={!this.state.settings.isPublic}
-                value={false}
-                onChange={(e) => {
-                  this.setState({ settings: {isPublic: !e.target.value, email: this.state.settings.email }});
-                }}
-                title="Privat"
-                text="Hochgeladene Medien sind nicht für Gruppenmitglieder sichtbar."
-              ></ListItem>
-              <ListItem radio name="isPublic-radio" 
-                defaultChecked={this.state.settings.isPublic} 
-                value={true}
-                onChange={(e) => {
-                  this.setState({ settings: {isPublic: e.target.value, email: this.state.settings.email }});
-                }}
-                title="Gruppen-Öffentlich"
-                text="Hochgeladene Medien sind für alle Gruppenmitglieder sichtbar."
-              ></ListItem>
-            </List>
-            <List>
-              <ListInput 
-                label="E-Mail für Benachrichtigungen" 
-                type="email"
-                placeholder="e@mail.de"
-                value={this.state.settings.email}
-                onInput={(e) => {
-                  this.setState({ settings: {email: e.target.value, isPublic: this.state.settings.isPublic }});
-                }}
-              ></ListInput>
-              <ListButton
-                title="Passwort ändern"
-                onClick={() => this.setState({changePw: true})}
-              >
-              </ListButton>
-            </List>
-        </Block>
+                <ListItem
+                  title="API-Funktionen"
+                >
+                  <List>
+                    {this.state.serverFunctions.map(f => (
+                      <ListItem checkbox title={f.name} disabled={true} checked={f.ok}></ListItem>
+                    ))} 
+                  </List>
+                </ListItem>
+              </List>
+            </AccordionContent>
+          </ListItem>
+
+          <ListItem accordionItem title="SVE Media Einstellungen">
+            <Icon slot="media" f7="photo_fill_on_rectangle_fill" />
+            <AccordionContent>
+              <Block>
+                <BlockTitle>Sichtbarkeit</BlockTitle>
+                <List mediaList>
+                  <ListItem radio name="isPublic-radio" 
+                    defaultChecked={!this.state.settings.isPublic}
+                    value={false}
+                    onChange={(e) => {
+                      this.setState({ settings: {isPublic: !e.target.value, email: this.state.settings.email }});
+                    }}
+                    title="Privat"
+                    text="Hochgeladene Medien sind nicht für Gruppenmitglieder sichtbar."
+                  ></ListItem>
+                  <ListItem radio name="isPublic-radio" 
+                    defaultChecked={this.state.settings.isPublic} 
+                    value={true}
+                    onChange={(e) => {
+                      this.setState({ settings: {isPublic: e.target.value, email: this.state.settings.email }});
+                    }}
+                    title="Gruppen-Öffentlich"
+                    text="Hochgeladene Medien sind für alle Gruppenmitglieder sichtbar."
+                  ></ListItem>
+                </List>
+              </Block>
+              <List>
+                <ListInput 
+                  label="E-Mail für Benachrichtigungen" 
+                  type="email"
+                  placeholder="e@mail.de"
+                  value={this.state.settings.email}
+                  onInput={(e) => {
+                    this.setState({ settings: {email: e.target.value, isPublic: this.state.settings.isPublic }});
+                  }}
+                ></ListInput>
+                <ListButton
+                  title="Passwort ändern"
+                  onClick={() => this.setState({changePw: true})}
+                >
+                </ListButton>
+              </List>
+            </AccordionContent>
+          </ListItem>
+          <ListItem accordionItem title="SVE Sicherheit">
+            <Icon slot="media" f7="lock_shield" />
+            <AccordionContent>
+              <Block>
+                  <BlockTitle>Registrierte Geräte</BlockTitle>
+                  <List>
+                    {this.state.devices.map(t => (
+                      <ListItem title={t.deviceAgent}>
+                        <Icon slot="media" f7={(t.type == TokenType.DeviceToken) ? "person_crop_circle" : "folder_circle"} />
+                        <Icon slot="media" textColor="red" f7="trash" />
+                      </ListItem>
+                    ))} 
+                  </List>
+              </Block>    
+            </AccordionContent>
+          </ListItem>
+        </List>
+
         <Block largeInset strong>
           <Row tag="p">
             <Button className="col" raised fillIos onClick={this.commitToServer.bind(this)}>Anwenden</Button>
@@ -152,7 +178,7 @@ export default class extends React.Component {
                 title="Übernehmen"
                 onClick={() => { 
                   if (this.state.newPw === this.state.newPw2) {
-                    f7.getUser().changePassword(this.state.oldPw, this.state.newPw).then(val => {
+                    store.state.user.changePassword(this.state.oldPw, this.state.newPw).then(val => {
                       if(!val) {
                         f7.dialog.alert("Änderung fehlgeschlagen!");
                       } else {
@@ -188,6 +214,11 @@ export default class extends React.Component {
         }
       }
       this.setState({serverFunctions: funcs});
+
+      this.state.devices = [];
+      SVEToken.listDevices(store.state.user).then(ti => {
+        this.setState({devices: ti});
+      });
     },
     function (data, status) {
       setTimeout(self.componentDidMount(), 1000);
