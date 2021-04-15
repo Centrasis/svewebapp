@@ -39,7 +39,7 @@ export default class extends React.Component {
         host: window.hostname
       },
       serverFunctions: [],
-      devices: []
+      tokens: []
     };
   }
   render() {
@@ -125,7 +125,7 @@ export default class extends React.Component {
               <Block>
                   <BlockTitle>Registrierte Geräte</BlockTitle>
                   <List>
-                    {this.state.devices.map(t => (
+                    {this.state.tokens.map(t => (
                       <ListItem title={t.deviceAgent}>
                         <Icon slot="media" f7={(t.type == TokenType.DeviceToken) ? "person_crop_circle" : "folder_circle"} />
                         <Icon slot="media" textColor="red" f7="trash" />
@@ -207,17 +207,33 @@ export default class extends React.Component {
       let sources = SVESystemInfo.getInstance().sources;
       for (let prop in sources) {
         if (prop !== "protocol") {
-          funcs.push({
-            name: prop,
-            ok: (sources[prop] !== undefined)
-          });
+          if (prop == undefined) {
+            funcs.push({
+              name: prop,
+              ok: false
+            });
+            this.setState({serverFunctions: funcs});
+          } else {
+            SVESystemInfo.checkAPI(SVESystemInfo.getInstance().sources[prop]).then(info => {
+              funcs.push({
+                name: prop + " v" + info.version,
+                ok: info.status
+              });
+              this.setState({serverFunctions: funcs});
+            }, err => {
+              funcs.push({
+                name: prop,
+                ok: false
+              });
+              this.setState({serverFunctions: funcs});
+            });
+          }
         }
       }
-      this.setState({serverFunctions: funcs});
 
-      this.state.devices = [];
+      this.state.tokens = [];
       SVEToken.listDevices(store.state.user).then(ti => {
-        this.setState({devices: ti});
+        this.setState({tokens: ti});
       });
     },
     function (data, status) {
