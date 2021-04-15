@@ -127,7 +127,7 @@ export default class extends React.Component {
           }
         });
       } else {
-        reject();
+        this.checkForToken().then(() => resolve(), err =>  reject());
       }
     });    
   }
@@ -614,44 +614,67 @@ export default class extends React.Component {
     location.reload();
   }
 
-  protected checkForToken() {
-    let token_str = window.localStorage.getItem("sve_token");
-    if (token_str !== null && token_str !== undefined) {
-      console.log("Found saved token");
-      this.loginData.username = window.localStorage.getItem("sve_username");
-      new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
-        this.loginData.token = token;
-        if(!token.getIsValid()) {
-          console.log("Device Token is not valid!");
-          this.loginMessages.errorMsg = "Gepeichertes Geräte-Token ist ungültig!";
-          this.cleanUpLogInData();
-        } else {
-          this.doLogInWithToken(token);
-        }
-        this.forceUpdate();
-      });
-    }
+  protected checkForToken(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let token_str = window.localStorage.getItem("sve_token");
+      if (token_str !== null && token_str !== undefined) {
+        console.log("Found saved token");
+        this.loginData.username = window.localStorage.getItem("sve_username");
+        new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+          this.loginData.token = token;
+          if(!token.getIsValid()) {
+            console.log("Device Token is not valid!");
+            this.loginMessages.errorMsg = "Gepeichertes Geräte-Token ist ungültig!";
+            this.cleanUpLogInData();
+            reject();
+          } else {
+            this.doLogInWithToken(token).then(() => resolve(), err => {
+              if (getDevice().standalone) {
+                SVESystemInfo.checkAPI(SVESystemInfo.getInstance().sources.accountService).then(info => {
+                  if (info.status) {
+                    reject();
+                  } else {
+                    resolve();  // if we were logged in once but now we dont have our account service
+                  }
+                }, err => {
+                  resolve();  // if we were logged in once but now we dont have internet
+                });
+              } else {
+                reject();
+              }
+            });
+          }
+          this.forceUpdate();
+        });
+      } else {
+        reject();
+      }
+    });
   }
 
-  protected doLogInWithToken(token) {
-    store.state.saveThisDevice = false;
-    console.log("Try login as: " + this.loginData.username);
-    console.log("Use token");
-  
-    token.use().then((usr) => {
-        console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
-        store.state.user = usr;
-        this.loginData.username = usr.getName();
-        this.onLoggedIn(usr);
-        this.forceUpdate();
-    }, err => {
-        console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
-        this.loginMessages.errorMsg = "Login via Geräte-Token fehlgeschlagen!";
-        this.onOpenLogin();
-        this.forceUpdate();
+  protected doLogInWithToken(token): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      store.state.saveThisDevice = false;
+      console.log("Try login as: " + this.loginData.username);
+      console.log("Use token");
+    
+      token.use().then((usr) => {
+          console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
+          store.state.user = usr;
+          this.loginData.username = usr.getName();
+          this.onLoggedIn(usr);
+          this.forceUpdate();
+          resolve();
+      }, err => {
+          console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
+          this.loginMessages.errorMsg = "Login via Geräte-Token fehlgeschlagen!";
+          this.onOpenLogin();
+          this.forceUpdate();
+          reject();
+      });
+      f7.loginScreen.close();
+      this.openOverlay = undefined;
     });
-    f7.loginScreen.close();
-    this.openOverlay = undefined;
   }
 
   protected onOpenRegister() {
