@@ -786,7 +786,6 @@ export default class extends React.Component {
       this.no_install = false;
       if (window.localStorage.getItem("no_install") !== null || window.localStorage.getItem("no_install") !== undefined) {
         this.no_install = window.localStorage.getItem("no_install") == "true";
-        console.log("no_install: ", this.no_install);
       }
       
       setTimeout(() => {
