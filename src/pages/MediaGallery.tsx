@@ -3,6 +3,8 @@ import { SVEDataType, SVEDataVersion, SVEData, SVEClassificator, AIClass } from 
 import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, ListInput, ListItem, Input, BlockHeader } from 'framework7-react';
 import Dom7 from 'dom7';
 import { f7, f7ready, theme } from 'framework7-react';
+import { getDevice } from 'framework7';
+import { math } from '@tensorflow/tfjs';
 
 export enum Sorting {
     AgeASC,
@@ -27,6 +29,92 @@ export type MediaSettings = {
     onSelectMedia?: (media?: SVEData) => void
 };
 
+export type MediaTileSettings = {
+    media: SVEData,
+    enableDeletion?: boolean,
+    enableFavorization?: boolean,
+    enableDownload?: boolean,
+    enableClassification?: boolean,
+    onDeleteMedia?: (media: SVEData) => void,
+    onSelectMedia?: (media?: SVEData) => void,
+    onClassifyMedia?: (media: SVEData) => void,
+    onFavoritizeMedia?: (media: SVEData) => void,
+    onDownloadMedia?: (media: SVEData) => void,
+};
+
+class MediaTile extends React.Component<MediaTileSettings & React.HTMLAttributes<HTMLCanvasElement> ,{}> {
+    render () {  
+        return (
+            <div className="imgHoverContainer middle" style={{
+                width: "100%",
+                height: "100%",
+                maxWidth: "inherit",
+                maxHeight: "inherit",
+                padding: "1vw",
+                backdropFilter: "drop-shadow(4px 4px 10px green)"
+            }}>
+                {(this.props.media.isClassfied()) ? <BlockHeader>Klasse: {this.props.media.getClassName()}</BlockHeader> : ""}
+                    <Row className="row text-align-center" style={{width: "100%", height: "100%", maxWidth: "inherit", maxHeight: "inherit"}}>
+                        <Col>
+                            <img
+                                className="middle"
+                                src={this.props.media.getURI(SVEDataVersion.Preview)}
+                                onClick={this.props.onSelectMedia.bind(this, this.props.media)}
+                                style={{
+                                    cursor: "pointer",
+                                    maxWidth: "100%",
+                                    maxHeight: "100%",
+                                    width: "100%",
+                                    height: "auto",
+                                    objectFit: "contain",
+                                    backfaceVisibility: "hidden",
+                                    opacity: (this.props.media.getType() == SVEDataType.Image) ? "1.0" : "0.5"
+                                }}
+                            />
+                            {(this.props.media.getType() === SVEDataType.Video) ?
+                                <div className="overlay" style={{cursor: "pointer"}}>
+                                    <Link href="#" onClick={this.props.onSelectMedia.bind(this, this.props.media)}>
+                                        <Icon f7="play_circle_fill" tooltip="Abspielen"></Icon>
+                                    </Link>
+                                </div>
+                            : ""}
+                        </Col>
+                    </Row>
+                    <Row className="row text-align-center">
+                        <Col>
+                        {(this.props.enableFavorization) ? 
+                            <Link href="#" onClick={this.props.onFavoritizeMedia.bind(this, this.props.media)}>;
+                                <Icon f7={(false) ? "star_slash_fill" : "star_fill"} tooltip="Datei (ent-)favorisieren"></Icon>;
+                            </Link>
+                        : ""}
+                        </Col>
+                        <Col>
+                        {(this.props.enableDownload) ? 
+                            <Link href="#" onClick={this.props.onDownloadMedia.bind(this, this.props.media)}>
+                                <Icon f7="cloud_download" tooltip="Herunterladen"></Icon>
+                            </Link>
+                        : "" }
+                        </Col>
+                        {(this.props.enableClassification) ? 
+                            <Col>
+                                <Link href="#" onClick={() => { this.props.onClassifyMedia(this.props.media); this.forceUpdate(); }}>
+                                    <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
+                                </Link>
+                            </Col>
+                        : ""}
+                        <Col>
+                        {(this.props.enableDeletion) ? 
+                            <Link href="#" onClick={this.props.onDeleteMedia.bind(this, this.props.media)}>
+                                <Icon f7="trash" tooltip="Datei entfernen"></Icon>
+                            </Link>
+                        : ""}
+                        </Col>
+                    </Row>
+            </div>
+        );
+    }
+}
+
 export default class MediaGallery extends React.Component<MediaSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected data: SVEData[] = [];
     protected displayCount: number = NaN;
@@ -48,6 +136,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     protected infiniteActive: boolean = false;
     protected shouldReturnSelectedMedia: boolean = false; //display media instead
     protected onSelectMedia: (media?: SVEData) => void = (media?: SVEData) => {};
+    protected sortedImages: SVEData[] = [];
 
     updateProps() {
         this.data = this.props.data;
@@ -108,6 +197,50 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         {
             this.enableFavorization = this.props.enableFavorization;
         }
+
+        this.sortedImages = [];
+        if (this.sortBy == Sorting.AgeASC) {
+            this.sortedImages = this.data.sort((a: SVEData, b: SVEData) => a.getCreationDate().getTime() - b.getCreationDate().getTime());
+        }
+        if (this.sortBy == Sorting.AgeDESC) {
+            this.sortedImages = this.data.sort((a: SVEData, b: SVEData) => b.getCreationDate().getTime() - a.getCreationDate().getTime());
+        }
+        if (this.sortBy == Sorting.UploadASC) {
+            this.sortedImages = this.data.sort((a: SVEData, b: SVEData) => a.getLastAccessDate().getTime() - b.getLastAccessDate().getTime());
+        } 
+        if (this.sortBy == Sorting.UploadDESC) {
+            this.sortedImages = this.data.sort((a: SVEData, b: SVEData) => b.getLastAccessDate().getTime() - a.getLastAccessDate().getTime());
+        }
+
+        this.sortedImages = this.sortedImages.slice(0, (this.displayCount <= this.sortedImages.length) ? this.displayCount : this.sortedImages.length);
+    }
+
+    getTiledView(cols: number = 3): SVEData[][] {
+        let ret: SVEData[][] = [];
+
+        if (this.sortedImages.length > cols) {
+            for(let i = 0; i < this.sortedImages.length - cols; i+=cols) {
+                let col: SVEData[] = [];
+                for(let j = i; j < i + cols; j++) {
+                    col.push(this.sortedImages[j]);
+                }
+
+                ret.push(col);
+            }
+
+            if (this.sortedImages.length % cols !== 0) {
+                let col: SVEData[] = [];
+                for(let j = this.sortedImages.length - Math.floor(this.sortedImages.length / cols); j < this.sortedImages.length; j++) {
+                    col.push(this.sortedImages[j]);
+                }
+
+                ret.push(col);
+            }
+        } else {
+            ret.push(this.sortedImages);
+        }
+
+        return ret;
     }
 
     componentDidUpdate() {
@@ -144,69 +277,52 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
     }
 
     render () {   
-        return (<Block strong style={{overflow: "scroll", overflowX: "hidden", position: "absolute", top: "0", left: "0", right: "0", bottom: "0", display: "block"}} className={this.props.id + "-scrollBox"}>
-                    {this.getPartialImagesList().map((image: SVEData) => (
-                    <Block strong>
-                        {(image.isClassfied()) ? <BlockHeader>Klasse: {image.getClassName()}</BlockHeader> : ""}
+        return <Block strong style={{overflow: "scroll", overflowX: "hidden", position: "absolute", top: "5%", left: "0", right: "0", bottom: "0", display: "block"}} className={this.props.id + "-scrollBox"}>
+            {(!getDevice().desktop) ? (
+                <div>
+                    {this.sortedImages.map((image: SVEData) => (
                         <Block style={{display: "flex", justifyContent: "center", alignContent: "center", paddingBottom: "1em", textAlign: "center"}}>
-                            <Row style={{width: "100%", display: "block"}}>
-                                <div className="imgHoverContainer">
-                                    <img
-                                        className="middle"
-                                        src={image.getURI(SVEDataVersion.Preview)}
-                                        onClick={this.onClickImage.bind(this, image, "")}
-                                        style={{
-                                            maxWidth: "400px",
-                                            maxHeight: "400px",
-                                            width: "100%",
-                                            height: "auto",
-                                            display: "block",
-                                            backfaceVisibility: "hidden",
-                                            opacity: (image.getType() == SVEDataType.Image) ? "1.0" : "0.5"
-                                        }}
-                                    />
-                                    {(image.getType() === SVEDataType.Video) ?
-                                        <div className="overlay">
-                                            <Link href="#" onClick={this.onClickImage.bind(this, image, "")}>
-                                                <Icon f7="play_circle_fill" tooltip="Abspielen"></Icon>
-                                            </Link>
-                                        </div>
-                                    : ""}
-                                </div>
-                            </Row>
+                            <MediaTile style={{maxWidth: "400px"}} media={image} onSelectMedia={this.onSelectMedia.bind(this)}/>
                         </Block>
-                        <Block className="row text-align-center">
-                            <Col>
-                            {(this.enableFavorization) ? 
-                                <Link href="#" onClick={(image.getID() in this.favoriteImgs) ? this.removeStar.bind(this, image) : this.markWithStar.bind(this, image)}>;
-                                    <Icon f7={(image.getID() in this.favoriteImgs) ? "star_slash_fill" : "star_fill"} tooltip="Datei (ent-)favorisieren"></Icon>;
-                                </Link>
-                            : ""}
-                            </Col>
-                            <Col>
-                            {(this.enableDownload) ? 
-                                <Link href="#" onClick={this.saveImageToDevice.bind(this, image)}>
-                                    <Icon f7="cloud_download" tooltip="Herunterladen"></Icon>
-                                </Link>
-                            : "" }
-                            </Col>
-                            {(this.enableClassification) ? 
-                                <Col>
-                                    <Link href="#" onClick={() => { this.classificationItem = image; this.forceUpdate(); }}>
-                                        <Icon f7="cube" tooltip="Datei klassifizieren"></Icon>
-                                    </Link>
-                                </Col>
-                            : ""}
-                            <Col>
-                            {(this.enableDeletion) ? 
-                                <Link href="#" onClick={this.deleteFromServer.bind(this, image)}>
-                                    <Icon f7="trash" tooltip="Datei entfernen"></Icon>
-                                </Link>
-                            : ""}
-                            </Col>
-                        </Block>
-                    </Block>
                     ))}
+                </div>
+                ) : (
+                    <div>
+                    {this.getTiledView().map((row: SVEData[]) => (
+                        <Row style={{maxHeight: "33vh", overflow: "hidden"}}>
+                            {row.map((image: SVEData) => (
+                                <Col style={{maxWidth: "33vw", overflow: "hidden"}} className="text-align-center">
+                                    <MediaTile 
+                                        media={image} 
+                                        onSelectMedia={(m) => this.onClickImage(m)} 
+                                        onDeleteMedia={(m) => this.deleteFromServer(m)}
+                                        onFavoritizeMedia={(m) => {
+                                            if(m.getID() in this.favoriteImgs) {
+                                                this.removeStar(m);
+                                            } else {
+                                                this.markWithStar(m);
+                                            }
+                                        }}
+                                        onDownloadMedia={(m) => this.saveImageToDevice(m)}
+                                        onClassifyMedia={(m) => { this.classificationItem = m; this.forceUpdate(); }}
+                                        enableDeletion={this.enableDeletion}
+                                        enableClassification={this.enableClassification}
+                                        enableFavorization={this.enableFavorization}
+                                        enableDownload={this.enableDownload}
+                                        style={{
+                                            margin: "0 auto", 
+                                            padding: "10px", 
+                                            display: "block", 
+                                            marginLeft: "auto", 
+                                            marginRight: "auto",
+                                            width: "400px"
+                                            }} />
+                                </Col>
+                            ))}
+                        </Row>
+                    ))}
+                    </div>
+                )}
                     <Preloader color="#11a802" className="preloader infinite-scroll-preloader" id={this.props.id + "-Infinity-Loader"}></Preloader>
 
                     <Popup swipeToClose opened={this.classificationItem !== undefined} onPopupClosed={() => {this.newClassName = ""; this.classificationItem = undefined; this.forceUpdate();}}>
@@ -254,9 +370,8 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
                                 </ListItem>
                             </List>
                         </Page>
-                    </Popup>   
+                    </Popup>
                 </Block> 
-            )
       }
 
       getClasses() {
@@ -341,32 +456,6 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
         this.forceUpdate();
       }
 
-      getPartialImagesList() {
-        let list: SVEData[] = [];
-        if (this.sortBy == Sorting.AgeASC || this.sortBy == Sorting.AgeDESC)
-        {
-          list = this.data.sort((a: SVEData, b: SVEData) => {
-              if (this.sortBy == Sorting.AgeASC) {
-                   return a.getCreationDate().getTime() - b.getCreationDate().getTime();
-               } else {
-                   return b.getCreationDate().getTime() - a.getCreationDate().getTime();
-               };
-            });
-        }
-        if (this.sortBy == Sorting.UploadASC || this.sortBy == Sorting.UploadDESC)
-        {
-          list = this.data.sort((a: SVEData, b: SVEData) => {
-            if (this.sortBy == Sorting.UploadASC) {
-                 return a.getLastAccessDate().getTime() - b.getLastAccessDate().getTime();
-             } else {
-                 return b.getLastAccessDate().getTime() - a.getLastAccessDate().getTime();
-             };
-          });
-        }
-
-        return list.slice(0, (this.displayCount <= list.length) ? this.displayCount : list.length);
-      }
-
       deleteFromServer(img: SVEData) {
         var self = this;
         f7.dialog.confirm("Möchten Sie die Datei: wirklich löschen?", "Löschbestätigung", function () {
@@ -445,7 +534,7 @@ export default class MediaGallery extends React.Component<MediaSettings & React.
             toolbar: false,
             popupCloseLinkText: "Schließen",
             renderNavbar: () => {
-                return "<i class=\"f7-icons\">cloud_download</i>";
+                return "<Icon f7=\"cloud_download\" tooltip=\"Herunterladen\"></Icon>";
             }
             });
             photobrowser.open(0);

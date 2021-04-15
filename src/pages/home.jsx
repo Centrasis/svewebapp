@@ -27,6 +27,7 @@ import { LoginHook } from '../components/LoginHook';
 import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
 import { LinkProcessor } from '../components/LinkProcessor';
 import { PopupHandler } from '../components/PopupHandler';
+import { getDevice } from 'framework7';
 
 export default class extends React.Component {
   constructor(props) {
@@ -82,7 +83,7 @@ export default class extends React.Component {
               link={`/context/${context.group.getID()}/`}
               onSwipeoutDeleted={this.onRemoveGroup.bind(this, context.group)}
             >
-              <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
+              <SwipeoutActions right={!getDevice().desktop} style={(!getDevice().desktop) ? {} : {display: "none"}}>
                 <SwipeoutButton delete confirmText={`Möchten Sie die Gruppe ${context.group.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
               </SwipeoutActions>
               {(this.state.showProjects && context.projects.length > 0) ? (
@@ -108,12 +109,12 @@ export default class extends React.Component {
     <Block strong>
       <Link href="/settings/" iconF7="gear" tooltip="Einstellungen">&nbsp;Einstellungen</Link>
     </Block>
-    {(!f7.device.standalone && (f7.device.android || f7.device.ios)) ? 
+    {(!getDevice().standalone && (getDevice().android || getDevice().ios)) ? 
       <Block strong>
         <Link href="/install/" iconF7="square_arrow_down">&nbsp;App installieren</Link>
       </Block>
     : ""}
-    {(store.dispatch("isDebug")) ? 
+    {(false) ? 
       <Block strong>
         <Link onClick={this.simulateError.bind(this)}>Simuliere Fehler</Link>
       </Block>

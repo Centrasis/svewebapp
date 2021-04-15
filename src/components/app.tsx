@@ -39,6 +39,7 @@ import { f7, f7ready, theme } from 'framework7-react';
 import { MultiMediaDeviceHandler } from './multimediadevicehandler';
 import { LoginHook } from './LoginHook';
 import { SideMenue } from './SideMenue';
+import { getDevice } from 'framework7';
 
 interface LoginData {
   username: string;
@@ -684,7 +685,7 @@ export default class extends React.Component {
     f7ready((f7) => {
       SideMenue.setApp(self);
 
-      if (!f7.device.standalone && f7.device.ios)
+      if (!getDevice().standalone && getDevice().ios)
       {
         f7.dialog.confirm("Die Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.", "App ist nicht installiert", 
           () => { 

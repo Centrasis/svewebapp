@@ -13,23 +13,24 @@ import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
 import { SideMenue } from '../components/SideMenue';
 import { getDevice } from 'framework7';
+import { PopupHandler } from '../components/PopupHandler';
 
 export default class extends React.Component {
+  showUpload = false;
+  sortBy = Sorting.AgeASC
+
   constructor(props) {
     super(props);
-
     this.state = {
       displayCount: 10,
       selectedGalleryImg: 0,
       project: Number(props.f7route.params.id),
-      sortBy: Sorting.AgeASC,
       selectedImg: '',
       maxPreViewCount: 10,
       currentPreViewIdx: 0,
       selectedVid: '',
       showMap: false,
       selectedImgUser: "",
-      showUpload: false,
       closeProject: false,
       selectSplash: false,
       images_toPreSelect: [],
@@ -47,56 +48,86 @@ export default class extends React.Component {
       return (
       <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
         <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
-          <NavRight>
-            <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
-          </NavRight>
+          
+            {(!getDevice().desktop) ? (
+              <NavRight>
+                <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
+              </NavRight>
+            ) : (
+              <NavRight>
+                <Link iconIos="f7:cloud_upload" iconAurora="f7:cloud_upload" iconMd="f7:cloud_upload" tooltip="Hochladen" onClick={() => this.showUploadPopup()}/>
+                <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen"/>
+                <Link iconIos="f7:person_3_fill" iconAurora="f7:person_3_fill" iconMd="f7:person_3_fill" tooltip="Mitglieder" onClick={() =>  f7.view.current.router.navigate("/projectdetails/" + this.state.project.getID() + "/")}/>    
+                <Link iconIos="f7:square_pencil" iconAurora="f7:square_pencil" iconMd="f7:square_pencil" tooltip="Bearbeiten" onClick={() => PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true)}/>           
+                <Link iconIos="f7:cloud_download" iconAurora="f7:cloud_download" iconMd="f7:cloud_download" tooltip="Download"/>
+                <Link iconIos="f7:rectangle_stack_person_crop_fill" iconAurora="f7:rectangle_stack_person_crop_fill" iconMd="f7:rectangle_stack_person_crop_fill" tooltip="Titelbild ändern"/>
+                <Link iconIos="f7:trash" iconAurora="f7:trash" iconMd="f7:trash" textColor="red" tooltip="Projekt löschen!"/>
+              </NavRight>
+              )}
+          
         </Navbar>
-
-        <Block strong>
-          {(!f7.device.desktop) ? (
+        {(!getDevice().desktop) ? (
+          <Block strong>
             <Row id="indexImage" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
               <img src={(typeof this.state.project !== "number") ? this.state.project.getSplashImageURI() : ""} style={{maxHeight: "30vh", width: "auto", display: "inherit"}}/>
+            </Row>        
+            <Row>
+              Gegründet von {this.state.ownerName}
             </Row>
-          ) : ""}
+            {(typeof this.state.project !== "number" && this.state.project.getDateRange() !== undefined && this.state.project.getDateRange().begin !== undefined && this.state.project.getDateRange().end !== undefined) ? (
+              <Row style={{display: "block"}}>
+                <p style={{color: (this.state.isTakingPlaceNow) ? "#11a802" : "#FFFFFF"}}>Zeitraum: {this.state.project.getDateRange().begin.toLocaleDateString()} bis {this.state.project.getDateRange().end.toLocaleDateString()}</p>
+              </Row>
+            ) : ""}
+            {(this.state.resultURI !== undefined) ? 
+              <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
+                <video 
+                  playsInline
+                  controls
+                  preload={"auto"} 
+                  style={{maxHeight: "30vh", width: "auto"}} 
+                  poster={this.state.resultPosterURI}
+                >
+                  <source src={this.state.resultURI} type={this.state.resultType} />
+                  <p>Dieser Browser unterstützt HTML5 Video nicht</p>
+                </video>
+              </Row>
+            : ""}
           
+            <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
+              <List id="SortByList" accordionList largeInset style={{width: "90%"}}>
+                <ListItem accordionItem title={"Sortierung: " + this.getReadableSortName(this.sortBy)}>
+                  <AccordionContent id="SortByAccordion">
+                    <List>
+                      <ListItem name="sort-radio" radio title="Alter absteigend" onClick={this.setSortBy.bind(this, Sorting.AgeDESC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Alter aufsteigend" defaultChecked onClick={this.setSortBy.bind(this, Sorting.AgeASC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Upload absteigend" onClick={this.setSortBy.bind(this, Sorting.UploadDESC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Upload aufsteigend" onClick={this.setSortBy.bind(this, Sorting.UploadASC)}></ListItem>
+                    </List>
+                  </AccordionContent>
+                </ListItem>
+              </List>
+            </Row>
+          </Block>
+        ) : (
           <Row>
-            Gegründet von {this.state.ownerName}
+            <Col width="25">
+              <List id="SortByList" accordionList>
+                <ListItem accordionItem title={"Sortierung: " + this.getReadableSortName(this.sortBy)}>
+                  <AccordionContent id="SortByAccordion">
+                    <List>
+                      <ListItem name="sort-radio" radio title="Alter absteigend" onClick={this.setSortBy.bind(this, Sorting.AgeDESC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Alter aufsteigend" defaultChecked onClick={this.setSortBy.bind(this, Sorting.AgeASC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Upload absteigend" onClick={this.setSortBy.bind(this, Sorting.UploadDESC)}></ListItem>
+                      <ListItem name="sort-radio" radio title="Upload aufsteigend" onClick={this.setSortBy.bind(this, Sorting.UploadASC)}></ListItem>
+                    </List>
+                  </AccordionContent>
+                </ListItem>
+              </List>
+            </Col>
+            <Col width="75"></Col>
           </Row>
-          {(typeof this.state.project !== "number" && this.state.project.getDateRange() !== undefined && this.state.project.getDateRange().begin !== undefined && this.state.project.getDateRange().end !== undefined) ? (
-            <Row style={{display: "block"}}>
-              <p style={{color: (this.state.isTakingPlaceNow) ? "#11a802" : "#FFFFFF"}}>Zeitraum: {this.state.project.getDateRange().begin.toLocaleDateString()} bis {this.state.project.getDateRange().end.toLocaleDateString()}</p>
-            </Row>
-          ) : ""}
-          {(this.state.resultURI !== undefined) ? 
-            <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <video 
-                playsInline
-                controls
-                preload={"auto"} 
-                style={{maxHeight: "30vh", width: "auto"}} 
-                poster={this.state.resultPosterURI}
-              >
-                <source src={this.state.resultURI} type={this.state.resultType} />
-                <p>Dieser Browser unterstützt HTML5 Video nicht</p>
-              </video>
-            </Row>
-          : ""}
-          
-          <Row style={{display: "flex", justifyContent: "center", alignContent: "center", width: "100%"}}>
-            <List id="SortByList" accordionList largeInset style={{width: "90%"}}>
-              <ListItem accordionItem title={"Sortierung: " + this.getReadableSortName(this.state.sortBy)}>
-                <AccordionContent id="SortByAccordion">
-                  <List>
-                    <ListItem name="sort-radio" radio title="Alter absteigend" onClick={this.setSortBy.bind(this, Sorting.AgeDESC)}></ListItem>
-                    <ListItem name="sort-radio" radio title="Alter aufsteigend" defaultChecked onClick={this.setSortBy.bind(this, Sorting.AgeASC)}></ListItem>
-                    <ListItem name="sort-radio" radio title="Upload absteigend" onClick={this.setSortBy.bind(this, Sorting.UploadDESC)}></ListItem>
-                    <ListItem name="sort-radio" radio title="Upload aufsteigend" onClick={this.setSortBy.bind(this, Sorting.UploadASC)}></ListItem>
-                  </List>
-                </AccordionContent>
-              </ListItem>
-            </List>
-          </Row>
-        </Block>
+        )}
 
         <Block strong>
           {(this.state.viewableUsers.size === 0) ? (
@@ -116,16 +147,24 @@ export default class extends React.Component {
           >
             {(this.state.viewableUsers.has(store.state.user.getName())) ? (
               <SwiperSlide className="scrollBox" style={{height: this.getSwiperHeight() + "px"}}>
-                  <MediaGallery 
-                    id={`image-gallery-${store.state.user.getName()}`}
-                    data={this.getImagesFor(store.state.user.getName())}
-                    sortBy={this.state.sortBy}
-                    enableDeletion={true}
-                    enableFavorization={true}
-                    style={{width: "100%", height: "100%"}}
-                    displayCount={this.state.displayCount}
-                    enableClassification={this.state.project.getType() !== SVEProjectType.Vacation}
-                  />
+                <Row noGap>
+                  <Col></Col>
+                  <Col style={{justifyContent: "center", alignContent: "center"}}>
+                    <h2>Meine Medien</h2>
+                  </Col>
+                  <Col></Col>
+                </Row>
+                <hr/>
+                <MediaGallery 
+                  id={`image-gallery-${store.state.user.getName()}`}
+                  data={this.getImagesFor(store.state.user.getName())}
+                  sortBy={this.sortBy}
+                  enableDeletion={true}
+                  enableFavorization={true}
+                  style={{width: "100%", height: "100%"}}
+                  displayCount={this.state.displayCount}
+                  enableClassification={this.state.project.getType() !== SVEProjectType.Vacation}
+                />
               </SwiperSlide>
             ) : ""}
             {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== store.state.user.getName()) ? (
@@ -141,7 +180,7 @@ export default class extends React.Component {
                   <MediaGallery
                     id={`image-gallery-${v.key}`}
                     data={this.getImagesFor(v.key)}
-                    sortBy={this.state.sortBy}
+                    sortBy={this.sortBy}
                     enableDeletion={false}
                     enableFavorization={false}
                     style={{width: "100%", height: "100%"}}
@@ -154,7 +193,7 @@ export default class extends React.Component {
           )}
         </Block>
 
-        <Popup className="image-upload" swipeToClose opened={this.state.showUpload} onPopupClosed={() => this.setState({showUpload : false, closeProject: false})}>
+        <Popup className="image-upload" swipeToClose opened={this.showUpload} onPopupClosed={() => this.showUploadPopup(false)}>
           <Page>
             <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
             {(typeof this.state.project !== "number") ? 
@@ -173,7 +212,7 @@ export default class extends React.Component {
               <MediaGallery 
                 id={`title-select-gallery`}
                 data={this.getImagesFor(store.state.user.getName())}
-                sortBy={this.state.sortBy}
+                sortBy={this.sortBy}
                 enableDeletion={false}
                 enableFavorization={false}
                 enableDownload={false}
@@ -211,6 +250,12 @@ export default class extends React.Component {
     </Page>
   )
 }
+
+  showUploadPopup(show = true) {
+    this.showUpload = show;
+    this.closeProject = false
+    this.forceUpdate();
+  }
 
   onSelectSplash(img) {
     if(img !== undefined) {
@@ -300,12 +345,14 @@ export default class extends React.Component {
   }
 
   setSortBy(SortBy) {
-    this.setState({sortBy: SortBy});
+    this.sortBy = SortBy;
 
     Dom7("#SortByList").click();
     //Dom7("SortByList").mousedown();
     Dom7("#SortByAccordion").trigger('accordion:closed');
     Dom7("#sort-radio").trigger('accordion:closed');
+
+    this.forceUpdate();
   }
 
   updateUploadedImages() {
@@ -405,7 +452,7 @@ export default class extends React.Component {
 
   updateContent() {
     var self = this;
-    var router = this.$f7router;
+    var router = f7.view.current.router;
 
     Dom7("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
 
@@ -417,7 +464,7 @@ export default class extends React.Component {
             (rights.write && this.state.project.getState() === SVEProjectState.Open) ?
             {
               caption: "Medien hochladen",
-              onClick: function() { self.setState({showUpload : true}) }
+              onClick: function() { self.showUploadPopup() }
             } : {}, 
             (rights.write) ?
             {
@@ -490,7 +537,6 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    var router = this.$f7router;
     var self = this;
     var $$ = Dom7;
     f7ready((f7) => {

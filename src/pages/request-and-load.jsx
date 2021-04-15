@@ -6,7 +6,7 @@ export default class extends React.Component {
     super(props);
 
     this.state = {
-      user: props.f7route.context.user,
+      user: f7.view.current.router.currentRoute.context.user,
     };
 
   }

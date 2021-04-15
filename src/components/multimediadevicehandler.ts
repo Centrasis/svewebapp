@@ -1,3 +1,4 @@
+import { getDevice } from 'framework7';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from './store';
 
@@ -88,7 +89,7 @@ export class MultiMediaDeviceHandler {
 
             let constraints = (devID === undefined || devID === null || devID === "undefined") ? {
               audio: false,
-              video: ((f7.device.android || f7.device.ios) ? {
+              video: ((getDevice().android || getDevice().ios) ? {
                 facingMode: "environment"
               } : true)
             } : { 

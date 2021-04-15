@@ -173,7 +173,7 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    var router = this.$f7router;
+    var router = f7.view.current.router;
     var self = this;
     var $$ = Dom7;
     f7ready((f7) => {

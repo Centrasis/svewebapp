@@ -48,7 +48,7 @@ export default class extends React.Component {
       var self = this;
       f7ready((f7) => {
         f7.dialog.alert("No valid game specified! (" + self.state.name + ")");
-        self.$f7router.back();
+        f7.view.current.router.back();
       });
       return;
     }

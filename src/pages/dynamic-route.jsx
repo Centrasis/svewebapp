@@ -9,28 +9,28 @@ export default class DynamicRoutePage extends Component {
         <Navbar title="Dynamic Route" backLink="Back" />
         <Block strong>
           <ul>
-            <li><b>Url:</b> {this.$f7route.url}</li>
-            <li><b>Path:</b> {this.$f7route.path}</li>
-            <li><b>Hash:</b> {this.$f7route.hash}</li>
+            <li><b>Url:</b> {f7.view.current.router.currentRoute.url}</li> 
+            <li><b>Path:</b> {f7.view.current.router.currentRoute.path}</li>
+            <li><b>Hash:</b> {f7.view.current.router.currentRoute.hash}</li>
             <li><b>Params:</b>
               <ul>
-                {Object.keys(this.$f7route.params).map(key => (
-                  <li key={key}><b>{key}:</b> {this.$f7route.params[key]}</li>
+                {Object.keys(f7.view.current.router.currentRoute.params).map(key => (
+                  <li key={key}><b>{key}:</b> {f7.view.current.router.currentRoute.params[key]}</li>
                 ))}
               </ul>
             </li>
             <li><b>Query:</b>
               <ul>
-                {Object.keys(this.$f7route.query).map(key => (
-                  <li key={key}><b>{key}:</b> {this.$f7route.query[key]}</li>
+                {Object.keys(f7.view.current.router.currentRoute.query).map(key => (
+                  <li key={key}><b>{key}:</b> {f7.view.current.router.currentRoute.query[key]}</li>
                 ))}
               </ul>
             </li>
-            <li><b>Route:</b> {this.$f7route.route.path}</li>
+            <li><b>Route:</b> {f7.view.current.router.currentRoute.route.path}</li>
           </ul>
         </Block>
         <Block strong>
-          <Link onClick={() => this.$f7router.back()}>Go back via Router API</Link>
+          <Link onClick={() => f7.view.current.router.back()}>Go back via Router API</Link>
         </Block>
       </Page>
     );

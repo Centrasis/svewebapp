@@ -13,6 +13,7 @@ import { LinkProcessor } from '../components/LinkProcessor';
 import { PopupHandler } from '../components/PopupHandler';
 import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
 import { SideMenue } from '../components/SideMenue';
+import { getDevice } from 'framework7';
 
 export default class extends React.Component {
   constructor(props) {
@@ -29,13 +30,23 @@ export default class extends React.Component {
     return (
       <Page name="context" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)}>
         <Navbar title="Urlaube" backLink="Back">
+        {(!getDevice().desktop) ? (
           <NavRight>
             <Link iconIos="f7:menu" iconAurora="f7:menu" iconMd="material:menu" panelOpen="right" />
           </NavRight>
+        ) : (
+          <NavRight>
+            <Link iconF7="folder_badge_plus" tooltip="Neues Projekt" onClick={() => PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true)}/>
+            <Link iconF7="qrcode_viewfinder" tooltip="Beitreten" onClick={this.joinGroup.bind(this)} onClick={() => this.$f7router.navigate("/contextdetails/" + group.getID() + "/")} />
+            <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen" onClick={() => this.$f7router.navigate("/contextdetails/" + group.getID() + "/")}/>
+            <Link iconIos="f7:person_3_fill" iconAurora="f7:person_3_fill" iconMd="f7:person_3_fill" tooltip="Mitglieder" onClick={() =>  this.$f7router.navigate("/projectdetails/" + this.state.project.getID() + "/")}/>    
+            <Link iconIos="f7:square_pencil" iconAurora="f7:square_pencil" iconMd="f7:square_pencil" tooltip="Bearbeiten" onClick={() => PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true)}/>           
+          </NavRight>
+        )}
         </Navbar>
         {(this.state.projects.length > 0) ? 
         <div>
-          <div class={"timeline " + ((f7.device.desktop) ? "timeline-sides" : "")}>
+          <div class={"timeline " + ((getDevice().desktop) ? "timeline-sides" : "")}>
           {this.getProjectsWithDate().map((project) => (
             <div class="timeline-item">
               <div class="timeline-item-date">
@@ -45,7 +56,7 @@ export default class extends React.Component {
               </div>
               <div class="timeline-item-divider"></div>
               <div class="timeline-item-content">
-                <List noChevron={f7.device.desktop}>
+                <List noChevron={getDevice().desktop}>
                   <ListItem
                     swipeout
                     key={project.getID()}
@@ -54,11 +65,11 @@ export default class extends React.Component {
                     onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
                   >
                     <img slot="media" src={project.getSplashImageURI()} width="80"/>
-                    <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
+                    <SwipeoutActions right={!getDevice().desktop} style={(!getDevice().desktop) ? {} : {display: "none"}}>
                       <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
                       <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
                     </SwipeoutActions>
-                    <Link slot="after" href="#" style={(f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                    <Link slot="after" href="#" style={(getDevice().desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
                       <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
                     </Link>
                   </ListItem>
@@ -68,7 +79,7 @@ export default class extends React.Component {
           ))}
           </div>
           {(this.getProjectsWithoutDate().length > 0) ? 
-            <List noChevron={f7.device.desktop}>
+            <List noChevron={getDevice().desktop}>
               {this.getProjectsWithoutDate().map((project) => (
                 <ListItem
                   swipeout
@@ -78,11 +89,11 @@ export default class extends React.Component {
                   onSwipeoutDeleted={this.onRemoveProject.bind(this, project)}
                 >
                   <img slot="media" src={project.getSplashImageURI()} width="80"/>
-                  <SwipeoutActions right={!f7.device.desktop} style={(!f7.device.desktop) ? {} : {display: "none"}}>
+                  <SwipeoutActions right={!getDevice().desktop} style={(!getDevice().desktop) ? {} : {display: "none"}}>
                     <SwipeoutButton onClick={this.onShowEdit.bind(this, project)}>Bearbeiten</SwipeoutButton>
                     <SwipeoutButton delete confirmText={`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
                   </SwipeoutActions>
-                  <Link slot="after" href="#" style={(f7.device.desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
+                  <Link slot="after" href="#" style={(getDevice().desktop) ? {} : {display: "none"}} popoverOpen=".popover-more" onClick={this.desktopOpenDetails.bind(this, project)}>
                     <Icon f7="arrowtriangle_down_square" tooltip="Bearbeiten"></Icon>
                   </Link>
                 </ListItem>

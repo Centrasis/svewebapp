@@ -116,7 +116,7 @@ export default class extends React.Component {
     }
 
     hostGame() {
-      this.$f7router.navigate("/playgame/" + this.state.newGame.type + "/" + this.state.newGame.name + "/host/");
+      f7.view.current.router.navigate("/playgame/" + this.state.newGame.type + "/" + this.state.newGame.name + "/host/");
     }
 
     componentDidMount() {

@@ -204,10 +204,14 @@ export default class extends React.Component {
   }
 
   updateGroupsList() {
+    if (store.state.user === undefined || store.state.user === null) {
+      return;
+    }
+
     SVEClassificator.getClasses("documents").then(ret => {
       console.log("Classes: " + JSON.stringify(ret));
       this.setState({documentClasses: ret})
-    });
+    });  
 
     SVEGroup.getGroupsOf(store.state.user).then(groups => {
       let groupsWithOnlyDocs = [];
