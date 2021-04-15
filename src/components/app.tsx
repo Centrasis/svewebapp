@@ -399,7 +399,7 @@ export default class extends React.Component {
                   onToggleChange={(e) => { store.state.saveThisDevice = e }}
                 />
               </ListItem>
-              )};
+              )}
               </List>
               <List>
                 <ListButton title="Login" onClick={() => this.onLogin()} />

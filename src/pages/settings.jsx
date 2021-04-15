@@ -125,6 +125,12 @@ export default class extends React.Component {
             <AccordionContent>
               <Block>
                   <BlockTitle>Registrierte Geräte</BlockTitle>
+                  {(this.state.tokens.length == 0) ? (
+                    <Block>
+                      <BlockTitle>Alle angemeldeten Geräte und Browser würden hier gelistet werden.</BlockTitle>
+                      <Button iconF7="lock_shield" raised fillIos>Dieses Gerät registrieren</Button>
+                    </Block>
+                  ) : (
                   <List>
                     {this.state.tokens.map(t => (
                       <ListItem title={t.deviceAgent}>
@@ -133,6 +139,7 @@ export default class extends React.Component {
                       </ListItem>
                     ))} 
                   </List>
+                  )}
               </Block>    
             </AccordionContent>
           </ListItem>
@@ -208,23 +215,21 @@ export default class extends React.Component {
       let sources = SVESystemInfo.getInstance().sources;
       for (let prop in sources) {
         if (prop !== "protocol") {
-          if (prop == undefined) {
-            funcs.push({
-              name: prop,
-              ok: false
-            });
-            this.setState({serverFunctions: funcs});
-          } else {
-            SVESystemInfo.checkAPI(SVESystemInfo.getInstance().sources[prop]).then(info => {
+          if (prop !== undefined) {
+            let api = SVESystemInfo.getInstance().sources[prop];
+            console.log("Api: ", api);
+            SVESystemInfo.checkAPI(api).then(info => {
               funcs.push({
                 name: prop + " v" + info.version,
-                ok: info.status
+                ok: info.status,
+                hint: api
               });
               this.setState({serverFunctions: funcs});
             }, err => {
               funcs.push({
                 name: prop,
-                ok: false
+                ok: false,
+                hint: api
               });
               this.setState({serverFunctions: funcs});
             });
