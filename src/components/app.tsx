@@ -87,6 +87,7 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
+    this.no_install = false;
 
     SVESystemInfo.getInstance().sources.sveService = process.env.sveAPI || window.location.hostname.replace("www.", "media.").replace("sve.", "media.");
     SVESystemInfo.getInstance().sources.authService = process.env.authAPI || window.location.hostname.replace("www.", "accounts.").replace("sve.", "accounts.") + "/auth";
@@ -781,6 +782,12 @@ export default class extends React.Component {
       if (getDevice().standalone) {
         store.state.saveThisDevice = true;
       }
+
+      this.no_install = false;
+      if (window.localStorage.getItem("no_install") !== null || window.localStorage.getItem("no_install") !== undefined) {
+        this.no_install = window.localStorage.getItem("no_install") == "true";
+        console.log("no_install: ", this.no_install);
+      }
       
       setTimeout(() => {
         this.showInstallHint = !getDevice().standalone;
@@ -791,10 +798,6 @@ export default class extends React.Component {
       navigator.serviceWorker.addEventListener("message", (evt) => {
         self.onWorkerMessage(evt.data);
       });
-
-      if (window.localStorage.getItem("no_install") !== null || window.localStorage.getItem("no_install") !== undefined) {
-        this.no_install = window.localStorage.getItem("no_install") == "true";
-      }
 
       navigator.serviceWorker.ready.then((registration) => {
         if (registration.active) {
