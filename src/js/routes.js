@@ -1,7 +1,6 @@
 
 import HomePage from '../pages/home.jsx';
 import AboutPage from '../pages/about.jsx';
-import InstallPage from '../pages/Install.jsx';
 import FormPage from '../pages/form.jsx';
 import DocsPage from '../pages/docs.jsx';
 import ProjectPage from '../pages/project.jsx';
@@ -43,13 +42,6 @@ var routes = [
   {
     path: '/gamehub/',
     component: GameHub,
-    options: {
-      transition: 'f7-dive',
-    },
-  },
-  {
-    path: '/install/',
-    component: InstallPage,
     options: {
       transition: 'f7-dive',
     },

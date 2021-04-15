@@ -19,7 +19,7 @@ import {
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import Dom7 from 'dom7';
-import { SVESystemInfo, SVEToken, TokenType } from 'svebaselib';
+import { LoginState, SVESystemInfo, SVEToken, TokenType } from 'svebaselib';
 
 export default class extends React.Component {
   constructor(props) {
@@ -74,6 +74,7 @@ export default class extends React.Component {
                   </List>
                 </ListItem>
               </List>
+              <Button iconF7="arrow_2_circlepath" raised fillIos onClick={this.refreshServerInfos.bind(this)}>Refresh</Button>
             </AccordionContent>
           </ListItem>
 
@@ -129,17 +130,24 @@ export default class extends React.Component {
                   {(this.state.tokens.length == 0) ? (
                     <Block>
                       <BlockTitle>Alle angemeldeten Geräte und Browser würden hier gelistet werden.</BlockTitle>
-                      <Button iconF7="lock_shield" raised fillIos>Dieses Gerät registrieren</Button>
+                      <Button iconF7="lock_shield" raised fillIos onClick={this.registerDevice.bind(this)}>Dieses Gerät registrieren</Button>
                     </Block>
                   ) : (
-                  <List>
-                    {this.state.tokens.map(t => (
-                      <ListItem title={t.deviceAgent}>
-                        <Icon slot="media" f7={(t.type == TokenType.DeviceToken) ? "person_crop_circle" : "folder_circle"} />
-                        <Icon slot="media" textColor="red" f7="trash" />
-                      </ListItem>
-                    ))} 
-                  </List>
+                    <div>
+                      <List>
+                        {this.state.tokens.map(t => (
+                          <div>
+                            <ListItem title={t.deviceAgent}>
+                              <Icon slot="media" f7={(t.type == TokenType.DeviceToken) ? "person_crop_circle" : "folder_circle"} />
+                              <Icon slot="after-title" textColor="red" f7="trash" onClick={this.removeToken.bind(this, t)} />
+                            </ListItem>
+                          </div>
+                        ))}
+                      </List>
+                      {(store.state.user.getLoginState() !== LoginState.LoggedInByToken) ? (
+                          <Button iconF7="lock_shield" raised fillIos onClick={this.registerDevice.bind(this)}>Dieses Gerät registrieren</Button>
+                        ) : ""}
+                    </div>
                   )}
               </Block>    
             </AccordionContent>
@@ -207,43 +215,61 @@ export default class extends React.Component {
     )
   }
 
+  registerDevice() {
+    SVEToken.register(store.state.user, TokenType.DeviceToken, store.state.user).then(token => {
+      window.localStorage.setItem("sve_token", token);
+      window.localStorage.setItem("sve_user", String(usr.getID()));
+      window.localStorage.setItem("sve_username", usr.getName());
+      this.refreshServerInfos();
+    });
+  }
+
+  removeToken(token) {
+    SVEToken.invalidateByInfo(store.state.user, token);
+    setTimeout(() => this.refreshServerInfos(), 1000);
+  }
+
+  refreshServerInfos() {
+    let funcs = [];
+    let sources = SVESystemInfo.getInstance().sources;
+    for (let prop in sources) {
+      if (prop !== "protocol") {
+        let api = SVESystemInfo.getInstance().sources[prop];
+        if (api !== undefined) {
+          console.log("Api: ", api);
+          SVESystemInfo.checkAPI(api).then(info => {
+            console.log("Api info: ", info);
+            funcs.push({
+              name: prop + " v" + info.version,
+              ok: info.status,
+              hint: api
+            });
+            this.setState({serverFunctions: funcs});
+          }, err => {
+            console.log("Error checking api: ", api, err);
+            funcs.push({
+              name: prop,
+              ok: false,
+              hint: api
+            });
+            this.setState({serverFunctions: funcs});
+          });
+        }
+      }
+    }
+
+    this.state.tokens = [];
+    SVEToken.listDevices(store.state.user).then(ti => {
+      this.setState({tokens: ti});
+    });
+  }
+
   componentDidMount() {
     var router = f7.view.current.router;
     var self = this;
     var $$ = Dom7;
     f7ready((f7) => {
-      let funcs = [];
-      let sources = SVESystemInfo.getInstance().sources;
-      for (let prop in sources) {
-        if (prop !== "protocol") {
-          let api = SVESystemInfo.getInstance().sources[prop];
-          if (api !== undefined) {
-            console.log("Api: ", api);
-            SVESystemInfo.checkAPI(api).then(info => {
-              console.log("Api info: ", info);
-              funcs.push({
-                name: prop + " v" + info.version,
-                ok: info.status,
-                hint: api
-              });
-              this.setState({serverFunctions: funcs});
-            }, err => {
-              console.log("Error checking api: ", api, err);
-              funcs.push({
-                name: prop,
-                ok: false,
-                hint: api
-              });
-              this.setState({serverFunctions: funcs});
-            });
-          }
-        }
-      }
-
-      this.state.tokens = [];
-      SVEToken.listDevices(store.state.user).then(ti => {
-        this.setState({tokens: ti});
-      });
+      this.refreshServerInfos();
     },
     function (data, status) {
       setTimeout(self.componentDidMount(), 1000);

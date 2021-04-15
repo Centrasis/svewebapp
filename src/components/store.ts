@@ -1,5 +1,4 @@
 import { createStore } from 'framework7/lite';
-import { f7, f7ready, theme } from 'framework7-react';
 import { SVEAccount, SVEToken, TokenType } from 'svebaselib';
 
 const store = createStore({

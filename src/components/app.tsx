@@ -3,6 +3,8 @@ import React from 'react';
 import {
   App,
   Panel,
+  Col,
+  Row,
   Views,
   View,
   Toggle,
@@ -21,14 +23,16 @@ import {
   NavTitle,
   NavTitleLarge,
   Block,
-  BlockTitle,
+  Sheet,
+  PageContent,
   NavRight,
   AccordionContent,
   Actions,
   ActionsButton,
   ActionsLabel,
   ActionsGroup,
-  Icon
+  Icon,
+  BlockTitle
 } from 'framework7-react';
 
 import Dom7 from 'dom7';
@@ -78,6 +82,8 @@ export default class extends React.Component {
   };
 
   protected openOverlay: "login-screen" | "register-screen" | undefined = undefined;
+  protected showInstallHint: boolean = false;
+  protected no_install: boolean = false;
 
   constructor(props) {
     super(props);
@@ -412,6 +418,69 @@ export default class extends React.Component {
             </Page>
           </View>
         </LoginScreen>
+
+        <Sheet 
+          className="install-sheet" 
+          push={getDevice().desktop}
+          opened={this.showInstallHint && !this.no_install}
+          swipeToClose={!getDevice().desktop}
+          backdrop
+          swipeToStep={!getDevice().desktop}
+        >
+          {(getDevice().desktop) ? (
+            <Toolbar>
+              <div className="left"></div>
+              <div className="right">
+                <Link sheetClose textColor="green" onClick={() => {this.showInstallHint = false; window.localStorage.setItem("no_install", "true"); this.forceUpdate();}}>Schließen</Link>
+              </div>
+          </Toolbar>
+          ) : (
+            <div className="sheet-modal-swipe-step">
+              <div className="display-flex padding justify-content-space-between align-items-center">
+                <Block>
+                  <BlockHeader>
+                    Diese Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.
+                  </BlockHeader>
+                  
+                  Nach oben wischen, um mehr zu erfahren.
+                </Block>
+              </div>
+            </div>
+          )}
+          
+          <PageContent>
+              <Row>
+                <Col></Col>
+                <Col><BlockTitle>Installation</BlockTitle></Col>
+                <Col></Col>
+              </Row>
+              <Row>
+              <Col></Col>
+              <Col>
+              {(getDevice().desktop) ? (
+                <div>
+                  Zur Installation auf Desktop-Systemen muss mit einem Google Chrome basierten Browser diese Seite geöffnet werden. Die Installation wird oben rechts in der Ecke angeboten.
+                </div>
+              ) : (
+                <div>
+                  {(getDevice().ios) ? (
+                    <div>
+                      <p>Zur installation von iOS aus müssen folgende beiden Schritte manuell durchgeführt werden:</p>
+                      <img src="AddPage1.png"></img>
+                      <img src="AddPage2.png"></img>
+                    </div>
+                  ): (
+                    <p>
+                      Zur Installation auf Android muss mit einem Google Chrome basierten Browser diese Seite geöffnet werden. Die Installation wird angeboten.
+                    </p>
+                  )}
+                </div>
+              )}
+              </Col>
+              <Col></Col>
+              </Row>
+          </PageContent>
+        </Sheet>
       </App>
     )
   }
@@ -434,10 +503,10 @@ export default class extends React.Component {
 
   public componentDidCatch(error, errorInfo) {
     let errorObj = store.state.error;
+    console.log("DYNAMIC: Catching error: " + errorObj.msg);
     errorObj.has = true;
     errorObj.msg = errorObj.msg + "<br>\n Info: " + JSON.stringify(errorInfo) + "<br>\nError: " + JSON.stringify(error);
-    store.state.error = errorObj;
-    console.log("DYNAMIC: Catching error: " + errorObj.msg);
+    store.state.error = errorObj;   
   }
 
   protected onPressEnter(event) {
@@ -689,23 +758,20 @@ export default class extends React.Component {
       if (getDevice().standalone) {
         store.state.saveThisDevice = true;
       }
-
-      if (!getDevice().standalone && getDevice().ios)
-      {
-        f7.dialog.confirm("Die Webapp ist noch nicht bei Ihnen installiert. Um diese App vollständig nutzen zu können installiere sie bitte.", "App ist nicht installiert", 
-          () => { 
-            f7.view.current.router.navigate("/install/");
-            f7.loginScreen.close();
-            self.openOverlay = undefined;
-          },
-          () => {}
-        );
-      }
+      
+      setTimeout(() => {
+        this.showInstallHint = !getDevice().standalone;
+        this.forceUpdate();
+      }, 1500);
 
       // listen to service worker events
       navigator.serviceWorker.addEventListener("message", (evt) => {
         self.onWorkerMessage(evt.data);
       });
+
+      if (window.localStorage.getItem("no_install") !== null || window.localStorage.getItem("no_install") !== undefined) {
+        this.no_install = window.localStorage.getItem("no_install") == "true";
+      }
 
       navigator.serviceWorker.ready.then((registration) => {
         if (registration.active) {
@@ -717,7 +783,7 @@ export default class extends React.Component {
       self.onOpenLogin();
 
       SVESystemInfo.getFullSystemState().then(state => {
-        console.log("Initial SVE state: " + JSON.stringify(state));
+        this.checkForToken();
 
         self.parseLink();
       }, err => {
