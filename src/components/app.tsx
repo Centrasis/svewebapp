@@ -249,9 +249,9 @@ export default class extends React.Component {
 
         </Views>
 
-        <LoginScreen id="register-screen">
-          <View>
-            <Page loginScreen>
+        <LoginScreen id="register-screen" style={{overflow: "visible"}}>
+          <View style={{overflow: "visible"}}>
+            <Page loginScreen style={{overflow: "visible"}}>
               <div
                 style={{
                   backgroundImage: "url('images/SnowVision_Logo_Alpha.png')",
@@ -265,7 +265,8 @@ export default class extends React.Component {
                   height: "100%",
                   width: "100%",
                   zIndex: -100,
-                  position: "absolute"
+                  position: "absolute",
+                  overflow: "visible"
                 }}
               />
               <LoginScreenTitle>Register&nbsp;{this.loginMessages.loginType}</LoginScreenTitle>
