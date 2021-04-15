@@ -69,7 +69,6 @@ export default class extends React.Component {
                   <List>
                     {this.state.serverFunctions.map(f => (
                       <ListItem checkbox title={f.name} disabled={true} checked={f.ok} tooltip={f.hint}>
-                        <Icon slot="media" f7="arrow_right_arrow_left_circle" textColor={(f.ok) ? "green" : "red"} tooltip={f.hint}/>
                       </ListItem>
                     ))} 
                   </List>
