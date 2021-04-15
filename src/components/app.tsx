@@ -391,6 +391,7 @@ export default class extends React.Component {
                 }}
                 required
               />
+              {(getDevice().standalone) ? "" : (
               <ListItem>
                 <span color="#008c0e">Dieses Gerät merken</span>
                 <Toggle
@@ -398,6 +399,7 @@ export default class extends React.Component {
                   onToggleChange={(e) => { store.state.saveThisDevice = e }}
                 />
               </ListItem>
+              )};
               </List>
               <List>
                 <ListButton title="Login" onClick={() => this.onLogin()} />
@@ -684,6 +686,9 @@ export default class extends React.Component {
     var self = this;
     f7ready((f7) => {
       SideMenue.setApp(self);
+      if (getDevice().standalone) {
+        store.state.saveThisDevice = true;
+      }
 
       if (!getDevice().standalone && getDevice().ios)
       {

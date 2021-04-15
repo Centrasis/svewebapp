@@ -13,7 +13,8 @@ import {
   Block,
   Icon,
   ListButton,
-  Popup
+  Popup,
+  AccordionContent 
 } from 'framework7-react';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
