@@ -1,21 +1,24 @@
 
-import HomePage from '../pages/home.jsx';
+import HomePage from '../pages/home';
+import MediaHomePage from '../pages/SVEMediaHome';
 import AboutPage from '../pages/about.jsx';
 import FormPage from '../pages/form.jsx';
 import DocsPage from '../pages/docs.jsx';
 import ProjectPage from '../pages/project.jsx';
-import ContextPage from '../pages/context.jsx';
-import SettingsPage from '../pages/settings.jsx';
+import ContextPage from '../pages/context';
+import SettingsPage from '../pages/settings';
 import UsersPage from '../pages/users.jsx';
 import ProjectdetailsPage from '../pages/projectDetails.jsx';
 import ContextdetailsPage from '../pages/contextDetails';
 
 import DynamicRoutePage from '../pages/dynamic-route.jsx';
-import RequestAndLoad from '../pages/request-and-load.jsx';
+import LoginScreen, { LoginType } from '../pages/LoginScreen';
 import NotFoundPage from '../pages/404.jsx';
 import PlayGame from '../pages/playGame.jsx';
 import GameHub from '../pages/gameHub.jsx';
 import { SideMenue } from '../components/SideMenue';
+import store from '../components/store';
+import { LoginHook } from '../components/LoginHook';
 
 var routes = [
   {
@@ -23,6 +26,33 @@ var routes = [
     component: HomePage,
     options: {
       transition: 'f7-dive',
+    },
+  },
+  {
+    path: '/mediahome/',
+    component: MediaHomePage,
+    options: {
+      transition: 'f7-dive',
+    }
+  },
+  {
+    path: '/login/',
+    component: LoginScreen,
+    options: {
+      transition: 'f7-cover-v',
+      props: {
+        type: LoginType.Login,
+      },
+    },
+  },
+  {
+    path: '/register/:token',
+    component: LoginScreen,
+    options: {
+      transition: 'f7-cover-v',
+      props: {
+        type: LoginType.Register,
+      },
     },
   },
   {
@@ -63,13 +93,6 @@ var routes = [
   {
     path: '/form/',
     component: FormPage,
-    options: {
-      transition: 'f7-dive',
-    },
-  },
-  {
-    path: '/register/:token',
-    component: HomePage,
     options: {
       transition: 'f7-dive',
     },

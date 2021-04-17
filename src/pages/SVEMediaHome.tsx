@@ -18,33 +18,39 @@ import {
   SwipeoutButton
 } from 'framework7-react';
 import Dom7 from 'dom7';
-import {SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
+import {SVEAccount, SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
 import NewGroupPopup from './NewGroupPopup';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
-import { LoginHook } from '../components/LoginHook';
 import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
 import { LinkProcessor } from '../components/LinkProcessor';
 import { PopupHandler } from '../components/PopupHandler';
 import { getDevice } from 'framework7';
+import { SVEPageComponent } from '../components/SVEPageComponent';
+import { LoginHook } from '../components/LoginHook';
 
-export default class extends React.Component {
+interface SVESearchResult {
+  group: SVEGroup;
+  projects: SVEProject[];
+}
+
+export default class extends SVEPageComponent<{}> {
+  protected groups: SVEGroup[] = [];
+  protected showProjects: boolean = false;
+  protected home_display_list: SVESearchResult[] = [];
+
   constructor(props) {
     super(props);
-    this.state = {
-      groups: [],
-      showProjects: false,
-      home_display_list: []
-    };
   }
-  render() {
+
+  customRender() {
     return (
   <Page name="home">
     {/* Top Navbar */}
     <Navbar large sliding={false}>
       <NavTitle sliding>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitle>
-      <NavTitleLarge sliding>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitleLarge>
+      <NavTitleLarge>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitleLarge>
       <NavRight>
         <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => PopupHandler.getPopupComponent('NewGroupPopup').setComponentVisible(true)}></Link>
         <Link iconF7="qrcode_viewfinder" tooltip="Gruppe mit QR Code beitreten" onClick={this.joinGroup.bind(this)}></Link>
@@ -56,7 +62,7 @@ export default class extends React.Component {
         searchContainer=".search-list"
         searchIn=".item-title"
         onSearchbarSearch={(sb, q, pq) => { this.onSearch(sb, q, pq) }}
-        onClickClear={(sb, pq) => { this.onClearSearch(sb) }}
+        onClickClear={(sb) => { this.onClearSearch(sb) }}
         onClickDisable={(sb) => { this.onDisableSearch(sb) }}
         onSearchbarEnable={(sb) => { this.onEnableSearch(sb) }}
         onSearchbarDisable={(sb) => { this.onDisableSearch(sb) }}
@@ -74,7 +80,7 @@ export default class extends React.Component {
 
     <BlockTitle large>Deine Urlaubsgruppen</BlockTitle>
     <List className="search-list searchbar-found">
-          {this.state.home_display_list.map((context) => (
+          {this.home_display_list.map((context) => (
             <ListItem
               swipeout
               id={context.group.getName()}
@@ -86,7 +92,7 @@ export default class extends React.Component {
               <SwipeoutActions right={!getDevice().desktop} style={(!getDevice().desktop) ? {} : {display: "none"}}>
                 <SwipeoutButton delete confirmText={`Möchten Sie die Gruppe ${context.group.getName()} wirklich löschen?`}>Löschen</SwipeoutButton>
               </SwipeoutActions>
-              {(this.state.showProjects && context.projects.length > 0) ? (
+              {(this.showProjects && context.projects.length > 0) ? (
                 <Block slot="content" mediumInset>
                   <BlockTitle>Projekte</BlockTitle>
                   <List>
@@ -97,7 +103,7 @@ export default class extends React.Component {
                         title={project.getName()}
                         link={`/project/${project.getID()}/`}
                       >
-                        <Img slot="media" src={project.getSplashImageURI()} width="60"/>
+                        <img slot="media" src={project.getSplashImageURI()} width="60"/>
                       </ListItem>
                     ))}
                   </List>
@@ -112,11 +118,6 @@ export default class extends React.Component {
     {(!getDevice().standalone && (getDevice().android || getDevice().ios)) ? 
       <Block strong>
         <Link href="/install/" iconF7="square_arrow_down">&nbsp;App installieren</Link>
-      </Block>
-    : ""}
-    {(false) ? 
-      <Block strong>
-        <Link onClick={this.simulateError.bind(this)}>Simuliere Fehler</Link>
       </Block>
     : ""}
     <Block strong>
@@ -136,16 +137,11 @@ export default class extends React.Component {
     {(store.state.user !== undefined) ?
       <NewGroupPopup
         owningUser={store.state.user}
-        onGroupCreated={(group) => { PopupHandler.getPopupComponent('NewGroupPopup').setComponentVisible(false); this.updateContent(); }}
+        onGroupCreated={(group) => { PopupHandler.getPopupComponent('NewGroupPopup').setComponentVisible(false); this.updateContent(store.state.user); }}
       />
     : ""}
   </Page>
     );
-  }
-
-  simulateError() {
-    this.simulateError = undefined;
-    this.forceUpdate();
   }
 
   joinGroup() {
@@ -153,20 +149,18 @@ export default class extends React.Component {
     PopupHandler.getPopupComponent('QRCodeScanner').setComponentVisible(true);
   }
 
-  onRemoveGroup(group) {
+  onRemoveGroup(group: SVEGroup) {
     group.remove().then(v => {
-      this.updateContent();
+      this.updateContent(store.state.user);
     });
   }
 
   logOut() {
-    store.dispatch("cleanUpLogInData");
-    store.dispatch("promptLogin");
+    store.dispatch("clearUser", {});
   }
 
   onSearch(sb, query, prevQuery) {
-    if (query === undefined || query.length == 0)
-    {
+    if (query === undefined || query.length == 0) {
       return;
     }
     SVEProjectQuery.query(query, store.state.user).then(results => {
@@ -177,7 +171,7 @@ export default class extends React.Component {
       let list = [];
       groups.forEach(g => {
         let prjs = [];
-        projects.filter(e => e.getGroup().getID() === g.getID()).forEach((e) => prjs.push(e));
+        projects.filter(e => (e as SVEProject).getGroup().getID() === g.getID()).forEach((e) => prjs.push(e));
         
         list.push({group: g, projects: prjs});
       });
@@ -188,7 +182,7 @@ export default class extends React.Component {
 
   onClearSearch(sb) {
     let list = [];
-    this.state.groups.forEach(g => {
+    this.groups.forEach(g => {
       list.push({
         group: g,
         projects: []
@@ -210,43 +204,63 @@ export default class extends React.Component {
     this.setState({showProjects: false});
   }
 
-  updateContent() {
-    var self = this;
-
-    if(store.state.user !== undefined) {
-      SVEGroup.getGroupsOf(store.state.user).then(gs => {
-        self.setState({
-          groups: gs
+  protected updateContent(user: SVEAccount) {
+    SVEGroup.getGroupsOf(user).then(gs => {
+      this.groups = gs;
+      let list = [];
+      gs.forEach(g => {
+        list.push({
+          group: g,
+          projects: []
         });
-        let list = [];
-        gs.forEach(g => {
-          list.push({
-            group: g,
-            projects: []
-          });
-        });
-        self.setState({home_display_list: list});
-      }, err => {
-        f7.dialog.alert("Can't fetch groups from server!", "Server down!");
-        store.dispatch("clearUser");
       });
-    } else {
-      //store.dispatch("promptLogin");
+      this.home_display_list = list;
+      this.forceUpdate();
+    }, err => {
+      f7.dialog.alert("Can't fetch groups from server!", "Server down!");
+      store.dispatch("clearUser", {});
+      this.forceUpdate();
+    });
+  }
+
+  protected onUserLoggedIn(user: SVEAccount) {
+    this.updateContent(user);
+  }
+
+  public componentDidUpdate() {
+    super.componentDidMount();
+    if (store.state.user === undefined) {
+      LoginHook.tryRestoreUserSession().then(() => {}, 
+      err => {
+        f7ready((f7) => {
+          this.f7router.navigate("/login/");
+        });
+      });
     }
   }
 
-  componentDidMount() {
+  public componentDidMount() {
+    super.componentDidMount();
     var self = this;
     f7ready((f7) => {
-      LoginHook.add(() => {
-        self.updateContent();
-      });
-
-      self.updateContent();
-
       Dom7(document).on('page:reinit', function (e) {
-        self.updateContent();
+        console.log("Reinit page");
+        if (store.state.user === undefined) {
+          LoginHook.tryRestoreUserSession().then(() => {}, err => self.f7router.navigate("/login/"));
+        } else {
+          self.updateContent(store.state.user);
+        }
       });
+    });
+    Dom7(document).on('page:afterin', function (e) {
+      if (store.state.user === undefined) {
+        LoginHook.tryRestoreUserSession().then(() => {}, 
+        err => {
+          f7ready((f7) => {
+            self.f7router.navigate("/login/");
+          });
+        });
+      }
     });
   }
 };

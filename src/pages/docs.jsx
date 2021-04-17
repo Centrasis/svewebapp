@@ -15,10 +15,11 @@ import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import {MultiMediaDeviceHandler as MMDH} from '../components/multimediadevicehandler';
 import { LoginHook } from '../components/LoginHook';
+import { SVEPageComponent } from '../components/SVEPageComponent';
 
-export default class extends React.Component {
-  constructor() {
-    super();
+export default class extends SVEPageComponent {
+  constructor(props) {
+    super(props);
 
     this.state = {
       documentGroups: [],
@@ -33,7 +34,8 @@ export default class extends React.Component {
       classify: false
     };
   }
-  render() {
+
+  customRender() {
       return (
       <Page name="docs">
         <Navbar title="SVE Docs">
@@ -246,6 +248,17 @@ export default class extends React.Component {
       });
 
       self.updateGroupsList();
+
+      Dom7(document).on('page:afterin', function (e) {
+        if (store.state.user === undefined) {
+          LoginHook.tryRestoreUserSession().then(() => {}, 
+          err => {
+            f7ready((f7) => {
+              self.f7router.navigate("/login/");
+            });
+          });
+        }
+      });
     });
   }
   

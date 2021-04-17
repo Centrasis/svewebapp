@@ -8,25 +8,34 @@ import { f7, f7ready } from 'framework7-react';
 import store from '../components/store';
 
 //import { Camera } from 'expo-camera';
-import {SVEGroup} from 'svebaselib';
+import {SVEGroup, SVEProject} from 'svebaselib';
 import { LinkProcessor } from '../components/LinkProcessor';
 import { PopupHandler } from '../components/PopupHandler';
 import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
-import { SideMenue } from '../components/SideMenue';
+import { PanelMenuItem, SideMenue } from '../components/SideMenue';
 import { getDevice } from 'framework7';
+import { SVEPageComponent } from '../components/SVEPageComponent';
+import { any } from '@tensorflow/tfjs';
 
-export default class extends React.Component {
+export default class extends SVEPageComponent {
+  protected groupID: number;
+  protected group: SVEGroup = undefined;
+  protected projects: SVEProject[] = [];
+  protected selectedGroup: SVEGroup = undefined;
+  protected selectedProject: SVEProject = undefined;
+
   constructor(props) {
     super(props);
 
-    this.state = {
-      group: Number(props.f7route.params.id),
-      projects: [],
-      selectedGroup: undefined,
-      selectedProject: undefined
-    };
+    this.groupID = Number(this.f7route.params.id);
   }
-  render() {
+
+  joinGroup() {
+    MultiMediaDeviceHandler.resetCameraPermissions(true);
+    PopupHandler.getPopupComponent('QRCodeScanner').setComponentVisible(true);
+  }
+
+  protected customRender() {
     return (
       <Page name="context" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)}>
         <Navbar title="Urlaube" backLink="Back">
@@ -37,25 +46,24 @@ export default class extends React.Component {
         ) : (
           <NavRight>
             <Link iconF7="folder_badge_plus" tooltip="Neues Projekt" onClick={() => PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true)}/>
-            <Link iconF7="qrcode_viewfinder" tooltip="Beitreten" onClick={this.joinGroup.bind(this)} onClick={() => this.$f7router.navigate("/contextdetails/" + group.getID() + "/")} />
-            <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen" onClick={() => this.$f7router.navigate("/contextdetails/" + group.getID() + "/")}/>
-            <Link iconIos="f7:person_3_fill" iconAurora="f7:person_3_fill" iconMd="f7:person_3_fill" tooltip="Mitglieder" onClick={() =>  this.$f7router.navigate("/projectdetails/" + this.state.project.getID() + "/")}/>    
+            <Link iconF7="qrcode_viewfinder" tooltip="Beitreten" onClick={() => this.f7router.navigate("/contextdetails/" + String(this.groupID) + "/")} />
+            <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen" onClick={() => this.f7router.navigate("/contextdetails/" + String(this.groupID) + "/")}/>
             <Link iconIos="f7:square_pencil" iconAurora="f7:square_pencil" iconMd="f7:square_pencil" tooltip="Bearbeiten" onClick={() => PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true)}/>           
           </NavRight>
         )}
         </Navbar>
-        {(this.state.projects.length > 0) ? 
+        {(this.projects.length > 0) ? 
         <div>
-          <div class={"timeline " + ((getDevice().desktop) ? "timeline-sides" : "")}>
+          <div className={"timeline " + ((getDevice().desktop) ? "timeline-sides" : "")}>
           {this.getProjectsWithDate().map((project) => (
-            <div class="timeline-item">
-              <div class="timeline-item-date">
+            <div className="timeline-item">
+              <div className="timeline-item-date">
                 {project.getDateRange().begin.getDate()}
                 <small>{this.getMonthOfDate(project.getDateRange().begin)}</small> <br />
                 <p style={{fontFamily: 'Courier New', fontSize:"+1"}}>{project.getDateRange().begin.getFullYear()}</p>
               </div>
-              <div class="timeline-item-divider"></div>
-              <div class="timeline-item-content">
+              <div className="timeline-item-divider"></div>
+              <div className="timeline-item-content">
                 <List noChevron={getDevice().desktop}>
                   <ListItem
                     swipeout
@@ -102,7 +110,7 @@ export default class extends React.Component {
           : ""}
         </div>
         : 
-          <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+          <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
             <span>Lade Gruppen...</span><br />
             <Preloader></Preloader>
           </div>
@@ -110,8 +118,8 @@ export default class extends React.Component {
 
         <Popover className="popover-more">
           <List noChevron>
-            <ListItem link="#" popoverClose={true} title="Bearbeiten" onClick={this.onShowEdit.bind(this, this.state.selectedProject)}/>
-            <ListItem link="#" popoverClose={true} title="Löschen" style={{color: "#FF1111"}} onClick={this.onRemoveProject.bind(this, this.state.selectedProject, true)}/>
+            <ListItem link="#" popoverClose={true} title="Bearbeiten" onClick={this.onShowEdit.bind(this, this.selectedProject)}/>
+            <ListItem link="#" popoverClose={true} title="Löschen" style={{color: "#FF1111"}} onClick={this.onRemoveProject.bind(this, this.selectedProject, true)}/>
           </List>
         </Popover>
 
@@ -119,7 +127,7 @@ export default class extends React.Component {
           id="NG-Context"
           owningUser={store.state.user}
           onGroupCreated={this.onGroupCreated.bind(this)}
-          groupToEdit={this.state.selectedGroup}
+          groupToEdit={this.selectedGroup}
         />
 
         <QRCodeScanner
@@ -130,13 +138,13 @@ export default class extends React.Component {
           }}
         />
 
-        {(typeof this.state.group !== "number") ? 
+        {(this.group !== undefined) ? 
           <NewProjectPopup
             owningUser={store.state.user}
-            onProjectCreated={(prj) => this.state.group.getProjects().then(prjs => { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
-            parentGroup={this.state.group}
-            caption={(this.state.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.state.selectedProject.getName()}
-            projectToEdit={this.state.selectedProject}
+            onProjectCreated={(prj) => this.group.getProjects().then(prjs => { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
+            parentGroup={this.group}
+            caption={(this.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.selectedProject.getName()}
+            projectToEdit={this.selectedProject}
           />
         : ""}
       </Page>
@@ -150,19 +158,19 @@ export default class extends React.Component {
   }
 
   getProjectsWithDate() {
-    return this.state.projects.filter(p => p.getDateRange() !== undefined).sort((a,b) => a.getDateRange().begin.getTime() - b.getDateRange().begin.getTime());
+    return this.projects.filter(p => p.getDateRange() !== undefined).sort((a,b) => a.getDateRange().begin.getTime() - b.getDateRange().begin.getTime());
   }
 
   getProjectsWithoutDate() {
-    return this.state.projects.filter(p => p.getDateRange() === undefined);
+    return this.projects.filter(p => p.getDateRange() === undefined);
   }
 
   applyProjectEdit() {
     var self = this;
 
-    this.state.selectedProject.store().then((success) => {
+    this.selectedProject.store().then((success) => {
       if(success) {
-        self.updateContent();
+        self.onGroupReady(this.group);
       } else {
         f7.dialog.alert("Fehlende Berechtigung zum bearbeiten!", "Fehlende Berechtigung");
       }
@@ -206,39 +214,45 @@ export default class extends React.Component {
     console.log("Open Camera");
   }
 
-  onGroupReady(group) {
-    if (isNaN(group.getID())) // safety first!
-      return;
+  onGroupReady(group: SVEGroup) {
+    this.group = group;
+    this.groupID = group.getID();
 
-    var router = this.$f7router;
+    var router = this.f7router;
     var self = this;
-    if (typeof this.state.group !== "number") {
-      this.state.group.getRightsForUser(store.state.user).then(rights => {
-        let panelContent = {
+    if (this.group !== undefined) {
+      this.group.getRightsForUser(store.state.user).then(rights => {
+        let panelContent: PanelMenuItem = {
             caption: "Gruppenoptionen",
             subMenuItems: [
               {
                 caption: "Neuer Urlaub",
+                color: undefined,
                 onClick: function() { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true); }
               },
               {
                 caption: "Teilen",
+                color: undefined,
                 onClick: function() { router.navigate("/contextdetails/" + group.getID() + "/") }
               },
               {
                 caption: "Neue Gruppe",
+                color: undefined,
                 onClick: function() { PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Gruppe bearbeiten",
-                onClick: function() { self.setState({selectedGroup: self.state.group}); PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
+                color: undefined,
+                onClick: function() { self.setState({selectedGroup: self.group}); PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Mitglieder",
+                color: undefined,
                 onClick: function() { router.navigate("/users/" + group.getID() + "/") }
               },
               {
                 caption: "Beitreten",
+                color: undefined,
                 onClick: function() { self.openCamera() }
               }
             ]
@@ -250,7 +264,7 @@ export default class extends React.Component {
             color: "red",
             onClick: function() { 
               f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
-                self.state.group.remove().then(v => {
+                self.group.remove().then(v => {
                   if(v) {
                     router.back();
                   } else {
@@ -274,12 +288,12 @@ export default class extends React.Component {
   componentDidMount() {
     var self = this;
     f7ready((f7) => {
-      if (typeof self.state.group === "number") {
-        self.setState({group: new SVEGroup({id: self.state.group}, store.state.user, g => self.onGroupReady(g))});
+      if (typeof self.group === "number") {
+        self.setState({group: new SVEGroup({id: self.group}, store.state.user, g => self.onGroupReady(g))});
       }
       Dom7(document).on('page:reinit', function (e) {
-        if (typeof self.state.group !== "number")
-          self.onGroupReady(self.state.group);
+        if (typeof self.group !== "number")
+          self.onGroupReady(self.group);
       });
     });
   }
@@ -287,6 +301,6 @@ export default class extends React.Component {
   onPageBeforeRemove() {
     console.log("before page remove!");
     // Destroy popup when page removed
-    if (this.popup) this.popup.destroy();
+    if ((this as any).popup) (this as any).popup.destroy();
   }
 }

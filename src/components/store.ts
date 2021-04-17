@@ -19,6 +19,7 @@ const store = createStore({
         onLoginHooks: [],
         activeService: undefined,
         routerParams: new Map(),
+        isDarkMode: true,
     },
     getters: {
         getUser({ state }) {
@@ -39,14 +40,40 @@ const store = createStore({
         },
     },
     actions: {
-        clearUser({ state }) {
+        clearUser({ state }, {}) {
+            let acc: SVEAccount = state.user;
             state.user = undefined;
+            let token_str = window.localStorage.getItem("sve_token");
+            if (token_str !== null && token_str !== undefined) {
+                new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+                    token.invalidate(acc);
+                });
+            }
+        
+            window.localStorage.removeItem("sve_token");
+            window.localStorage.removeItem("sve_username");
+            window.localStorage.removeItem("sve_user");
+        
+            let allCookies = document.cookie.split(';');
+            for (let i = 0; i < allCookies.length; i++)
+                document.cookie = allCookies[i] + "=;expires=" + new Date(0).toUTCString();
+        
+            //update complete webapp
+            location.reload();
+        },
+
+        updateWebapp({ state }, {}) {
+            window.caches.delete("/js/app.js").then(r => {
+              window.caches.delete("/").then(r => {
+                window.location.reload();
+              }, err => window.location.reload());
+            }, err => window.location.reload());
         },
         
-        promptLogin({ state }) {
+        promptLogin({ state }, {}) {
             return state.onOpenLogin();
         },
-        sendRequest({ state }, msg) { // request to service worker
+        sendRequest({ state }, {msg}) { // request to service worker
             if (state.activeService !== undefined)
                 state.activeService.postMessage(msg);
         },

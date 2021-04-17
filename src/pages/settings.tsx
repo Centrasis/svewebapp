@@ -19,31 +19,42 @@ import {
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import Dom7 from 'dom7';
-import { LoginState, SVESystemInfo, SVEToken, TokenType } from 'svebaselib';
+import { LoginState, SVESystemInfo, SVEToken, TokenInfo, TokenType } from 'svebaselib';
+import { SVEPageComponent } from '../components/SVEPageComponent';
+import { RegisterData } from './LoginScreen';
 
-export default class extends React.Component {
+export default class extends SVEPageComponent {
+  protected accountData: RegisterData;
+  protected changePw: boolean = false;
+  protected oldPw: string = "";
+  protected installedVersions: string[] = ["Unbekannt"];
+  protected isPublic: boolean = false;
+  protected server: {
+    api: string,
+    host: string
+  };
+  protected serverFunctions: {
+    ok: boolean,
+    name: string,
+    hint: string
+  }[] = [];
+  protected tokens: TokenInfo[] = [];
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      changePw: false,
-      oldPw: "",
-      newPw: "",
-      newPw2: "",
-      installedVersions: ["Unbekannt"],
-      settings: {
-        isPublic: false,
-        email: ""
-      },
-      server: {
-        api: "",
-        host: window.hostname
-      },
-      serverFunctions: [],
-      tokens: []
-    };
+    this.server = {
+      api: "",
+      host: location.hostname
+    }
+    this.accountData = {
+      email: "",
+      password: "",
+      password2: "",
+      username: "",
+      token: undefined
+    }
   }
-  render() {
+  protected customRender() {
     return (
       <Page name="settings">
         <Navbar title="Einstellungen" backLink="Back"/>
@@ -57,9 +68,10 @@ export default class extends React.Component {
                   label="SVE-API Server"
                   type="url"
                   placeholder={location.hostname}
-                  value={this.state.server.host}
+                  value={this.server.host}
                   onInput={(e) => {
-                    this.setState({ server: {host: e.target.value, api: this.state.server.api }});
+                    this.server.host = e.target.value;
+                    this.forceUpdate();
                   }}
                 ></ListInput>
 
@@ -67,7 +79,7 @@ export default class extends React.Component {
                   title="API-Funktionen"
                 >
                   <List>
-                    {this.state.serverFunctions.map(f => (
+                    {this.serverFunctions.map(f => (
                       <ListItem checkbox title={f.name} disabled={true} checked={f.ok} tooltip={f.hint}>
                       </ListItem>
                     ))} 
@@ -78,26 +90,24 @@ export default class extends React.Component {
             </AccordionContent>
           </ListItem>
 
-          <ListItem accordionItem title="SVE Media Einstellungen">
+          {(this.user !== undefined) ? (<ListItem accordionItem title="SVE Media Einstellungen">
             <Icon slot="media" f7="photo_fill_on_rectangle_fill" />
             <AccordionContent>
               <Block>
                 <BlockTitle>Sichtbarkeit</BlockTitle>
                 <List mediaList>
                   <ListItem radio name="isPublic-radio" 
-                    defaultChecked={!this.state.settings.isPublic}
-                    value={false}
+                    checked={!this.isPublic}
                     onChange={(e) => {
-                      this.setState({ settings: {isPublic: !e.target.value, email: this.state.settings.email }});
+                      this.isPublic = !e.target.value;
                     }}
                     title="Privat"
                     text="Hochgeladene Medien sind nicht für Gruppenmitglieder sichtbar."
                   ></ListItem>
                   <ListItem radio name="isPublic-radio" 
-                    defaultChecked={this.state.settings.isPublic} 
-                    value={true}
+                    checked={this.isPublic}
                     onChange={(e) => {
-                      this.setState({ settings: {isPublic: e.target.value, email: this.state.settings.email }});
+                      this.isPublic = e.target.value;
                     }}
                     title="Gruppen-Öffentlich"
                     text="Hochgeladene Medien sind für alle Gruppenmitglieder sichtbar."
@@ -109,25 +119,25 @@ export default class extends React.Component {
                   label="E-Mail für Benachrichtigungen" 
                   type="email"
                   placeholder="e@mail.de"
-                  value={this.state.settings.email}
+                  value={this.accountData.email}
                   onInput={(e) => {
-                    this.setState({ settings: {email: e.target.value, isPublic: this.state.settings.isPublic }});
+                    this.accountData.email = e.target.value;
                   }}
                 ></ListInput>
                 <ListButton
                   title="Passwort ändern"
-                  onClick={() => this.setState({changePw: true})}
+                  onClick={() => { this.changePw = true; this.forceUpdate(); }}
                 >
                 </ListButton>
               </List>
             </AccordionContent>
-          </ListItem>
-          <ListItem accordionItem title="SVE Sicherheit">
+          </ListItem>) : ""}
+          {(this.user !== undefined) ? (<ListItem accordionItem title="SVE Sicherheit">
             <Icon slot="media" f7="lock_shield" />
             <AccordionContent>
               <Block>
                   <BlockTitle>Registrierte Geräte</BlockTitle>
-                  {(this.state.tokens.length == 0) ? (
+                  {(this.tokens.length == 0) ? (
                     <Block>
                       <BlockTitle>Alle angemeldeten Geräte und Browser würden hier gelistet werden.</BlockTitle>
                       <Button iconF7="lock_shield" raised fillIos onClick={this.registerDevice.bind(this)}>Dieses Gerät registrieren</Button>
@@ -135,11 +145,11 @@ export default class extends React.Component {
                   ) : (
                     <div>
                       <List>
-                        {this.state.tokens.map(t => (
+                        {this.tokens.map(t => (
                           <div>
                             <ListItem title={t.deviceAgent}>
                               <Icon slot="media" f7={(t.type == TokenType.DeviceToken) ? "person_crop_circle" : "folder_circle"} />
-                              <Icon slot="after-title" textColor="red" f7="trash" onClick={this.removeToken.bind(this, t)} />
+                              <Button slot="after-title" textColor="red" iconF7="trash" onClick={this.removeToken.bind(this, t)} />
                             </ListItem>
                           </div>
                         ))}
@@ -151,16 +161,28 @@ export default class extends React.Component {
                   )}
               </Block>    
             </AccordionContent>
+          </ListItem>) : ""}
+          <ListItem accordionItem title="Darstellung">
+            <AccordionContent>
+              <Block>
+                <BlockTitle>Dark Mode</BlockTitle>
+                <Toggle
+                  color="#11a802"
+                  onToggleChange={(e) => { store.state.isDarkMode = e; this.forceUpdate(); }}
+                  value={store.state.isDarkMode}
+                />
+              </Block>
+            </AccordionContent>
           </ListItem>
         </List>
 
-        <Block largeInset strong>
+        {(this.user !== undefined) ? (<Block largeInset strong>
           <Row tag="p">
             <Button className="col" raised fillIos onClick={this.commitToServer.bind(this)}>Anwenden</Button>
           </Row>
-        </Block>
+        </Block>) : ""}
         
-        <Popup swipeToClose opened={this.state.changePw} onPopupClosed={() => { this.setState({changePw: false}); }}>
+        <Popup swipeToClose opened={this.changePw} onPopupClosed={() => { this.changePw = false; this.forceUpdate(); }}>
           <Page>
             <BlockTitle>Passwort ändern</BlockTitle>
             <List>
@@ -168,38 +190,45 @@ export default class extends React.Component {
                   label="Altes Passwort"
                   type="password"
                   placeholder={"Altes Passwort"}
-                  value={this.state.oldPw}
+                  value={this.oldPw}
                   onInput={(e) => {
-                      this.setState({oldPw: e.target.value});
+                      this.oldPw = e.target.value;
+                      this.forceUpdate();
                   }}
               />
               <ListInput
                   label="Neues Passwort"
                   type="password"
-                  placeholder={"Altes Passwort"}
-                  value={this.state.newPw}
+                  placeholder={"Neues Passwort"}
+                  value={this.accountData.password}
                   onInput={(e) => {
-                      this.setState({newPw: e.target.value});
+                      this.accountData.password = e.target.value;
+                      this.forceUpdate();
                   }}
               />
               <ListInput
                   label="Neues Passwort wiederholen"
                   type="password"
-                  placeholder={"Altes Passwort wiederholen"}
-                  value={this.state.newPw2}
+                  placeholder={"Neues Passwort wiederholen"}
+                  value={this.accountData.password2}
                   onInput={(e) => {
-                      this.setState({newPw2: e.target.value});
+                    this.accountData.password2 = e.target.value;
+                    this.forceUpdate();
                   }}
               />
               <ListItem
                 title="Übernehmen"
                 onClick={() => { 
-                  if (this.state.newPw === this.state.newPw2) {
-                    store.state.user.changePassword(this.state.oldPw, this.state.newPw).then(val => {
+                  if (this.accountData.password === this.accountData.password2) {
+                    store.state.user.changePassword(this.oldPw, this.accountData.password).then(val => {
                       if(!val) {
                         f7.dialog.alert("Änderung fehlgeschlagen!");
                       } else {
-                        this.setState({changePw: false, oldPw: "", newPw: "", newPw2: ""});
+                        this.changePw = false;
+                        this.oldPw = "";
+                        this.accountData.password = "";
+                        this.accountData.password2 = "";
+                        this.forceUpdate();
                       }
                     });
                   } else {
@@ -218,8 +247,8 @@ export default class extends React.Component {
   registerDevice() {
     SVEToken.register(store.state.user, TokenType.DeviceToken, store.state.user).then(token => {
       window.localStorage.setItem("sve_token", token);
-      window.localStorage.setItem("sve_user", String(usr.getID()));
-      window.localStorage.setItem("sve_username", usr.getName());
+      window.localStorage.setItem("sve_user", String(store.state.user.getID()));
+      window.localStorage.setItem("sve_username", store.state.user.getName());
       this.refreshServerInfos();
     });
   }
@@ -230,8 +259,9 @@ export default class extends React.Component {
   }
 
   refreshServerInfos() {
-    let funcs = [];
+    this.serverFunctions = [];
     let sources = SVESystemInfo.getInstance().sources;
+    this.forceUpdate();
     for (let prop in sources) {
       if (prop !== "protocol") {
         let api = SVESystemInfo.getInstance().sources[prop];
@@ -239,48 +269,52 @@ export default class extends React.Component {
           console.log("Api: ", api);
           SVESystemInfo.checkAPI(api).then(info => {
             console.log("Api info: ", info);
-            funcs.push({
+            this.serverFunctions.push({
               name: prop + " v" + info.version,
               ok: info.status,
               hint: api
             });
-            this.setState({serverFunctions: funcs});
+            this.forceUpdate();
           }, err => {
             console.log("Error checking api: ", api, err);
-            funcs.push({
+            this.serverFunctions.push({
               name: prop,
               ok: false,
               hint: api
             });
-            this.setState({serverFunctions: funcs});
+            this.forceUpdate();
           });
         }
       }
     }
 
-    this.state.tokens = [];
+    this.tokens = [];
+    this.forceUpdate();
     SVEToken.listDevices(store.state.user).then(ti => {
-      this.setState({tokens: ti});
+      this.tokens = ti;
+      this.forceUpdate();
     });
   }
 
   componentDidMount() {
-    var router = f7.view.current.router;
-    var self = this;
-    var $$ = Dom7;
+    super.componentDidMount();
+    let self = this;
     f7ready((f7) => {
-      this.refreshServerInfos();
-    },
-    function (data, status) {
-      setTimeout(self.componentDidMount(), 1000);
+      self.refreshServerInfos();
     });
+
+    if(this.user !== undefined) {
+      this.accountData = {
+        email: "",
+        password: "",
+        password2: "",
+        username: this.user.getName(),
+        token: undefined
+      }
+    };
   }
 
   commitToServer() {
-    var dlg = f7.dialog;
-    f7.request.get(f7.apiPath + "/setUserSettings.php?id="+this.state.user.id+"&isPublic="+((this.state.settings.isPublic) ? "1" : "0") + "&email="+this.state.settings.email, function(data) {
-      if(!JSON.parse(data).Succeeded)
-        dlg.alert("Ein Fehler auf dem Server trat auf! Die Einstellungen wurden nicht übernommen!");
-    });
+    
   }
 };
