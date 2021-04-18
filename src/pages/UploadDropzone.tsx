@@ -9,7 +9,7 @@ export type UploadDropzoneSettings = {
     project: SVEProject,
     maxParallelUploads?: number,
     onImageUploaded?: (img: SVEData) => void,
-    doCheckImageBeforeUpload: (img: ImageData) => boolean
+    doCheckImageBeforeUpload?: (img: ImageData) => boolean
 };
 
 export default class UploadDropzone<P = {}> extends React.Component<P & UploadDropzoneSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
@@ -41,6 +41,11 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
         if (this.props.onImageUploaded)
         {
             this.onImageUploaded = this.props.onImageUploaded;
+        }
+
+        if (this.props.doCheckImageBeforeUpload)
+        {
+            this.doCheckImageBeforeUpload = this.props.doCheckImageBeforeUpload;
         }
     }
 

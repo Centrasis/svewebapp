@@ -112,10 +112,20 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     protected checkForToken(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
           let token_str = window.localStorage.getItem("sve_token");
-          if (token_str !== null && token_str !== undefined) {
+          if (token_str !== null && token_str !== undefined && token_str !== "undefined") {
             console.log("Found saved token");
-            this.loginData.username = window.localStorage.getItem("sve_username");
-            new SVEToken(token_str, TokenType.DeviceToken, Number(window.localStorage.getItem("sve_user")), token => {
+            let usr_name = window.localStorage.getItem("sve_username");
+            if (usr_name === null || usr_name === undefined || usr_name === "undefined") {
+                reject();
+                return;
+            }
+            this.loginData.username = usr_name;
+            let usr_id = window.localStorage.getItem("sve_user");
+            if (usr_id === null || usr_id === undefined || usr_id === "undefined") {
+                reject();
+                return;
+            }
+            new SVEToken(token_str, TokenType.DeviceToken, Number(usr_id), token => {
               this.loginData.token = token;
               if(!token.getIsValid()) {
                 console.log("Device Token is not valid!");
@@ -215,6 +225,7 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     }
 
     protected onOpenRegister() {
+        this.f7router.history = this.f7router.history.filter(route => route !== this.f7router.currentRoute.path);
         this.f7router.navigate("/register/x", {
             history: false,
             transition: "f7-fade"
@@ -222,6 +233,7 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     }
 
     protected onOpenLogin() {
+        this.f7router.history = this.f7router.history.filter(route => route !== this.f7router.currentRoute.path);
         this.f7router.navigate("/login/", {
             history: false,
             transition: "f7-fade"

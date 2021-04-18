@@ -176,7 +176,7 @@ export default class extends SVEPageComponent<{}> {
         list.push({group: g, projects: prjs});
       });
 
-      this.setState({home_display_list: list});
+      this.home_display_list = list; this.forceUpdate();
     });
   }
 
@@ -188,20 +188,20 @@ export default class extends SVEPageComponent<{}> {
         projects: []
       });
     });
-    this.setState({home_display_list: list});
+    this.home_display_list = list; this.forceUpdate();
   }
 
   onEnableSearch(sb) {
     Dom7("#intro").hide();
     this.onClearSearch(sb);
-    this.setState({home_display_list: []});
-    this.setState({showProjects: true});
+    this.home_display_list = []; this.forceUpdate();
+    this.showProjects = true; this.forceUpdate();
   }
 
   onDisableSearch(sb) {
     Dom7("#intro").show();
     this.onClearSearch(sb);
-    this.setState({showProjects: false});
+    this.showProjects = false; this.forceUpdate();
   }
 
   protected updateContent(user: SVEAccount) {
@@ -227,40 +227,19 @@ export default class extends SVEPageComponent<{}> {
     this.updateContent(user);
   }
 
-  public componentDidUpdate() {
-    super.componentDidMount();
-    if (store.state.user === undefined) {
-      LoginHook.tryRestoreUserSession().then(() => {}, 
-      err => {
-        f7ready((f7) => {
-          this.f7router.navigate("/login/");
-        });
-      });
+  protected pageAfterNavigate(isUserReady: boolean) {
+    if(!isUserReady) {
+      this.f7router.navigate("/login/");
+    } else {
+      this.updateContent(this.user);
     }
   }
 
-  public componentDidMount() {
-    super.componentDidMount();
-    var self = this;
-    f7ready((f7) => {
-      Dom7(document).on('page:reinit', function (e) {
-        console.log("Reinit page");
-        if (store.state.user === undefined) {
-          LoginHook.tryRestoreUserSession().then(() => {}, err => self.f7router.navigate("/login/"));
-        } else {
-          self.updateContent(store.state.user);
-        }
-      });
-    });
-    Dom7(document).on('page:afterin', function (e) {
-      if (store.state.user === undefined) {
-        LoginHook.tryRestoreUserSession().then(() => {}, 
-        err => {
-          f7ready((f7) => {
-            self.f7router.navigate("/login/");
-          });
-        });
-      }
-    });
+  protected pageReinit(isUserReady: boolean) {
+    if(!isUserReady) {
+      this.f7router.navigate("/login/");
+    } else {
+      this.updateContent(this.user);
+    }
   }
 };

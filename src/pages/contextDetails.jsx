@@ -52,12 +52,12 @@ export default class extends React.Component {
     f7ready((f7) => {
       if (typeof self.state.group === "number") {
         new SVEGroup({id: self.state.group}, store.state.user, g => {
-          self.setState({group: g});
+          self.group = g; self.forceUpdate();
           g.getProjects().then(ps => {
-            self.setState({projectsCount: ps.length});
+            self.projectsCount = ps.length; self.forceUpdate();
           });
           g.getUsers().then(us => {
-            self.setState({usersCount: us.length});
+            self.usersCount = us.length; self.forceUpdate();
           });
         });
       }

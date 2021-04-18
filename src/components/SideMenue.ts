@@ -1,24 +1,27 @@
 import React from 'react';
 
+export interface PanelSubMenuItem {
+    caption: string,
+    icon: string,
+    onClick: () => void;
+    color?: string;
+}
+
 export interface PanelMenuItem {
     caption: string;
-    subMenuItems: {
-        caption: string,
-        onClick: () => void;
-        color: string;
-    }[];
+    subMenuItems: (PanelSubMenuItem | undefined)[];
 }
 
 export class SideMenue {
     protected static app: React.Component;
-    protected static rightMenueContent: PanelMenuItem[] = [];
+    protected static rightMenueContent: PanelMenuItem = undefined;
     protected static leftMenueContent: PanelMenuItem;
     
-    public static pushRightPanel(content: PanelMenuItem) {
+    public static setRightPanel(content: PanelMenuItem) {
         if(content === undefined || content === null)
             return;
         content.subMenuItems = content.subMenuItems.filter(e => e !== undefined);
-        SideMenue.rightMenueContent.push(content);
+        SideMenue.rightMenueContent = content;
         SideMenue.app.forceUpdate();
     }
 
@@ -27,15 +30,10 @@ export class SideMenue {
     }
 
     public static getCurrentRightMenu(): PanelMenuItem {
-        return (this.rightMenueContent.length > 0) ? this.rightMenueContent[this.rightMenueContent.length - 1] : {
+        return (this.rightMenueContent !== undefined) ? this.rightMenueContent : {
         subMenuItems: [],
         caption: ""
       };
-    }
-
-    public static popRightPanel(): PanelMenuItem {
-        let r = this.rightMenueContent.pop();
-        return r;
     }
 
     public static popLeftPanel(): PanelMenuItem {

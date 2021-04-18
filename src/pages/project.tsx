@@ -4,50 +4,71 @@ import Dom7 from 'dom7';
 //import KeepScreenOn from 'react-native-keep-screen-on'
 
 //import MapView from 'react-native-maps';
-import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData, SVEProjectType} from 'svebaselib';
+import {SVEGroup, SVEProject, SVEProjectState, SVEDataType, SVEDataVersion, SVESystemInfo, SVEData, SVEProjectType, SVEAccount} from 'svebaselib';
 import UploadDropzone from './UploadDropzone';
-import MediaGallery, {Media, Sorting} from './MediaGallery';
+import MediaGallery, {Sorting} from './MediaGallery';
 import NewProjectPopup from "./NewProjectPopup"
 import { f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
-import { SideMenue } from '../components/SideMenue';
+import { PanelMenuItem, SideMenue } from '../components/SideMenue';
 import { getDevice } from 'framework7';
 import { PopupHandler } from '../components/PopupHandler';
+import { SVEPageComponent } from '../components/SVEPageComponent';
 
-export default class extends React.Component {
-  showUpload = false;
-  sortBy = Sorting.AgeASC
+export default class extends SVEPageComponent {
+  protected showUpload: boolean = false;
+  protected sortBy: Sorting = Sorting.AgeASC;
+  protected displayCount: number = 10;
+  protected selectedGalleryImg: number = 0;
+  protected project: SVEProject = undefined;
+  protected selectedImg: number = 0;
+  protected maxPreViewCount: number = 10;
+  protected currentPreViewIdx: number = 0;
+  protected selectedVid: number = 0;
+  protected showMap: boolean = false;
+  protected selectedImgUser: SVEAccount = undefined;
+  protected closeProject: boolean = false;
+  protected selectSplash: boolean = false;
+  protected images_toPreSelect: SVEData[] = [];
+  protected showPreSelect: boolean = false;
+  protected ownerName: string = '';
+  protected resultURI: string = undefined;
+  protected resultType: string = "";
+  protected resultPosterURI: string = "";
+  protected lastLatestID: number = 0;
+  protected isTakingPlaceNow: boolean = false;
+  protected viewableUsers: Map<SVEAccount, SVEData[]> = new Map<SVEAccount, SVEData[]>();
+  protected favoriteImgs: SVEData[] = [];
 
   constructor(props) {
     super(props);
-    this.state = {
-      displayCount: 10,
-      selectedGalleryImg: 0,
-      project: Number(props.f7route.params.id),
-      selectedImg: '',
-      maxPreViewCount: 10,
-      currentPreViewIdx: 0,
-      selectedVid: '',
-      showMap: false,
-      selectedImgUser: "",
-      closeProject: false,
-      selectSplash: false,
-      images_toPreSelect: [],
-      showPreSelect: false,
-      ownerName: '',
-      resultURI: undefined,
-      resultType: "",
-      resultPosterURI: "",
-      lastLatestID: 0,
-      isTakingPlaceNow: false,
-      viewableUsers: new Map() //Map<User, Image[]>,
-    };
+    new SVEProject(Number(this.f7route.params.id), store.state.user, p => {
+      this.project = p;
+      p.getResult().then((data => {
+        if (isNaN(data.getID())) {
+          console.log("Got result error on Server!");
+        } else {
+          this.resultURI = data.getURI(SVEDataVersion.Full, false),
+          this.resultPosterURI = data.getURI(SVEDataVersion.Preview, false),
+          this.resultType = data.getContentType(SVEDataVersion.Full)
+          this.updateContent();
+        }
+      }), err => {});
+      this.updateContent();
+    });
   }
-  render() {
+  
+  protected onPageBeforeRemove(page: any) {
+    console.log("before page remove!");
+    // Destroy popup when page removed
+    if ((this as any).popup) (this as any).popup.destroy();
+  }
+
+  protected customRender() {
       return (
       <Page name="project" onPageBeforeRemove={this.onPageBeforeRemove.bind(this)} id="page">
-        <Navbar title={(typeof this.state.project !== "number") ? this.state.project.getName() : ""} backLink="Back">
+        <Navbar title={(this.project !== undefined) ? this.project.getName() : ""} backLink="Back">
           
             {(!getDevice().desktop) ? (
               <NavRight>
@@ -55,13 +76,9 @@ export default class extends React.Component {
               </NavRight>
             ) : (
               <NavRight>
-                <Link iconIos="f7:cloud_upload" iconAurora="f7:cloud_upload" iconMd="f7:cloud_upload" tooltip="Hochladen" onClick={() => this.showUploadPopup()}/>
-                <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen"/>
-                <Link iconIos="f7:person_3_fill" iconAurora="f7:person_3_fill" iconMd="f7:person_3_fill" tooltip="Mitglieder" onClick={() =>  f7.view.current.router.navigate("/projectdetails/" + this.state.project.getID() + "/")}/>    
-                <Link iconIos="f7:square_pencil" iconAurora="f7:square_pencil" iconMd="f7:square_pencil" tooltip="Bearbeiten" onClick={() => PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true)}/>           
-                <Link iconIos="f7:cloud_download" iconAurora="f7:cloud_download" iconMd="f7:cloud_download" tooltip="Download"/>
-                <Link iconIos="f7:rectangle_stack_person_crop_fill" iconAurora="f7:rectangle_stack_person_crop_fill" iconMd="f7:rectangle_stack_person_crop_fill" tooltip="Titelbild ändern"/>
-                <Link iconIos="f7:trash" iconAurora="f7:trash" iconMd="f7:trash" textColor="red" tooltip="Projekt löschen!"/>
+                {SideMenue.getCurrentRightMenu().subMenuItems.map(item => (
+                  <Link iconIos={item.icon} iconAurora={item.icon} iconMd={item.icon} tooltip={item.caption} textColor={(item.color !== undefined) ? item.color : ""} onClick={item.onClick.bind(this)}/>
+                ))}
               </NavRight>
               )}
           
@@ -69,26 +86,26 @@ export default class extends React.Component {
         {(!getDevice().desktop) ? (
           <Block strong>
             <Row id="indexImage" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
-              <img src={(typeof this.state.project !== "number") ? this.state.project.getSplashImageURI() : ""} style={{maxHeight: "30vh", width: "auto", display: "inherit"}}/>
+              <img src={(this.project !== undefined) ? this.project.getSplashImageURI() : ""} style={{maxHeight: "30vh", width: "auto", display: "inherit"}}/>
             </Row>        
             <Row>
-              Gegründet von {this.state.ownerName}
+              Gegründet von {this.ownerName}
             </Row>
-            {(typeof this.state.project !== "number" && this.state.project.getDateRange() !== undefined && this.state.project.getDateRange().begin !== undefined && this.state.project.getDateRange().end !== undefined) ? (
+            {(this.project !== undefined && this.project.getDateRange() !== undefined && this.project.getDateRange().begin !== undefined && this.project.getDateRange().end !== undefined) ? (
               <Row style={{display: "block"}}>
-                <p style={{color: (this.state.isTakingPlaceNow) ? "#11a802" : "#FFFFFF"}}>Zeitraum: {this.state.project.getDateRange().begin.toLocaleDateString()} bis {this.state.project.getDateRange().end.toLocaleDateString()}</p>
+                <p style={{color: (this.isTakingPlaceNow) ? "#11a802" : "#FFFFFF"}}>Zeitraum: {this.project.getDateRange().begin.toLocaleDateString()} bis {this.project.getDateRange().end.toLocaleDateString()}</p>
               </Row>
             ) : ""}
-            {(this.state.resultURI !== undefined) ? 
+            {(this.resultURI !== undefined) ? 
               <Row id="video-row" style={{display: "flex", justifyContent: "center", alignContent: "center"}}>
                 <video 
                   playsInline
                   controls
                   preload={"auto"} 
                   style={{maxHeight: "30vh", width: "auto"}} 
-                  poster={this.state.resultPosterURI}
+                  poster={this.resultPosterURI}
                 >
-                  <source src={this.state.resultURI} type={this.state.resultType} />
+                  <source src={this.resultURI} type={this.resultType} />
                   <p>Dieser Browser unterstützt HTML5 Video nicht</p>
                 </video>
               </Row>
@@ -130,8 +147,8 @@ export default class extends React.Component {
         )}
 
         <Block strong>
-          {(this.state.viewableUsers.size === 0) ? (
-            <Block strong style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: "9", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+          {(this.viewableUsers.size === 0) ? (
+            <Block strong style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
               <Row><Col></Col><Col><span>Lade Medien...</span></Col><Col></Col></Row>
               <Row>
                 <Col></Col><Col><Preloader></Preloader></Col><Col></Col>
@@ -145,7 +162,7 @@ export default class extends React.Component {
             init={true}
             style={{display: "flex", flexFlow: "column", height: "100%"}}
           >
-            {(this.state.viewableUsers.has(store.state.user.getName())) ? (
+            {(this.viewableUsers.has(store.state.user.getName())) ? (
               <SwiperSlide className="scrollBox" style={{height: this.getSwiperHeight() + "px"}}>
                 <Row noGap>
                   <Col></Col>
@@ -162,12 +179,12 @@ export default class extends React.Component {
                   enableDeletion={true}
                   enableFavorization={true}
                   style={{width: "100%", height: "100%"}}
-                  displayCount={this.state.displayCount}
-                  enableClassification={this.state.project.getType() !== SVEProjectType.Vacation}
+                  displayCount={this.displayCount}
+                  enableClassification={this.project.getType() !== SVEProjectType.Vacation}
                 />
               </SwiperSlide>
             ) : ""}
-            {this.getListFromMap(this.state.viewableUsers).map((v) => (v.key !== store.state.user.getName()) ? (
+            {this.getListFromMap(this.viewableUsers).map((v) => (v.key !== store.state.user.getName()) ? (
               <SwiperSlide 
                 style={{height: this.getSwiperHeight() + "px"}}
                 className="scrollBox"
@@ -184,7 +201,7 @@ export default class extends React.Component {
                     enableDeletion={false}
                     enableFavorization={false}
                     style={{width: "100%", height: "100%"}}
-                    displayCount={this.state.displayCount}
+                    displayCount={this.displayCount}
                   />
                 </Row>
               </SwiperSlide>
@@ -196,19 +213,19 @@ export default class extends React.Component {
         <Popup className="image-upload" swipeToClose opened={this.showUpload} onPopupClosed={() => this.showUploadPopup(false)}>
           <Page>
             <BlockTitle large style={{justifySelf: "center"}}>Medien auswählen</BlockTitle>
-            {(typeof this.state.project !== "number") ? 
+            {(this.project !== undefined) ? 
               <UploadDropzone
-                project={this.state.project}
+                project={this.project}
                 onImageUploaded={(img) => this.OnImgUploaded(img)}
               />
             : ""}
           </Page>
         </Popup>
 
-        <Popup className="splash-select" swipeToClose opened={this.state.selectSplash} onPopupClosed={() => this.setState({selectSplash : false})}>
+        <Popup className="splash-select" swipeToClose opened={this.selectSplash} onPopupClosed={() => {this.selectSplash = false; this.forceUpdate()}}>
           <Page>
             <BlockTitle large style={{justifySelf: "center"}}>Titelbild wählen</BlockTitle>
-            {(typeof this.state.project !== "number") ? 
+            {(this.project !== undefined) ? 
               <MediaGallery 
                 id={`title-select-gallery`}
                 data={this.getImagesFor(store.state.user.getName())}
@@ -217,7 +234,7 @@ export default class extends React.Component {
                 enableFavorization={false}
                 enableDownload={false}
                 style={{width: "100%", height: "100%"}}
-                displayCount={this.state.displayCount}
+                displayCount={this.displayCount}
                 shouldReturnSelectedMedia={true}
                 onSelectMedia={this.onSelectSplash.bind(this)}
               />
@@ -225,22 +242,22 @@ export default class extends React.Component {
           </Page>
         </Popup>
       
-      {(typeof this.state.project !== "number") ? 
+      {(this.project !== undefined) ? 
        	<NewProjectPopup
           id = "ProjectDisplay"
           owningUser={store.state.user}
-          parentGroup={this.state.project.getGroup()}
-          caption={"Bearbeite Projekt: " + this.state.project.getName()}
-          projectToEdit={this.state.project}
+          parentGroup={this.project.getGroup()}
+          caption={"Bearbeite Projekt: " + this.project.getName()}
+          projectToEdit={this.project}
         />
       : ""}
 
-      <Popup swipeToClose opened={this.state.closeProject} onPopupClosed={() => this.setState({closeProject : false})}>
+      <Popup swipeToClose opened={this.closeProject} onPopupClosed={() => {this.closeProject = false; this.forceUpdate()}}>
         <Page>
           <BlockTitle large style={{justifySelf: "center"}}>Urlaub mit Diashow abschließen?</BlockTitle>
-          {(typeof this.state.project !== "number") ? 
+          {(this.project !== undefined) ? 
             <UploadDropzone
-              project={this.state.project}
+              project={this.project}
               onImageUploaded={(img) => this.OnImgUploaded(img)}
             />
           : ""}
@@ -259,24 +276,24 @@ export default class extends React.Component {
 
   onSelectSplash(img) {
     if(img !== undefined) {
-      this.state.project.setSplashImgID(img.getID());
-      this.state.project.store().then(val => {
+      this.project.setSplashImgID(img.getID());
+      this.project.store().then(val => {
         if(!val) {
           f7.dialog.alert("Titelbild konnte nicht gesetzt werden!");
         }
       });
     }
 
-    this.setState({selectSplash: false});
+    this.selectSplash = false; this.forceUpdate();
   }
 
   enqueueLatestDataCall(storeProject, count = 0) {
     if(count < 100) {
       setTimeout(() => {
         SVEData.getLatestUpload(store.state.user).then(latestData => {
-          if(latestData !== this.state.lastLatestID) {
-            this.setState({lastLatestID: latestData});
-            this.state.project.setResult(latestData);
+          if(latestData.getID() !== this.lastLatestID) {
+            this.lastLatestID = latestData.getID(); this.forceUpdate();
+            this.project.setResult(latestData);
             storeProject();
           } else {
             this.enqueueLatestDataCall(storeProject, count + 1);
@@ -290,12 +307,12 @@ export default class extends React.Component {
 
   OnImgUploaded(img) {
     console.log("Media uploaded!");
-    if(this.state.closeProject) {
+    if(this.closeProject) {
       console.log("Close project!");
 
       let storeProject = () => {
-        this.state.project.setState(SVEProjectState.Closed);
-        this.state.project.store().then(val => {
+        this.project.setState(SVEProjectState.Closed);
+        this.project.store().then(val => {
           f7.toast.create({
             text: val ? "Projekt erfolgreich abgeschlossen!" : "Projekt wurde nicht korrekt abgeschlossen!",
             closeButton: !val,
@@ -312,14 +329,14 @@ export default class extends React.Component {
       } else {
         storeProject();
       }
-      this.setState({closeProject: false});
+      this.closeProject = false; this.forceUpdate();
     }
 
     this.updateUploadedImages();
   }
 
   getImagesFor(user) {
-    return (this.state.viewableUsers.has(user)) ? this.state.viewableUsers.get(user) : []
+    return (this.viewableUsers.has(user)) ? this.viewableUsers.get(user) : []
   }
 
   getListFromMap(map) {
@@ -349,23 +366,23 @@ export default class extends React.Component {
 
     Dom7("#SortByList").click();
     //Dom7("SortByList").mousedown();
-    Dom7("#SortByAccordion").trigger('accordion:closed');
-    Dom7("#sort-radio").trigger('accordion:closed');
+    Dom7("#SortByAccordion").trigger('accordion:closed', {});
+    Dom7("#sort-radio").trigger('accordion:closed', {});
 
     this.forceUpdate();
   }
 
   updateUploadedImages() {
     SVEData.getLatestUpload(store.state.user).then(latestData => {
-        this.setState({lastLatestID: latestData});
+        this.lastLatestID = latestData.getID(); this.forceUpdate();
     });
 
     var self = this;
     var $$ = Dom7;
 
-    self.state.viewableUsers = new Map();
+    self.viewableUsers.clear();
 
-    self.state.project.getData().then((unclassified_imgs) => {
+    self.project.getData().then((unclassified_imgs) => {
       let imgs = [];
 
       let finalize = () => {
@@ -377,18 +394,18 @@ export default class extends React.Component {
                 return;
               }
     
-              let vu = self.state.viewableUsers;
+              let vu = self.viewableUsers;
               let list = (vu.has(usr.getName())) ? vu.get(usr.getName()) : [];
     
               list.push(i);
               vu.set(usr.getName(), list);
-              self.setState({viewableUsers: vu});
+              self.viewableUsers = vu; self.forceUpdate();
             });
           });
         }
       }
 
-      if(self.state.project.getType() !== SVEProjectType.Vacation) {
+      if(self.project.getType() !== SVEProjectType.Vacation) {
         console.log("Pulling class names for documents..");
         unclassified_imgs.forEach(i => {
           i.pullClassification().then(() => {
@@ -405,9 +422,9 @@ export default class extends React.Component {
     }, 
     err => console.log("Fetching data error: " + JSON.stringify(err)));
 
-    let favImgs = {};
+    let favImgs = [];
     // Init
-    self.setState({favoriteImgs: favImgs});
+    self.favoriteImgs = favImgs; self.forceUpdate();
 
     if (getDevice().ios || getDevice().android)
     {
@@ -447,7 +464,7 @@ export default class extends React.Component {
   }
 
   showOnMap() {
-    this.setState({showMap: true});
+    this.showMap = true; this.forceUpdate();
   }
 
   updateContent() {
@@ -456,57 +473,65 @@ export default class extends React.Component {
 
     Dom7("#ImgSwiper").css("height", this.getSwiperHeight() + "px");
 
-    if (typeof this.state.project !== "number") {
-      this.state.project.getGroup().getRightsForUser(store.state.user).then(rights => {
-        let panelContent = {
+    if (this.project !== undefined) {
+      this.project.getGroup().getRightsForUser(store.state.user).then(rights => {
+        let panelContent: PanelMenuItem = {
           caption: "Urlaubsaktionen",
           subMenuItems: [
-            (rights.write && this.state.project.getState() === SVEProjectState.Open) ?
+            (rights.write && this.project.getState() === SVEProjectState.Open) ?
             {
               caption: "Medien hochladen",
+              icon: "f7:cloud_upload",
               onClick: function() { self.showUploadPopup() }
-            } : {}, 
+            } : undefined, 
             (rights.write) ?
             {
               caption: "Bearbeiten",
+              icon: "f7:square_pencil",
               onClick: function() { PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true); }
-            } : {},
+            } : undefined,
             {
               caption: "Teilen",
-              onClick: function() { router.navigate("/projectdetails/" + self.state.project.getID() + "/") }
+              icon: "f7:arrowshape_turn_up_right",
+              onClick: function() { router.navigate("/projectdetails/" + self.project.getID() + "/") }
             },
             {
               caption: "Mitglieder",
-              onClick: function() { router.navigate("/users/" + self.state.project.getGroup().getID() + "/") }
+              icon: "f7:person_3_fill",
+              onClick: function() { router.navigate("/users/" + self.project.getGroup().getID() + "/") }
             },
             {
               caption: "Herunterladen",
+              icon: "f7:cloud_download",
               onClick: function() { 
-                window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.state.project.getID() + '/data/zip', "_system");
+                window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.project.getID() + '/data/zip', "_system");
               }
             },
             (rights.admin) ?
             {
               caption: "Projekt abschließen",
               color: "green",
+              icon: "f7:checkmark_shield_fill",
               onClick: function() { 
-                self.setState({closeProject: true});
+                self.closeProject = true; self.forceUpdate();
               }
-            } : {},
+            } : undefined,
             (rights.admin) ?
             {
               caption: "Titelbild wählen",
+              icon: "f7:rectangle_stack_person_crop_fill",
               onClick: function() { 
-                self.setState({selectSplash: true});
+                self.selectSplash = true; self.forceUpdate();
               }
-            } : {},
+            } : undefined,
             (rights.admin) ?
             {
               caption: "Projekt löschen",
               color: "red",
+              icon: "f7:trash",
               onClick: function() { 
                 f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
-                  self.state.project.remove().then(v => {
+                  self.project.remove().then(v => {
                     if(v) {
                       router.back();
                     } else {
@@ -515,7 +540,7 @@ export default class extends React.Component {
                   });
                 }, () =>  {});
               }
-            } : {}
+            } : undefined
             /*,
             {
               caption: "Karte",
@@ -524,13 +549,13 @@ export default class extends React.Component {
           ]
         };
 
-        SideMenue.pushRightPanel(panelContent);
+        SideMenue.setRightPanel(panelContent);
       });
     }
 
-    if (typeof this.state.project !== "number") {
-      this.state.project.getOwner().then(user => {
-        self.setState({ownerName: user.getName()});
+    if (this.project !== undefined) {
+      this.project.getOwner().then(user => {
+        self.ownerName = user.getName(); self.forceUpdate();
         self.updateUploadedImages();
       });
     }
@@ -544,39 +569,15 @@ export default class extends React.Component {
         self.updateContent();
       });
 
-      if (typeof self.state.project === "number") {
-        self.setState({project: new SVEProject(self.state.project, store.state.user, p => {
-          p.getResult().then((data => {
-            if (isNaN(data.getID())) {
-              console.log("Got result error on Server!");
-            } else {
-              self.setState({
-                resultURI: data.getURI(SVEDataVersion.Full, false),
-                resultPosterURI: data.getURI(SVEDataVersion.Preview, false),
-                resultType: data.getContentType(SVEDataVersion.Full)
-              });
-            }
-          }), err => {});
-          self.updateContent();
-        })});
-      }
-
-      $$(document).on('page:reinit', function (e) {
-        self.updateContent();
-      });
-
       //self.registerScrollListeners();
     });
   }
 
-  onPageBeforeRemove() {
-    console.log("before page remove!");
-    // Destroy popup when page removed
-    if (this.popup) this.popup.destroy();
+  protected pageReinit(isUserReady: boolean) {
+    this.updateContent();
   }
 
-  getDerivedStateFromError(error) {
-    console.log("Got error: " + JSON.stringify(error));
-    return { hasError: true, errorMsg: JSON.stringify(error) };
+  protected pageAfterNavigate(isUserReady: boolean) {
+    this.updateContent();
   }
 }

@@ -15,7 +15,6 @@ import { MultiMediaDeviceHandler } from '../components/multimediadevicehandler';
 import { PanelMenuItem, SideMenue } from '../components/SideMenue';
 import { getDevice } from 'framework7';
 import { SVEPageComponent } from '../components/SVEPageComponent';
-import { any } from '@tensorflow/tfjs';
 
 export default class extends SVEPageComponent {
   protected groupID: number;
@@ -45,10 +44,9 @@ export default class extends SVEPageComponent {
           </NavRight>
         ) : (
           <NavRight>
-            <Link iconF7="folder_badge_plus" tooltip="Neues Projekt" onClick={() => PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true)}/>
-            <Link iconF7="qrcode_viewfinder" tooltip="Beitreten" onClick={() => this.f7router.navigate("/contextdetails/" + String(this.groupID) + "/")} />
-            <Link iconIos="f7:arrowshape_turn_up_right" iconAurora="f7:arrowshape_turn_up_right" iconMd="f7:arrowshape_turn_up_right" tooltip="Teilen und Einladen" onClick={() => this.f7router.navigate("/contextdetails/" + String(this.groupID) + "/")}/>
-            <Link iconIos="f7:square_pencil" iconAurora="f7:square_pencil" iconMd="f7:square_pencil" tooltip="Bearbeiten" onClick={() => PopupHandler.getPopupComponent('NewProjectPopupProjectDisplay').setComponentVisible(true)}/>           
+                {SideMenue.getCurrentRightMenu().subMenuItems.map(item => (
+                  <Link iconIos={item.icon} iconAurora={item.icon} iconMd={item.icon} tooltip={item.caption} textColor={(item.color !== undefined) ? item.color : ""} onClick={item.onClick.bind(this)}/>
+                ))}
           </NavRight>
         )}
         </Navbar>
@@ -141,14 +139,23 @@ export default class extends SVEPageComponent {
         {(this.group !== undefined) ? 
           <NewProjectPopup
             owningUser={store.state.user}
-            onProjectCreated={(prj) => this.group.getProjects().then(prjs => { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(false); this.setState({ selectedProject: undefined, projects: prjs}); })}
+            onProjectCreated={this.onNewProject.bind(this)}
             parentGroup={this.group}
             caption={(this.selectedProject === undefined) ? "Neuer Urlaub" : "Bearbeite Projekt: " + this.selectedProject.getName()}
-            projectToEdit={this.selectedProject}
+            projectToEdit={this.selectedProject}        
           />
         : ""}
       </Page>
     );
+  }
+
+  protected onNewProject(prj: SVEProject) {
+    this.group.getProjects().then(prjs => { 
+      PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(false); 
+      this.selectedProject = undefined;
+      this.projects = prjs; 
+      this.forceUpdate(); 
+    });
   }
 
   getMonthOfDate(date) {
@@ -176,19 +183,20 @@ export default class extends SVEPageComponent {
       }
     });
     
-    this.setState({ selectedProject: undefined});
+    this.selectedProject = undefined; this.forceUpdate();
   }
 
   onShowEdit(prj) {
-    this.setState({ selectedProject: prj});
+    this.selectedProject = prj;
     PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true);
   }
 
-  desktopOpenDetails(prj) {
-    this.setState({selectedProject: prj});
+  desktopOpenDetails(prj: SVEProject) {
+    this.selectedProject = prj;
+    this.forceUpdate();
   }
 
-  onRemoveProject(project, shouldPromt = false) {
+  onRemoveProject(project: SVEProject, shouldPromt: boolean = false) {
     if (shouldPromt) {
       var self = this;
       f7.dialog.confirm(`Möchten Sie das Projekt ${project.getName()} wirklich löschen?`, "Löschen?", () => { self.onRemoveProject(project); });
@@ -204,7 +212,7 @@ export default class extends SVEPageComponent {
   }
 
   onGroupCreated(group) {
-    this.setState({selectedGroup: undefined});
+    this.selectedGroup = undefined; this.forceUpdate();
     PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(false);
   }
 
@@ -227,31 +235,37 @@ export default class extends SVEPageComponent {
             subMenuItems: [
               {
                 caption: "Neuer Urlaub",
+                icon: "f7:folder_badge_plus",
                 color: undefined,
                 onClick: function() { PopupHandler.getPopupComponent('NewProjectPopup').setComponentVisible(true); }
               },
               {
                 caption: "Teilen",
+                icon: "f7:arrowshape_turn_up_right",
                 color: undefined,
                 onClick: function() { router.navigate("/contextdetails/" + group.getID() + "/") }
               },
               {
                 caption: "Neue Gruppe",
+                icon: "f7:folder_badge_plus",
                 color: undefined,
                 onClick: function() { PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Gruppe bearbeiten",
+                icon: "f7:square_pencil",
                 color: undefined,
-                onClick: function() { self.setState({selectedGroup: self.group}); PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
+                onClick: function() { self.selectedGroup = self.group; self.forceUpdate(); PopupHandler.getPopupComponent('NewGroupPopupNG-Context').setComponentVisible(true); }
               },
               {
                 caption: "Mitglieder",
+                icon: "f7:person_3_fill",
                 color: undefined,
                 onClick: function() { router.navigate("/users/" + group.getID() + "/") }
               },
               {
                 caption: "Beitreten",
+                icon: "f7:qrcode_viewfinder",
                 color: undefined,
                 onClick: function() { self.openCamera() }
               }
@@ -262,6 +276,7 @@ export default class extends SVEPageComponent {
           panelContent.subMenuItems.push({
             caption: "Gruppe löschen",
             color: "red",
+            icon: "f7:trash",
             onClick: function() { 
               f7.dialog.confirm("Möchten Sie das Projekt wirklich löschen?", "Projekt löschen", () => {
                 self.group.remove().then(v => {
@@ -275,27 +290,43 @@ export default class extends SVEPageComponent {
             }
           });
         }
-        SideMenue.pushRightPanel(panelContent);
+        SideMenue.setRightPanel(panelContent);
       });
     }
 
-    self.setState({projects: []});
+    self.projects = []; self.forceUpdate();
     group.getProjects().then(prjs => {
-      self.setState({projects: prjs});
+      self.projects = prjs; self.forceUpdate();
     });
   }
 
   componentDidMount() {
     var self = this;
     f7ready((f7) => {
-      if (typeof self.group === "number") {
-        self.setState({group: new SVEGroup({id: self.group}, store.state.user, g => self.onGroupReady(g))});
+      if (self.group === undefined) {
+        self.group = new SVEGroup({id: self.groupID}, store.state.user, g => self.onGroupReady(g));
       }
-      Dom7(document).on('page:reinit', function (e) {
-        if (typeof self.group !== "number")
-          self.onGroupReady(self.group);
-      });
     });
+  }
+
+  protected pageAfterNavigate(isUserReady: boolean) {
+    if (this.group !== undefined) {
+      this.onGroupReady(this.group);
+    } else {
+      if (this.groupID >= 0) {
+          this.group = new SVEGroup({id: this.groupID}, store.state.user, g => this.onGroupReady(g));
+      }
+    }
+  }
+
+  protected pageReinit(isUserReady: boolean) {
+    if (this.group !== undefined) {
+      this.onGroupReady(this.group);
+    } else {
+      if (this.groupID >= 0) {
+          this.group = new SVEGroup({id: this.groupID}, store.state.user, g => this.onGroupReady(g));
+      }
+    }
   }
 
   onPageBeforeRemove() {

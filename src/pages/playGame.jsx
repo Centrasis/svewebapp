@@ -65,13 +65,13 @@ export default class extends React.Component {
       IsHosting: hosting
     };
     newGame.OnGameStart = () => this.onRequestFullscreen();
-    this.setState({game: newGame});*/
+    this.game = newGame; this.forceUpdate();*/
   }
 
   onSceneMount = (e) => {
     console.log("On mount scene component");
     const { canvas, scene, engine } = e;
-    this.setState({ canvas: canvas});
+    this.canvas = canvas; this.forceUpdate();
   }
 
   onGameConnected = (success) => {
@@ -132,17 +132,17 @@ export default class extends React.Component {
   }
 
   OnNewPlayer() {
-    this.setState({hasEnoughPlayers: this.state.game.GetPlayersCount() >= this.state.game.MinPlayers()});
+    this.hasEnoughPlayers = this.state.game.GetPlayersCount() >= this.state.game.MinPlayers(); this.forceUpdate();
   }
 
   onGiveUp() {
     this.state.game.GiveUp();
-    this.setState({IsGameRunning: this.state.game.IsRunning()});
+    this.IsGameRunning = this.state.game.IsRunning(); this.forceUpdate();
   }
 
   onStartGame() {
     this.state.game.StartGame();
-    this.setState({IsGameRunning: this.state.game.IsRunning()});
+    this.IsGameRunning = this.state.game.IsRunning(); this.forceUpdate();
     this.onRequestFullscreen();
   }
 
@@ -169,7 +169,7 @@ export default class extends React.Component {
           self.forceUpdate();
         }, err => {
           f7.dialog.alert("Error on host new game!");
-          self.setState({game: undefined});
+          self.game = undefined; self.forceUpdate();
         });
       } else {
         self.state.game.join(store.state.user).then(() => self.forceUpdate(), err => console.log("JOINING FAILED!"));

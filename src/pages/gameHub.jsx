@@ -82,7 +82,7 @@ export default class extends React.Component {
     )}
 
     updateGames() {
-      this.setState({foundGames: []});
+      this.foundGames = []; this.forceUpdate();
 
       SVEGameServer.listGames(store.state.user).then((infos) => {
         let list = [];
@@ -95,7 +95,7 @@ export default class extends React.Component {
             maxPlayers: i.maxPlayers
           });
         });
-        this.setState({foundGames: list});
+        this.foundGames = list; this.forceUpdate();
       });
     }
 

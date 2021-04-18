@@ -12,9 +12,11 @@ import {
     NavTitle,
     NavTitleLarge,
     NavRight,
-    AccordionContent
+    AccordionContent,
+    f7ready
   } from 'framework7-react';
 import { LoginHook } from './LoginHook';
+import Dom7 from 'dom7';
 
 interface ErrorState {
     has: boolean;
@@ -104,12 +106,34 @@ export abstract class SVEPageComponent<P = {}> extends React.Component<P, {}> {
     }
 
     protected abstract customRender(): any;
+    protected pageReinit(isUserReady: boolean) { }
+    protected pageAfterNavigate(isUserReady: boolean) { }
 
     public componentDidMount() {
-        this.user = store.state.user;
+      this.user = store.state.user;
+      var self = this;
+      f7ready((f7) => {
+        Dom7(document).on('page:reinit', function (e) {
+          self.user = store.state.user;
+          if (store.state.user === undefined) {
+            LoginHook.tryRestoreUserSession().then(() => self.pageReinit(true), err => self.pageReinit(false));
+          } else {
+            self.pageReinit(true);
+          }
+        });
+
+        Dom7(document).on('page:afterin', function (e) {
+          self.user = store.state.user;
+          if (store.state.user === undefined) {
+            LoginHook.tryRestoreUserSession().then(() => self.pageAfterNavigate(true), err => self.pageAfterNavigate(false));
+          } else {
+            self.pageAfterNavigate(true);
+          }
+        });
+      });
     }
 
     public componentDidUpdate() {
-        this.user = store.state.user;
+      this.user = store.state.user;
     }
 }

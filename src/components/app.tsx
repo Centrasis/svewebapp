@@ -100,7 +100,7 @@ export default class extends React.Component {
             <Page>
               <Navbar title={`${SideMenue.getCurrentRightMenu().caption}`}/>
               <List>
-                {SideMenue.getCurrentRightMenu().subMenuItems.map((item) => (
+                {SideMenue.getCurrentRightMenu().subMenuItems.map((item) => (item !== undefined) ? (
                   <ListItem 
                     panelClose="right"
                     title={item.caption}
@@ -113,7 +113,7 @@ export default class extends React.Component {
                     className="button"
                     style={(item.color !== undefined) ? {color: item.color} : {}}
                   />
-                ))}
+                ) : "")}
                 <ListItem panelClose="right"/>
               </List>
             </Page>
