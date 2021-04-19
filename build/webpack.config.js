@@ -3,10 +3,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const path = require('path');
 
@@ -61,9 +62,7 @@ module.exports = {
     }
   },
   optimization: {
-    minimizer: [new TerserPlugin({
-      sourceMap: true,
-    })],
+    minimizer: [new TerserPlugin()],
   },
   module: {
     rules: [
@@ -183,17 +182,11 @@ module.exports = {
     }),
 
     ...(env === 'production' ? [
-      new OptimizeCSSPlugin({
-        cssProcessorOptions: {
-          safe: true,
-          map: { inline: false },
-        },
-      }),
-      new webpack.optimize.ModuleConcatenationPlugin(),
+      new CssMinimizerPlugin()
     ] : [
       // Development only plugins
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin(),
+      new ReactRefreshWebpackPlugin(),
     ]),
     new HtmlWebpackPlugin({
       filename: './index.html',

@@ -4,7 +4,6 @@ import { Block, Button } from 'framework7-react';
 import { f7, f7ready, theme } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import { ImageCapture } from 'image-capture/src/imagecapture';
-import * as crypto from 'crypto';
 import store from '../components/store';
 import {MultiMediaDeviceHandler as MMDH} from '../components/multimediadevicehandler';
 
@@ -71,12 +70,16 @@ export default class CameraDropzone extends UploadDropzone<CameraUploadDropzoneS
         let imageCapture = new ImageCapture(track);
         imageCapture.takePhoto().then((blob: Blob) => {
           let name = new Date().toISOString();
-          name = crypto.createHash('sha1').update(name + Math.random().toString()).digest('hex');
-          this.onAcceptMedia([new File([blob], "ScanPhoto_" + name + ".png")]);
-          setTimeout(() => {
-            (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
-            this.setupCamera();
-          }, 1000);
+          const encoder = new TextEncoder();
+          const data = encoder.encode(name + Math.random().toString());
+          crypto.subtle.digest('SHA-256', data).then((v) => {
+            this.onAcceptMedia([new File([blob], "ScanPhoto_" + v + ".png")]);
+            setTimeout(() => {
+              (elem.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+              this.setupCamera();
+            }, 1000);
+          });
+          
         });
     }
     

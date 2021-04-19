@@ -5,7 +5,7 @@
   ],
   "name": "sve-online",
   "framework": "react",
-  "template": "tabs",
+  "template": "single-view",
   "bundler": "webpack",
   "cssPreProcessor": "less",
   "theming": {
