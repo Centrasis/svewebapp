@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 //import * as BABYLON from 'babylonjs';
 //import BaseGame from 'webgames/dist/BaseGame';
 import { SVEAccount } from 'svebaselib';
-import { GameRejectReason } from 'svegamesapi';
+//import { GameRejectReason } from 'svegamesapi';
 import { f7, f7ready, theme } from 'framework7-react';
 
 export type SceneEventArgs = {
@@ -23,7 +23,7 @@ export type SceneProps = {
   adaptToDeviceRatio?: boolean,
   onSceneMount?: (args: SceneEventArgs) => void,
   onGameConnected?: (success: Boolean) => void,
-  onGameRejected?: (reason: GameRejectReason) => void,
+  onGameRejected?: (reason: /*GameRejectReason*/ any) => void,
   OnNewPlayer: () => void,
   graphics?: GraphicsSettings,
   game: any,// BaseGame,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
-import { SVEGameServer } from 'svegamesapi';
+//import { SVEGameServer } from 'svegamesapi';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
@@ -84,7 +84,7 @@ export default class extends React.Component {
     updateGames() {
       this.foundGames = []; this.forceUpdate();
 
-      SVEGameServer.listGames(store.state.user).then((infos) => {
+      /*SVEGameServer.listGames(store.state.user).then((infos) => {
         let list = [];
         infos.forEach(i => {
           list.push({
@@ -96,7 +96,7 @@ export default class extends React.Component {
           });
         });
         this.foundGames = list; this.forceUpdate();
-      });
+      });*/
     }
 
     gameTypeToReadable(type) {

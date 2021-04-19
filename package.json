@@ -40,7 +40,6 @@
     "react-dropzone": "^11.0.3",
     "request": "^2.88.2",
     "svebaselib": "github:ftl999/sveBaseLib#0.8.0",
-    "svegamesapi": "github:ftl999/sveGamesAPI#0.0.1",
     "template7": "^1.4.2",
     "uninstall": "0.0.0",
     "ws": "^7.3.1"
