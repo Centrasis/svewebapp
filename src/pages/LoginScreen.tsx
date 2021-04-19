@@ -53,12 +53,14 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     };
     protected loginData: LoginData | RegisterData;
     protected no_install: boolean = false;
-    protected showInstallHint: boolean = false;    
+    protected showInstallHint: boolean = false; 
+    protected type: LoginType = LoginType.Login;   
 
     constructor(props) {
         super(props);
+        this.type = this.props.type;
         
-        if (this.props.type == LoginType.Login) {
+        if (this.type == LoginType.Login) {
             this.loginData = {
                 username: "",
                 password: ""
@@ -77,16 +79,15 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     }
 
     protected onLoginAction() {
-        console.log("On Login Action..");
-        if(this.props.type == LoginType.Login) {
+        if(this.type == LoginType.Login) {
             this.loginMessages.errorMsg = '';
             new SVEAccount({ name: this.loginData.username, pass: this.loginData.password }, (usr: SVEAccount) => {
                 window.sessionStorage.setItem("sessionID", usr.getSessionID());
                 if (store.state.saveThisDevice) {
                     SVEToken.register(usr, TokenType.DeviceToken, usr).then(token => {
-                    window.localStorage.setItem("sve_token", token);
-                    window.localStorage.setItem("sve_user", String(usr.getID()));
-                    window.localStorage.setItem("sve_username", usr.getName());
+                        window.localStorage.setItem("sve_token", token);
+                        window.localStorage.setItem("sve_user", String(usr.getID()));
+                        window.localStorage.setItem("sve_username", this.loginData.username);
                     });
                 }
                 console.log("Logged in!");
@@ -173,6 +174,7 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
           }, err => {
               console.log("Login via Geräte-Token fehlgeschlagen! (Use hat funktioniert)");
               this.loginMessages.errorMsg = "Login via Geräte-Token fehlgeschlagen!";
+              store.dispatch("clearUser", {});
               this.forceUpdate();
               reject();
           });
@@ -225,19 +227,13 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     }
 
     protected onOpenRegister() {
-        this.f7router.history = this.f7router.history.filter(route => route !== this.f7router.currentRoute.path);
-        this.f7router.navigate("/register/x", {
-            history: false,
-            transition: "f7-fade"
-        });
+        this.type = LoginType.Register;
+        this.forceUpdate();
     }
 
     protected onOpenLogin() {
-        this.f7router.history = this.f7router.history.filter(route => route !== this.f7router.currentRoute.path);
-        this.f7router.navigate("/login/", {
-            history: false,
-            transition: "f7-fade"
-        });
+        this.type = LoginType.Login;
+        this.forceUpdate();
     }
 
     public componentDidMount() {
@@ -290,7 +286,7 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
                         overflow: "visible"
                     }}
                 />
-                {(this.props.type == LoginType.Login) ? (
+                {(this.type == LoginType.Login) ? (
                     <div>
                         <LoginScreenTitle>Login&nbsp;{this.loginMessages.loginType}</LoginScreenTitle>
                         {(this.loginMessages.errorMsg.length > 0) ? (

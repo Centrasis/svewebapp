@@ -86,19 +86,35 @@ export default class extends SVEPageComponent<{}> {
           alignContent: "center",
           overflow: "visible"
         }}>
-          <BlockTitle style={{fontSize: "5em", height: "25vh", overflow: "visible"}}>Willkommen im SVE System</BlockTitle>
+          <BlockTitle style={{fontSize: (getDevice().desktop) ? "5em" : "1em", height: "25vh", overflow: "visible"}}>Willkommen im SVE System</BlockTitle>
         </Block>
       </Row>
       <Row>
         {(getDevice().desktop) ? (<Col width="15"></Col>) : ""}
-        <Col width={(getDevice().desktop) ? "70" : "100"}>
-
-          <Swiper initialSlide={1} navigation={!getDevice().desktop} centeredSlides pagination={!getDevice().desktop} speed={500} slidesPerView={(getDevice().desktop) ? 3 : 1} spaceBetween={20}>
+        <Col width="100">
+          <Swiper 
+            initialSlide={1} 
+            navigation={!getDevice().desktop} 
+            centeredSlides pagination={!getDevice().desktop} 
+            speed={500} 
+            slidesPerView={(getDevice().desktop) ? 3 : 1} 
+            spaceBetween={20}
+            style={{
+              width: "100%"
+            }}
+          >
             <SwiperSlide>
               <Block>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <Link href="/docs/">
                       <i className="f7-icons"
                         style={{
@@ -110,19 +126,32 @@ export default class extends SVEPageComponent<{}> {
                   <Col></Col>
                 </Row>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <BlockFooter>SVE Documents</BlockFooter>
                   </Col>
-                  <Col></Col>
                 </Row>
               </Block>
             </SwiperSlide>
             <SwiperSlide>
               <Block>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <Link href="/mediahome/">
                       <i className="f7-icons"
                         style={{
@@ -134,19 +163,32 @@ export default class extends SVEPageComponent<{}> {
                   <Col></Col>
                 </Row>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <BlockFooter>SVE Media System</BlockFooter>
                   </Col>
-                  <Col></Col>
                 </Row>
               </Block>
             </SwiperSlide>
             <SwiperSlide>
               <Block>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <Link href="/gamehub/">
                       <i className="f7-icons"
                         style={{
@@ -155,14 +197,19 @@ export default class extends SVEPageComponent<{}> {
                       >gamecontroller_alt_fill</i>
                     </Link>
                   </Col>
-                  <Col></Col>
                 </Row>
                 <Row>
-                  <Col></Col>
-                  <Col>
+                  <Col width="100" style={{
+                    display: "flex",
+                    width: "100%",
+                    justifySelf: "center",
+                    justifyContent: "center",
+                    justifyItems: "center",
+                    alignContent: "center",
+                    overflow: "visible"
+                  }}>
                     <BlockFooter>SVE Games Hub</BlockFooter>
                   </Col>
-                  <Col></Col>
                 </Row>
               </Block>
             </SwiperSlide>

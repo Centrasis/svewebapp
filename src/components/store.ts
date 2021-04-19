@@ -41,6 +41,7 @@ const store = createStore({
     },
     actions: {
         clearUser({ state }, {}) {
+            console.log("Clear UserInfos...");
             let acc: SVEAccount = state.user;
             state.user = undefined;
             let token_str = window.localStorage.getItem("sve_token");
