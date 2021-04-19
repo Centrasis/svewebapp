@@ -4,7 +4,6 @@ import { Block, Row, Link, Icon, Col, Preloader, Popup, Page, BlockTitle, List, 
 import Dom7 from 'dom7';
 import { f7, f7ready, theme } from 'framework7-react';
 import { getDevice } from 'framework7';
-import { math } from '@tensorflow/tfjs';
 
 export enum Sorting {
     AgeASC,

@@ -21,7 +21,6 @@
     "Samsung >= 5"
   ],
   "dependencies": {
-    "@tensorflow/tfjs": "^2.6.0",
     "@types/qrcode-generator": "^1.0.6",
     "@types/socket.io": "^2.1.11",
     "@types/w3c-image-capture": "^1.0.2",

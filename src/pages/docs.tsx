@@ -2,14 +2,14 @@ import React from 'react';
 import { Page, Navbar, List, ListItem, NavRight, Searchbar, Link, Block, BlockTitle, Popup, ListInput, ListButton, Col, Row, Input, BlockFooter } from 'framework7-react';
 
 //import {Tesseract} from "tesseract.ts";
-import * as tf from '@tensorflow/tfjs';
+//import * as tf from '@tensorflow/tfjs';
 //import { pdfjs } from 'react-pdf';
 
 import CameraDropzone from './CameraDropzone';
 import NewGroupPopup from './NewGroupPopup';
 import { SVEProject, SVEGroup, SVEProjectType, SVEProjectState, SVESystemInfo, SVEClassificator } from 'svebaselib';
 import QRCodeScanner from './QRCodeScanner';
-import { model } from '@tensorflow/tfjs';
+//import { model } from '@tensorflow/tfjs';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import {MultiMediaDeviceHandler as MMDH} from '../components/multimediadevicehandler';
@@ -123,7 +123,7 @@ export default class extends SVEPageComponent {
 
   predict(model, videoElem) {
     if (this.classify) {
-      tf.tidy(() => {
+      /*tf.tidy(() => {
         let tensor = tf.browser.fromPixels(videoElem, 3);
         const dim: [number, number] = [model.input.shape[1] as number, model.input.shape[2] as number];
         tensor = tf.image.resizeBilinear(tensor, dim);
@@ -135,17 +135,17 @@ export default class extends SVEPageComponent {
           this.recognizedClass = max; this.forceUpdate();
         }
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
-      });
+      });*/
     }
   }
 
   predictOnCamera(videoElem) {
     if(videoElem != undefined) {
       this.classify = true; this.forceUpdate();
-      tf.loadLayersModel(SVESystemInfo.getInstance().sources.aiService + '/models/documents/model.json').then(model => {
+      /*tf.loadLayersModel(SVESystemInfo.getInstance().sources.aiService + '/models/documents/model.json').then(model => {
         console.log("Start recognition...");
         window.requestAnimationFrame(this.predict.bind(this, model, videoElem));
-      }, err => console.log("Error on load model: " + JSON.stringify(err)));
+      }, err => console.log("Error on load model: " + JSON.stringify(err)));*/
     }
   }
 
