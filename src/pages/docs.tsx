@@ -41,7 +41,7 @@ export default class extends SVEPageComponent {
   customRender() {
       return (
       <Page name="docs">
-        <Navbar title="SVE Docs">
+        <Navbar title="SVE Docs" backLink="Back">
           <NavRight>
               <Link iconF7="camera_on_rectangle" tooltip="Kamera auswählen" onClick={() => { MMDH.resetCameraPermissions(true); MMDH.selectCamera(); }}></Link>
               <Link iconF7="folder_badge_plus" tooltip="Neue Dokumentengruppe erstellen" onClick={() => PopupHandler.getPopupComponent('NewGroupPopupDocs-New-Group').setComponentVisible(true)}></Link>

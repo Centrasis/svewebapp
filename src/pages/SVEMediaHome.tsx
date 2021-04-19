@@ -15,7 +15,8 @@ import {
   Col,
   Button,
   SwipeoutActions,
-  SwipeoutButton
+  SwipeoutButton,
+  NavLeft
 } from 'framework7-react';
 import Dom7 from 'dom7';
 import {SVEAccount, SVEGroup, SVEProject, SVEProjectQuery} from 'svebaselib';
@@ -48,7 +49,7 @@ export default class extends SVEPageComponent<{}> {
     return (
   <Page name="home">
     {/* Top Navbar */}
-    <Navbar large sliding={false}>
+    <Navbar large sliding={true} backLink="Back">
       <NavTitle sliding>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitle>
       <NavTitleLarge>Willkommen {(store.state.user !== undefined) ? store.state.user.getName() : ""}</NavTitleLarge>
       <NavRight>

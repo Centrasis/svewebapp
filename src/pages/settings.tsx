@@ -290,6 +290,10 @@ export default class extends SVEPageComponent {
 
     this.tokens = [];
     this.forceUpdate();
+
+    if (store.state.user === undefined)
+      return;
+
     SVEToken.listDevices(store.state.user).then(ti => {
       this.tokens = ti;
       this.forceUpdate();

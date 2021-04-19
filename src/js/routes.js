@@ -15,7 +15,7 @@ import DynamicRoutePage from '../pages/dynamic-route.jsx';
 import LoginScreen, { LoginType } from '../pages/LoginScreen';
 import NotFoundPage from '../pages/404.jsx';
 import PlayGame from '../pages/playGame.jsx';
-import GameHub from '../pages/gameHub.jsx';
+import GameHub from '../pages/gameHub';
 
 var routes = [
   {

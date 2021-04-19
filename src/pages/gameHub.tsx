@@ -1,37 +1,35 @@
 import React from 'react';
 import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem } from 'framework7-react';
-//import { SVEGameServer } from 'svegamesapi';
+import { SVEGameServer, SVEGame, SVEGameInfo } from 'svegamesapi';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
+import { SVEPageComponent } from '../components/SVEPageComponent';
 
-export default class extends React.Component {
+export default class extends SVEPageComponent {
+  newGameName: string = "";
+  newGameType: string = "";
+  foundGames: SVEGameInfo[] = [];
+
   constructor(props) {
     super(props);  
 
-    this.state = {
-      newGame: {
-        name: "",
-        type: ""
-      },
-      foundGames: []
-    };
   }
 
-  render() {
+  protected customRender() {
     return (
       <Page>
-        <Navbar title="Spiele-Hub" />
+        <Navbar title="Spiele-Hub" backLink="Back"/>
         <Block strong mediumInset>
           <BlockTitle>Spiel beitreten</BlockTitle>
           <List>
-          {this.state.foundGames.map((game) => (
+          {this.foundGames.map((game) => (
             <ListItem mediaItem
               key={game.name}
               title={game.name}
               subtitle={"Host: " + game.host + " Players: (" + game.playersCount + "/" + game.maxPlayers + ")"}
-              footer={"Spiel: " + this.gameTypeToReadable(game.gameType)}
-              link={`/playgame/${game.gameType}/${game.name}/join/`}
+              footer={"Spiel: Unbekannt"}
+              link={`/playgame/survival/${game.name}/join/`}
             >
             </ListItem>
           ))}
@@ -49,23 +47,24 @@ export default class extends React.Component {
               label="Spielname"
               type="text"
               placeholder={"Spielname"}
-              value={this.state.newGame.name}
+              value={this.newGameName}
               onInput={(e) => {
-                this.setState({ newGame: {name: e.target.value, type: this.state.newGame.type }});
+                this.newGameName = e.target.value;
+                this.forceUpdate();
               }}
             ></ListInput>
 
             <ListInput
               label="Spieltyp"
               type="select"
-              smartSelect
-              smartSelectParams={{openIn: 'sheet'}}
-              value={this.state.newGame.type}
+              value={this.newGameType}
               onInput={(e) => {
-                this.setState({ newGame: {type: e.target.value, name: this.state.newGame.name }});
+                this.newGameType = e.target.value;
+                this.forceUpdate();
               }}
             >
               <option value="">Undefiniert</option>
+              <option value="Survival">Survival</option>
               <option value="TheGame">The Game</option>
               <option value="Uno">Uno</option>
               <option value="Busdriver">Busfahrer</option>
@@ -74,7 +73,7 @@ export default class extends React.Component {
             </List>
             <Block largeInset strong>
               <Row tag="p">
-                <Button disabled={this.state.newGame.type == "" || this.state.newGame.name == ""} className="col" raised fill onClick={this.hostGame.bind(this)}>Hosten</Button>
+                <Button disabled={this.newGameName == "" || this.newGameType == ""} className="col" raised fill onClick={this.hostGame.bind(this)}>Hosten</Button>
               </Row>
             </Block>
         </Block>
@@ -84,19 +83,9 @@ export default class extends React.Component {
     updateGames() {
       this.foundGames = []; this.forceUpdate();
 
-      /*SVEGameServer.listGames(store.state.user).then((infos) => {
-        let list = [];
-        infos.forEach(i => {
-          list.push({
-            host: i.host.getName(),
-            gameType: "Survival",
-            name: i.name,
-            playersCount: i.playersCount,
-            maxPlayers: i.maxPlayers
-          });
-        });
-        this.foundGames = list; this.forceUpdate();
-      });*/
+      SVEGameServer.listGames(store.state.user).then((infos) => {
+        this.foundGames = infos; this.forceUpdate();
+      });
     }
 
     gameTypeToReadable(type) {
@@ -116,7 +105,7 @@ export default class extends React.Component {
     }
 
     hostGame() {
-      f7.view.current.router.navigate("/playgame/" + this.state.newGame.type + "/" + this.state.newGame.name + "/host/");
+      f7.view.current.router.navigate("/playgame/" + this.newGameType + "/" + this.newGameName + "/host/");
     }
 
     componentDidMount() {
@@ -126,5 +115,13 @@ export default class extends React.Component {
           self.updateGames();
         });
       });
+    }
+
+    pageReinit() {
+      this.updateGames();
+    }
+
+    pageAfterNavigate() {
+      this.updateGames();
     }
 };
