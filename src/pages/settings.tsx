@@ -18,7 +18,6 @@ import {
 } from 'framework7-react';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
-import Dom7 from 'dom7';
 import { LoginState, SVESystemInfo, SVEToken, TokenInfo, TokenType } from 'svebaselib';
 import { SVEPageComponent } from '../components/SVEPageComponent';
 import { RegisterData } from './LoginScreen';

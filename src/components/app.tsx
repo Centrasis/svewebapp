@@ -3,47 +3,26 @@ import React from 'react';
 import {
   App,
   Panel,
-  Col,
-  Row,
-  Views,
   View,
-  Toggle,
   Page,
   Navbar,
-  Toolbar,
-  Link,
-  LoginScreen,
-  LoginScreenTitle,
   List,
   ListItem,
-  ListInput,
-  ListButton,
-  BlockFooter,
-  BlockHeader,
-  NavTitle,
-  NavTitleLarge,
-  Block,
-  Sheet,
-  PageContent,
-  NavRight,
-  AccordionContent,
   Actions,
   ActionsButton,
   ActionsLabel,
   ActionsGroup,
   Icon,
-  BlockTitle
 } from 'framework7-react';
 
-import Dom7 from 'dom7';
 import routes from '../js/routes';
 import store from './store';
-import {SVESystemInfo, SVEAccount, LoginState, SVEToken, TokenType} from 'svebaselib';
-import { f7, f7ready, theme } from 'framework7-react';
+import {SVESystemInfo} from 'svebaselib';
+import { f7, f7ready } from 'framework7-react';
 import { MultiMediaDeviceHandler } from './multimediadevicehandler';
 import { SideMenue } from './SideMenue';
 import { getDevice } from 'framework7';
-import { LoginHook } from './LoginHook';
+
 
 export default class extends React.Component {
   protected f7params = {

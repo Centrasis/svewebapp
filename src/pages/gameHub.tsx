@@ -32,43 +32,84 @@ export default class extends SVEPageComponent {
             <Block>
               <Row>
                 <Col width="100" style={{textAlign: "center"}}>
-                  <p>Sie sind nicht Eingeloggt</p>
+                  <p style={{fontSize: "large", fontWeight: "bold"}}>Sie sind nicht eingeloggt</p>
                 </Col>
               </Row>
               <Row>
-                <Col>
+                <Col className="list-block">
                   <Row></Row>
                   <Row>
-                    <Button onClick={() => this.f7router.navigate("/login/")} fill>
-                      Einloggen
-                    </Button>
+                    <Col width="25"></Col>
+                    <Col width="50">
+                      <Button onClick={() => this.f7router.navigate("/login/")} fill>
+                        Einloggen
+                      </Button>
+                    </Col>
+                    <Col width="25"></Col>
                   </Row>
                   <Row></Row>
                 </Col>
-                <Col>
-                  <BlockTitle>Oder einfach Spielerenamen festlegen</BlockTitle>
-                  <List noHairlinesMd>
-                    <ListInput
-                      label="Name"
-                      type="text"
-                      value={this.tempUserName}
-                      placeholder="Dein Name"
-                      clearButton
-                      onInput={(e) => {
-                        this.tempUserName = (e.target.value as string).trim();
-                        if (this.tempUserName.length === 0) 
-                          this.tempUserName = this.createUserName();
-                        this.forceUpdate();
-                      }}
-                      onInputClear={() => {
-                        this.tempUserName = this.createUserName();
-                        this.forceUpdate();
-                      }}
-                    />
-                  </List>
-                  <Button onClick={() => this.registerTempUser()} fill>
-                    Erstellen
-                  </Button>
+                
+                <Col className="list-block">
+                  <Row>
+                    <Col width="25"></Col>
+                    <Col width="50">
+                      <Row>
+                      <Col width="15"></Col>
+                        <Col width="70">
+                          <BlockTitle style={{margin: "0"}}>Oder einfach Spielerenamen festlegen</BlockTitle>
+                        </Col>
+                        <Col width="15"></Col>
+                      </Row>
+                      <Row>
+                        <Col width="15"></Col>
+                        <Col width="70">
+                          <List noHairlinesMd>
+                            <ListInput
+                              style={{
+                                margin: "0",
+                                display: "block",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                maxWidth: "50%", 
+                                minWidth: "200px",
+                              }}
+                              label="Name"
+                              type="text"
+                              value={this.tempUserName}
+                              placeholder="Dein Name"
+                              clearButton
+                              onInput={(e) => {
+                                this.tempUserName = (e.target.value as string).trim();
+                                if (this.tempUserName.length === 0) 
+                                  this.tempUserName = this.createUserName();
+                                this.forceUpdate();
+                              }}
+                              onInputClear={() => {
+                                this.tempUserName = this.createUserName();
+                                this.forceUpdate();
+                              }}
+                            />
+                          </List>
+                        </Col>
+                        <Col width="15"></Col>
+                      </Row>
+                      <Row>
+                        <Col width="15"></Col>
+                        <Col width="70">
+                          <Button style={{
+                            maxWidth: "50%", 
+                            minWidth: "200px",
+                            margin: "0",
+                          }} onClick={() => this.registerTempUser()} fill>
+                            Erstellen
+                          </Button>
+                        </Col>
+                        <Col width="15"></Col>
+                      </Row>
+                    </Col>
+                    <Col width="25"></Col>
+                  </Row>
                 </Col>
               </Row>
             </Block>
@@ -82,9 +123,7 @@ export default class extends SVEPageComponent {
               title={game.name}
               subtitle={"Host: " + game.host + " Players: (" + game.playersCount + "/" + game.maxPlayers + ")"}
               footer={"Spiel: " + game.type}
-              link={window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + `/${game.type}?name=${game.name}&join=1&sessionID=${store.state.user.getSessionID()}`}
-              external
-              target="_blank"
+              link={`/playgame/${game.name}/client`}
             >
             </ListItem>
           ))}
@@ -182,8 +221,9 @@ export default class extends SVEPageComponent {
         playersCount: 0,
         state: GameState.UnReady
       }).then(gi => {
-        window.open(window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + `/${gi.type}?name=${gi.name}&host=1&sessionID=${store.state.user.getSessionID()}`);
-      });
+        this.updateGames();
+        this.f7router.navigate(`/playgame/${gi.name}/host`);
+      }, err => console.log("Error hosting game!"));
     }
 
     componentDidMount() {

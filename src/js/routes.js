@@ -14,7 +14,7 @@ import ContextdetailsPage from '../pages/contextDetails';
 import DynamicRoutePage from '../pages/dynamic-route.jsx';
 import LoginScreen, { LoginType } from '../pages/LoginScreen';
 import NotFoundPage from '../pages/404.jsx';
-import PlayGame from '../pages/playGame.jsx';
+import PlayGame from '../pages/playGame';
 import GameHub from '../pages/gameHub';
 
 var routes = [
@@ -60,7 +60,7 @@ var routes = [
     },
   },
   {
-    path: '/playgame/:game/:id/:isHost',
+    path: '/playgame/:id/:isHost',
     component: PlayGame,
     options: {
       transition: 'f7-dive',
