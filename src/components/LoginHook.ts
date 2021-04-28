@@ -9,7 +9,8 @@ export class LoginHook {
     }
 
     public static call(user: SVEAccount) {
-        LoginHook.onLoginHooks.forEach(h => h(user));
+      store.state.user = user;
+      LoginHook.onLoginHooks.forEach(h => h(user));
     }
 
     public static tryRestoreUserSession(): Promise<void> {

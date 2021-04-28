@@ -73,9 +73,7 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
                 password2: ""
             } as RegisterData;
         }
-        this.no_install = false;       
-
-        this.forceUpdate();
+        this.no_install = false;
     }
 
     protected onLoginAction() {
@@ -166,7 +164,6 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
         
           token.use().then((usr) => {
               console.log("After token use logged in user: " + JSON.stringify(usr.getInitializer()));
-              store.state.user = usr;
               this.loginData.username = usr.getName();
               this.onLoggedIn(usr);
               this.forceUpdate();
@@ -189,8 +186,6 @@ export default class extends SVEPageComponent<LoginScreenSettings> {
     
         if (usr.getState() == LoginState.LoggedInByToken || usr.getState() == LoginState.LoggedInByUser) {
           //console.log("Login succeeded! State: " + JSON.stringify(usr.getState()));
-          store.state.user = usr;
-
           if(store.state.routerParams.has("redirectProject")) {
             let pid = Number(store.state.routerParams.get("redirectProject"));
             f7.view.current.router.navigate("/project/" + pid + "/");
