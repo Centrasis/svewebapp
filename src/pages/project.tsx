@@ -40,6 +40,7 @@ export default class extends SVEPageComponent {
   protected isTakingPlaceNow: boolean = false;
   protected viewableUsers: Map<SVEAccount, SVEData[]> = new Map<SVEAccount, SVEData[]>();
   protected favoriteImgs: SVEData[] = [];
+  protected hasNoImages: boolean = false;
 
   constructor(props) {
     super(props);
@@ -149,10 +150,21 @@ export default class extends SVEPageComponent {
         <Block strong>
           {(this.viewableUsers.size === 0) ? (
             <Block strong style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
-              <Row><Col></Col><Col><span>Lade Medien...</span></Col><Col></Col></Row>
-              <Row>
-                <Col></Col><Col><Preloader></Preloader></Col><Col></Col>
-              </Row>
+                <Row><Col></Col><Col>{(this.hasNoImages) ? (<span>Bisher sind keine Medien vorhanden <br/> Beginne damit welche hochzuladen!</span>) : <span>Lade Medien...</span>}</Col><Col></Col></Row>
+                <Row>
+                  <Col></Col><Col>{(this.hasNoImages) ? (
+                      <Link href="#" onClick={() => { this.showUploadPopup(); }}>
+                        <Icon
+                          tooltip="Herunterladen"
+                          icon="f7:cloud_download"
+                          f7="cloud_download"
+                        >
+                        </Icon>
+                      </Link>
+                    ) : (
+                      <Preloader color="green"></Preloader>
+                    )}</Col><Col></Col>
+                </Row>
             </Block>
            ) : (
           <Swiper 
@@ -383,9 +395,13 @@ export default class extends SVEPageComponent {
     var $$ = Dom7;
 
     self.viewableUsers.clear();
+    self.hasNoImages = false;
+    self.forceUpdate();
 
     self.project.getData().then((unclassified_imgs) => {
       let imgs = [];
+      self.hasNoImages = unclassified_imgs.length <= 0;
+      self.forceUpdate();
 
       let finalize = () => {
         if(imgs.length === unclassified_imgs.length) {
