@@ -504,7 +504,7 @@ export default class extends SVEPageComponent {
               caption: "Herunterladen",
               icon: "f7:cloud_download",
               onClick: function() { 
-                window.open(SVESystemInfo.getInstance().sources.sveService + '/project/' + self.project.getID() + '/data/zip', "_system");
+                window.open(SVESystemInfo.getAPIRoot() + '/project/' + self.project.getID() + '/data/zip' + "?sessionID=" + encodeURI(self.user.getSessionID()), "_system");
               }
             },
             (rights.admin) ?
