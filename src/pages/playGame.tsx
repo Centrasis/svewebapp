@@ -69,7 +69,7 @@ export default class extends SVEPageComponent {
               <div>
                 <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
                   <span>Joining...</span><br />
-                  <Preloader></Preloader>
+                  <Preloader color="#11a802"></Preloader>
                 </div>
               </div>
             }

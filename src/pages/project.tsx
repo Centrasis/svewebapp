@@ -162,7 +162,7 @@ export default class extends SVEPageComponent {
                         </Icon>
                       </Link>
                     ) : (
-                      <Preloader color="green"></Preloader>
+                      <Preloader color="#11a802"></Preloader>
                     )}</Col><Col></Col>
                 </Row>
             </Block>

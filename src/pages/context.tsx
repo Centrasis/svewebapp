@@ -110,7 +110,7 @@ export default class extends SVEPageComponent {
         : 
           <div style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
             <span>Lade Gruppen...</span><br />
-            <Preloader></Preloader>
+            <Preloader color="#11a802"></Preloader>
           </div>
         }
 

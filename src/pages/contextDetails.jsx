@@ -42,7 +42,7 @@ export default class extends React.Component {
               <Col style={{width: "33%"}}></Col>
             </Block>
           </div>
-        : <Preloader></Preloader> }
+        : <Preloader color="#11a802"></Preloader> }
       </Page>
     );
   }
