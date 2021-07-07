@@ -87,6 +87,7 @@ export default class extends SVEPageComponent {
                 {(this.selectedProject !== undefined) ? 
                   <CameraDropzone
                     id="CameraDropzone"
+                    user={this.user}
                     project={this.selectedProject}
                     maxParallelUploads={1}
                     onCameraLoaded={this.predictOnCamera.bind(this)}
