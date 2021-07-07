@@ -216,6 +216,7 @@ export default class extends SVEPageComponent {
             {(this.project !== undefined) ? 
               <UploadDropzone
                 project={this.project}
+                user={this.user}
                 onImageUploaded={(img) => this.OnImgUploaded(img)}
               />
             : ""}

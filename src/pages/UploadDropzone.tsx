@@ -1,5 +1,5 @@
 import React from 'react';
-import { SVEProject, SVESystemInfo, SVEData } from 'svebaselib';
+import { SVEProject, SVESystemInfo, SVEData, SVEAccount } from 'svebaselib';
 import { Block } from 'framework7-react';
 import Dropzone from 'react-dropzone';
 import HugeUploader from 'huge-uploader';
@@ -7,6 +7,7 @@ import { f7, f7ready, theme } from 'framework7-react';
 
 export type UploadDropzoneSettings = {
     project: SVEProject,
+    user: SVEAccount,
     maxParallelUploads?: number,
     onImageUploaded?: (img: SVEData) => void,
     doCheckImageBeforeUpload?: (img: ImageData) => boolean
@@ -14,6 +15,7 @@ export type UploadDropzoneSettings = {
 
 export default class UploadDropzone<P = {}> extends React.Component<P & UploadDropzoneSettings & React.HTMLAttributes<HTMLCanvasElement>, {}> {
     protected project: SVEProject;
+    protected user: SVEAccount;
     protected hasError: boolean = false;
     protected onImageUploaded: (img: SVEData) => void = (img: SVEData) => {}
     protected doCheckImageBeforeUpload: (img: ImageData) => boolean = (img: ImageData) => { return true; }
@@ -31,22 +33,23 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
     protected lastRemaining = 0.0;
 
     componentDidMount() {
-        this.project = this.props.project;
+      this.project = this.props.project;
+      this.user = this.props.user;
 
-        if (this.props.maxParallelUploads)
-        {
-            this.uploadInfo.maxParallelUploads = this.props.maxParallelUploads;
-        }
+      if (this.props.maxParallelUploads)
+      {
+          this.uploadInfo.maxParallelUploads = this.props.maxParallelUploads;
+      }
 
-        if (this.props.onImageUploaded)
-        {
-            this.onImageUploaded = this.props.onImageUploaded;
-        }
+      if (this.props.onImageUploaded)
+      {
+          this.onImageUploaded = this.props.onImageUploaded;
+      }
 
-        if (this.props.doCheckImageBeforeUpload)
-        {
-            this.doCheckImageBeforeUpload = this.props.doCheckImageBeforeUpload;
-        }
+      if (this.props.doCheckImageBeforeUpload)
+      {
+          this.doCheckImageBeforeUpload = this.props.doCheckImageBeforeUpload;
+      }
     }
 
     render () {   
@@ -140,7 +143,7 @@ export default class UploadDropzone<P = {}> extends React.Component<P & UploadDr
           return;
         }
         const uploader = new HugeUploader({ 
-          endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload", 
+          endpoint: SVESystemInfo.getAPIRoot() + "/project/" + this.project.getID() + "/data/upload" + "?sessionID=" + encodeURI(this.user.getSessionID()), 
           file: media,
           chunkSize: 5,
           postParams: {
