@@ -150,9 +150,9 @@ export default class extends SVEPageComponent {
         <Block strong>
           {(this.viewableUsers.size === 0) ? (
             <Block strong style={{justifyContent: "center", justifyItems: "center", position: "fixed", zIndex: 9, left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
-                <Row><Col></Col><Col>{(this.hasNoImages) ? (<span>Bisher sind keine Medien vorhanden <br/> Beginne damit welche hochzuladen!</span>) : <span>Lade Medien...</span>}</Col><Col></Col></Row>
-                {(this.hasNoImages) ? (
-                    <Row>
+                <Row className="text-align-center"><Col className="text-align-center">{(this.hasNoImages) ? (<span>Bisher sind keine Medien vorhanden <br/> Beginne damit welche hochzuladen!</span>) : <span>Lade Medien...</span>}</Col></Row>
+                <Row>
+                  <Col></Col><Col>{(this.hasNoImages) ? (
                       <Link href="#" onClick={() => { this.showUploadPopup(); }}>
                         <Icon
                           tooltip="Hochladen"
@@ -161,10 +161,10 @@ export default class extends SVEPageComponent {
                         >
                         </Icon>
                       </Link>
-                    </Row>
-                  ) : (
-                    <Row><Col></Col><Col><Preloader color="#11a802"></Preloader></Col><Col></Col></Row>
-                  )}
+                    ) : (
+                      <Preloader color="#11a802"></Preloader>
+                    )}</Col><Col></Col>
+                </Row>
             </Block>
            ) : (
           <Swiper 
