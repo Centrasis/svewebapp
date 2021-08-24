@@ -39,8 +39,8 @@
     "react-dropzone": "^11.3.4",
     "react-iframe": "^1.8.0",
     "skeleton-elements": "^3.4.0",
-    "svebaselib": "git+https://github.com/ftl999/sveBaseLib.git#0.8.0",
-    "svegamesapi": "git+https://github.com/ftl999/sveGamesAPI.git#0.0.1",
+    "svebaselib": "git+https://github.com/Centrasis/sveBaseLib.git#0.8.0",
+    "svegamesapi": "git+https://github.com/Centrasis/sveGamesAPI.git#0.0.1",
     "swiper": "^6.7.5",
     "uninstall": "0.0.0",
     "ws": "^7.5.2"

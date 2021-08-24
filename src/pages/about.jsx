@@ -10,7 +10,7 @@ export default () => (
     </Block>
     <Block strong tag="p">
       <Row>Um mit der SVE online App Medien zu verwalten, kann entweder dieser Server verwendet werden (Der Standard in der App), wobei jedoch ein Account auf diesem Server benötigt wird. Um den eigenen Datenschutz beim Austausch von Medien zu erhalten kann über git das API-Bundle bezogen werden. Dieses ist in php geschrieben und lässt sich somit bei den meisten gängigen Hostern oder Zuhause verwenden.</Row>
-      <Row><a class="link external" href="https://github.com/ftl999/sve-api-2.0">Quellen API 2.0</a></Row>
+      <Row><a class="link external" href="https://github.com/Centrasis/sve-api-2.0">Quellen API 2.0</a></Row>
     </Block>
   </Page>
 );
