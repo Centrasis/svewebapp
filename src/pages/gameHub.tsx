@@ -6,6 +6,86 @@ import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
 import { SVEPageComponent } from '../components/SVEPageComponent';
 import { SVEAccount } from 'svebaselib';
+import { getDevice } from 'framework7';
+import { height } from 'dom7';
+
+class AnonymousAccountCreationPanel<P = {}> extends React.Component<P & React.HTMLAttributes<HTMLCanvasElement>, {}> {
+  public tempUserName: string = "";
+
+  protected createUserName(): string {
+    let names = ["Todesschabe", "KomischerDude1Elf", "Evaporator", "Gamer8", "Bender", "Decay", "BigPapa", "Hotdog", "Starbug", "Helo", "Cobra"];
+    return names[Math.floor(Math.random() * names.length)];
+  }
+
+  protected registerTempUser() {
+    SVEAccount.registerTemporaryUser(this.tempUserName).then(usr => {
+      LoginHook.call(usr);
+    });
+  }
+
+  componentDidMount() {
+    this.tempUserName = this.createUserName();
+
+    this.forceUpdate();
+  }
+
+  render () {   
+    return (
+      <Block>
+        <Row>
+          <Col width="70" style={{textAlign: "center"}}><BlockTitle>Anonymen Nutzer erstellen</BlockTitle></Col>
+          <Col width="15"></Col>
+        </Row>
+        <Row>
+          <Col width={7.5}></Col>
+          <Col width="85" style={{textAlign: "center"}}>
+            <List noHairlinesMd>
+              <ListInput
+                style={{
+                  margin: "0",
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  maxWidth: "50%", 
+                  minWidth: "200px",
+                }}
+                label="Name"
+                type="text"
+                value={this.tempUserName}
+                placeholder="Dein Name"
+                clearButton
+                onInput={(e) => {
+                  this.tempUserName = (e.target.value as string).trim();
+                  if (this.tempUserName.length === 0) 
+                    this.tempUserName = this.createUserName();
+                  this.forceUpdate();
+                }}
+                onInputClear={() => {
+                  this.tempUserName = this.createUserName();
+                  this.forceUpdate();
+                }}
+              />
+            </List>
+          </Col>
+          <Col width={7.5}></Col>
+        </Row>
+        <Row>
+          <Col width="15"></Col>
+          <Col width={70} style={{textAlign: "center"}}>
+            <Button style={{
+              maxWidth: "50%", 
+              minWidth: "200px",
+              margin: "0",
+            }} onClick={() => this.registerTempUser()} fill>
+              Erstellen
+            </Button>
+          </Col>
+          <Col width="15"></Col>
+        </Row>
+      </Block>
+    )
+  }
+}
 
 export default class extends SVEPageComponent {
   newGameName: string = "";
@@ -16,13 +96,8 @@ export default class extends SVEPageComponent {
 
   constructor(props) {
     super(props);
-    this.tempUserName = this.createUserName();
-  }
-
-  protected createUserName(): string {
-    let names = ["Todesschabe", "KomischerDude1Elf", "Evaporator", "Gamer8", "Bender", "Decay", "BigPapa", "Hotdog", "Starbug", "Helo", "Cobra"];
-    return names[Math.floor(Math.random() * names.length)];
-  }
+    
+  } 
 
   protected customRender() {
     return (
@@ -36,80 +111,50 @@ export default class extends SVEPageComponent {
                 </Col>
               </Row>
               <Row>
-                <Col className="list-block">
+                <Col>
                   <Row></Row>
-                  <Row>
-                    <Col width="25"></Col>
-                    <Col width="50">
-                      <Button onClick={() => this.f7router.navigate("/login/")} fill>
-                        Einloggen
-                      </Button>
+                    <Col width="7.5"></Col>
+                      <Col width="85">
+                      {(getDevice().desktop) ? (
+                        <Row>
+                          <Col>
+                            <Row><BlockTitle>Account vorhanden?</BlockTitle></Row>
+                            <Row>
+                              <Col>
+                                <Button onClick={() => this.f7router.navigate("/login/")} fill>
+                                  Einloggen
+                                </Button>
+                              </Col>
+                            </Row>
+                            <Row>&nbsp;</Row>
+                          </Col>
+                          <Col>
+                            <AnonymousAccountCreationPanel></AnonymousAccountCreationPanel>
+                          </Col>
+                        </Row>
+                    ) : (
+                      <Row>
+                        <Col>
+                          <Row><BlockTitle>Account vorhanden?</BlockTitle></Row>
+                          <Row>
+                            <Col>
+                              <Button onClick={() => this.f7router.navigate("/login/")} fill>
+                                Einloggen
+                              </Button>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col>
+                              <Row><BlockTitle>Oder</BlockTitle></Row>
+                              <AnonymousAccountCreationPanel></AnonymousAccountCreationPanel>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                    )}
                     </Col>
-                    <Col width="25"></Col>
-                  </Row>
+                    <Col width="7.5"></Col>
                   <Row></Row>
-                </Col>
-                
-                <Col className="list-block">
-                  <Row>
-                    <Col width="25"></Col>
-                    <Col width="50">
-                      <Row>
-                      <Col width="15"></Col>
-                        <Col width="70">
-                          <BlockTitle style={{margin: "0"}}>Oder einfach Spielerenamen festlegen</BlockTitle>
-                        </Col>
-                        <Col width="15"></Col>
-                      </Row>
-                      <Row>
-                        <Col width="15"></Col>
-                        <Col width="70">
-                          <List noHairlinesMd>
-                            <ListInput
-                              style={{
-                                margin: "0",
-                                display: "block",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                maxWidth: "50%", 
-                                minWidth: "200px",
-                              }}
-                              label="Name"
-                              type="text"
-                              value={this.tempUserName}
-                              placeholder="Dein Name"
-                              clearButton
-                              onInput={(e) => {
-                                this.tempUserName = (e.target.value as string).trim();
-                                if (this.tempUserName.length === 0) 
-                                  this.tempUserName = this.createUserName();
-                                this.forceUpdate();
-                              }}
-                              onInputClear={() => {
-                                this.tempUserName = this.createUserName();
-                                this.forceUpdate();
-                              }}
-                            />
-                          </List>
-                        </Col>
-                        <Col width="15"></Col>
-                      </Row>
-                      <Row>
-                        <Col width="15"></Col>
-                        <Col width="70">
-                          <Button style={{
-                            maxWidth: "50%", 
-                            minWidth: "200px",
-                            margin: "0",
-                          }} onClick={() => this.registerTempUser()} fill>
-                            Erstellen
-                          </Button>
-                        </Col>
-                        <Col width="15"></Col>
-                      </Row>
-                    </Col>
-                    <Col width="25"></Col>
-                  </Row>
                 </Col>
               </Row>
             </Block>
@@ -186,12 +231,6 @@ export default class extends SVEPageComponent {
         this.foundGames = infos; this.forceUpdate();
       });
     } 
-
-    registerTempUser() {
-      SVEAccount.registerTemporaryUser(this.tempUserName).then(usr => {
-        LoginHook.call(usr);
-      });
-    }
 
     gameTypeToReadable(type) {
       if (type == "thegame")
