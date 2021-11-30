@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem, Col } from 'framework7-react';
-import { SVEGameServer, SVEGame, SVEGameInfo, GameState } from 'svegamesapi';
+import { Page, Navbar, Block, BlockTitle, Row, List, Button, ListInput, ListItem, Col, AccordionContent, Icon } from 'framework7-react';
+import { SVEGameServer, SVEGame, SVEGameInfo, GameState, SVEStaticGameInfo } from 'svegamesapi';
 import { f7, f7ready, theme } from 'framework7-react';
 import store from '../components/store';
 import { LoginHook } from '../components/LoginHook';
@@ -88,15 +88,24 @@ class AnonymousAccountCreationPanel<P = {}> extends React.Component<P & React.HT
 }
 
 export default class extends SVEPageComponent {
-  newGameName: string = "";
-  newGameType: string = "";
+  newGame: SVEGameInfo;
   foundGames: SVEGameInfo[] = [];
-  foundGameTypes: string[] = [];
+  foundGameTypes: SVEStaticGameInfo[] = [];
   tempUserName: string = "";
 
   constructor(props) {
     super(props);
-    
+    this.newGame = {
+      name: "",
+      assetPath: "",
+      host: "",
+      id: 0,
+      maxPlayers: 0,
+      minPlayers: 0,
+      playersCount: 0,
+      state: GameState.UnReady,
+      type: ""
+    }
   } 
 
   protected customRender() {
@@ -181,14 +190,14 @@ export default class extends SVEPageComponent {
         </Block>
         <Block largeInset>
           <BlockTitle>Spiel hosten</BlockTitle>
-          <List>
+          <List accordionList accordionOpposite>
             <ListInput
               label="Spielname"
               type="text"
               placeholder={"Spielname"}
-              value={this.newGameName}
+              value={this.newGame.name}
               onInput={(e) => {
-                this.newGameName = e.target.value;
+                this.newGame.name = e.target.value;
                 this.forceUpdate();
               }}
             ></ListInput>
@@ -196,21 +205,43 @@ export default class extends SVEPageComponent {
             <ListInput
               label="Spieltyp"
               type="select"
-              value={this.newGameType}
+              value={this.newGame.type}
               onInput={(e) => {
-                this.newGameType = e.target.value;
+                this.newGame.type = e.target.value;
+                const possiblePrefabs = this.foundGameTypes.filter(e => e.type === this.newGame.type);
+                if (possiblePrefabs.length > 0) {
+                  const prefab = possiblePrefabs[0];
+                  this.newGame.assetPath = prefab.assetPath;
+                  this.newGame.maxPlayers = prefab.maxPlayers;
+                  this.newGame.minPlayers = prefab.minPlayers;
+                  this.newGame.host = this.user;
+                } else {
+                  this.newGame.name = "";
+                }
                 this.forceUpdate();
               }}
             >
               <option value="">Undefiniert</option>
               {this.foundGameTypes.map(t => (
-                <option value={t}>{t}</option>
+                <option value={t.type}>{t.type}</option>
               ))}
             </ListInput>
+            {(this.newGame.type !== "") ? (
+              <ListItem accordionItem title="Spielinformationen">
+                <Icon slot="media" f7="info_circle" />
+                <AccordionContent>
+                  <Block>
+                    <List mediaList>
+                      <ListItem title="Maximale Spieleranzahl">{this.newGame.maxPlayers}</ListItem>
+                      <ListItem title="Minimale Spieleranzahl">{this.newGame.minPlayers}</ListItem>
+                    </List>
+                  </Block>
+                </AccordionContent>
+              </ListItem>) : ""}
             </List>
             <Block largeInset strong>
               <Row tag="p">
-                <Button disabled={this.newGameName == "" || this.newGameType == "" || store.state.user === undefined} className="col" raised fill onClick={this.hostGame.bind(this)}>Hosten</Button>
+                <Button disabled={this.newGame.name == "" || this.newGame.type == "" || store.state.user === undefined} className="col" raised fill onClick={this.hostGame.bind(this)}>Hosten</Button>
               </Row>
             </Block>
         </Block>
@@ -249,20 +280,11 @@ export default class extends SVEPageComponent {
     }
 
     hostGame() {
-      console.log("Host game: " + this.newGameName + " as " + store.state.user.getName());
-      SVEGameServer.hostGame({
-        host: store.state.user,
-        id: 0,
-        maxPlayers: 10,
-        minPlayers: 2,
-        name: this.newGameName,
-        type: this.newGameType,
-        playersCount: 0,
-        state: GameState.UnReady
-      }).then(gi => {
+      console.log("Host game: " + this.newGame.name + " as " + store.state.user.getName());
+      SVEGameServer.hostGame(this.newGame).then(gi => {
         this.updateGames();
-        this.f7router.navigate(`/playgame/${gi.name}/host`);
-      }, err => console.log("Error hosting game!"));
+        this.f7router.navigate("/playgame/" + gi.name + "/host");
+      }, err => f7.dialog.alert("Spiel konnte nicht erstellt werden! Eventuell ist der Name bereits vergeben: " + JSON.stringify(err.reason)));
     }
 
     componentDidMount() {

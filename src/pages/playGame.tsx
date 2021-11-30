@@ -20,7 +20,7 @@ export default class extends SVEPageComponent {
   customRender() {
     return (
       <Page name="TheGame">
-        <Navbar title={"Play: " + ((this.game !== undefined) ? this.game.type : "") + " im Raum: " + this.gameID} backLink="Back">
+        <Navbar title={"Play: " + ((this.game !== undefined) ? this.game.type : "") + " im Raum: " + this.game.name} backLink="Back">
           <Link href="#" onClick={this.onRequestFullscreen.bind(this)}>
             <Icon f7="play_rectangle" tooltip="Vollbild an"></Icon>
           </Link>
@@ -32,20 +32,6 @@ export default class extends SVEPageComponent {
         ) : ""}
         <div style={{width: "100%", height: "90%"}}>
           {(this.game !== undefined) ? (
-            /*<Game
-              player={store.state.user}
-              onSceneMount={this.onSceneMount} 
-              onGameConnected={this.onGameConnected}
-              game={this.state.game}
-              doHost={this.state.IsHosting}
-              onGameRejected={this.onGameRejected.bind(this)}
-              OnNewPlayer={this.OnNewPlayer.bind(this)}
-              engineOptions={{
-                stencil: true
-              }}
-              graphics={{resolution: { X: 1920, Y: 1080}}} 
-              style={{width: "100%", height: "100%"}} 
-            />*/
               <Row>
                 <Col width="10"></Col>
                 <Col width="80" style={{
@@ -91,7 +77,7 @@ export default class extends SVEPageComponent {
             self.game = g;
           }
         });
-        self.gameURL = "https://" + window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + "/" + self.game.type + "/?name=" + self.game.id + "&sessionID=" + store.state.user.getSessionID();
+        self.gameURL = "https://" + window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + "/" + self.game.assetPath + "/?name=" + self.game.id + "&sessionID=" + store.state.user.getSessionID();
         self.forceUpdate();
       });
     });
