@@ -20,7 +20,7 @@ export default class extends SVEPageComponent {
   customRender() {
     return (
       <Page name="TheGame">
-        <Navbar title={"Play: " + ((this.game !== undefined) ? this.game.type : "") + " im Raum: " + this.game.name} backLink="Back">
+        <Navbar title={"Play: " + ((this.game !== undefined) ? this.game.type : "") + " im Raum: " + ((this.game !== undefined) ? this.game.name : "")} backLink="Back">
           <Link href="#" onClick={this.onRequestFullscreen.bind(this)}>
             <Icon f7="play_rectangle" tooltip="Vollbild an"></Icon>
           </Link>
