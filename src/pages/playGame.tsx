@@ -77,7 +77,7 @@ export default class extends SVEPageComponent {
             self.game = g;
           }
         });
-        self.gameURL = "https://" + window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + "/" + self.game.assetPath + "/?name=" + self.game.id + "&sessionID=" + store.state.user.getSessionID();
+        self.gameURL = "https://" + window.location.hostname.replace("www.", "play.").replace("sve.", "play.") + "/" + self.game.assetPath + "/?name=" + self.game.id + "&sessionID=" + store.state.user.getSessionID() + "&api=" + window.location.hostname.replace("www.", "").replace("sve.", "");
         self.forceUpdate();
       });
     });
