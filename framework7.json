@@ -7,7 +7,7 @@
   "framework": "react",
   "template": "single-view",
   "bundler": "vite",
-  "cssPreProcessor": "less",
+  "cssPreProcessor": false,
   "theming": {
     "customColor": true,
     "color": "#008c0e",
