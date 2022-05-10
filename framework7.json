@@ -1,12 +1,12 @@
 {
   "cwd": ".",
   "type": [
-    "pwa"
+    "web"
   ],
   "name": "sve-online",
   "framework": "react",
   "template": "single-view",
-  "bundler": "webpack",
+  "bundler": "vite",
   "cssPreProcessor": "less",
   "theming": {
     "customColor": true,
@@ -15,12 +15,5 @@
     "iconFonts": true,
     "fillBars": false
   },
-  "customBuild": false,
-  "webpack": {
-    "developmentSourceMap": true,
-    "productionSourceMap": true,
-    "hashAssets": false,
-    "preserveAssetsPaths": false,
-    "inlineAssets": true
-  }
+  "customBuild": false
 }
